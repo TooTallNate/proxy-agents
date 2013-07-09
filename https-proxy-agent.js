@@ -6,7 +6,7 @@
 var net = require('net');
 var tls = require('tls');
 var url = require('url');
-var Agent = require('./agent');
+var Agent = require('agent-base');
 var inherits = require('util').inherits;
 
 /**
