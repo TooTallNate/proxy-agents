@@ -34,7 +34,7 @@ console.log('attempting to GET %j', endpoint);
 var opts = url.parse(endpoint);
 
 // create an instance of the `HttpsProxyAgent` class with the proxy server information
-var agent = new HttpProxyAgent(proxy);
+var agent = new HttpsProxyAgent(proxy);
 opts.agent = agent;
 
 https.get(opts, function (res) {
