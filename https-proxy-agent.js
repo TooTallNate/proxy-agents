@@ -25,6 +25,7 @@ module.exports = HttpsProxyAgent;
 function HttpsProxyAgent (opts) {
   if (!(this instanceof HttpsProxyAgent)) return new HttpsProxyAgent(opts);
   if ('string' == typeof opts) opts = url.parse(opts);
+  if (!opts) throw new Error('an HTTP(S) proxy server `host` and `port` must be specified!');
   var proxy = clone(opts, {});
   Agent.call(this);
 
