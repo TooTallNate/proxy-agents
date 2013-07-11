@@ -66,26 +66,36 @@ HttpsProxyAgent.prototype.createConnection = function (opts, fn) {
     socket = net.connect(this.proxy);
   }
 
-  var msg = 'CONNECT ' + opts.host + ':' + opts.port + ' HTTP/1.1\r\n' +
-    'Host: ' + opts.host + ':' + opts.port + '\r\n' +
-    '\r\n';
-  socket.write(msg);
+  function read () {
+    var b = socket.read();
+    if (b) ondata(b);
+    else socket.once('readable', read);
+  }
 
-  socket.ondata = function (b, offset, length) {
-    var buf = b.slice(offset, length);
+  function ondata (b) {
+    //console.log(b.length, b, b.toString());
     // TODO: verify that the socket is properly connected, check response...
-
-    socket.ondata = null;
 
     // since the proxy is connecting to an SSL server, we have
     // to upgrade this socket connection to an SSL connection
-    socket = tls.connect({
+    var secure = tls.connect({
       socket: socket,
       servername: opts.host
     });
 
-    fn(null, socket);
-  };
+    fn(null, secure);
+  }
+
+  if (socket.read) {
+    read();
+  } else {
+    socket.once('data', ondata);
+  }
+
+  var msg = 'CONNECT ' + opts.host + ':' + opts.port + ' HTTP/1.1\r\n' +
+    'Host: ' + opts.host + ':' + opts.port + '\r\n' +
+    '\r\n';
+  socket.write(msg);
 };
 
 function clone (src, dest) {
