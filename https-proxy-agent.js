@@ -25,9 +25,22 @@ module.exports = HttpsProxyAgent;
 function HttpsProxyAgent (opts) {
   if (!(this instanceof HttpsProxyAgent)) return new HttpsProxyAgent(opts);
   if ('string' == typeof opts) opts = url.parse(opts);
+  var proxy = clone(opts, {});
   Agent.call(this);
-  this.proxy = opts;
-  this.secure = this.proxy.protocol && this.proxy.protocol == 'https:';
+
+  this.secure = proxy.protocol && proxy.protocol == 'https:';
+
+  proxy.host = proxy.hostname || proxy.host;
+  proxy.port = +proxy.port || (this.secure ? 443 : 80);
+
+  if (proxy.host && proxy.path) {
+    // XXX: if both a `host` and `path` are specified then it's most likely the
+    // result of a `url.parse()` call... we need to remove the `path` portion so
+    // that `net.connect()` doesn't attempt to open that as a unix socket file.
+    delete proxy.path;
+  }
+
+  this.proxy = proxy;
 }
 inherits(HttpsProxyAgent, Agent);
 
@@ -45,14 +58,10 @@ Agent.prototype.defaultPort = 443;
 
 HttpsProxyAgent.prototype.createConnection = function (opts, fn) {
   var socket;
-  var info = {
-    host: this.proxy.hostname || this.proxy.host,
-    port: +this.proxy.port || (this.secure ? 443 : 80)
-  };
   if (this.secure) {
-    socket = tls.connect(info);
+    socket = tls.connect(this.proxy);
   } else {
-    socket = net.connect(info);
+    socket = net.connect(this.proxy);
   }
 
   var msg = 'CONNECT ' + opts.host + ':' + opts.port + ' HTTP/1.1\r\n' +
@@ -76,3 +85,8 @@ HttpsProxyAgent.prototype.createConnection = function (opts, fn) {
     fn(null, socket);
   };
 };
+
+function clone (src, dest) {
+  for (var i in src) dest[i] = src[i];
+  return dest;
+}
