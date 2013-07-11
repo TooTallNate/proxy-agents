@@ -40,7 +40,7 @@ Agent.prototype.defaultPort = 443;
 /**
  * Initiates a TCP connection to the specified HTTP proxy server.
  *
- * @api public
+ * @api protected
  */
 
 HttpsProxyAgent.prototype.createConnection = function (opts, fn) {
@@ -72,6 +72,7 @@ HttpsProxyAgent.prototype.createConnection = function (opts, fn) {
       socket: socket,
       servername: opts.host
     });
+
     fn(null, socket);
   };
 };
