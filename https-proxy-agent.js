@@ -31,11 +31,12 @@ function HttpsProxyAgent (opts) {
 
   this.secure = proxy.protocol && proxy.protocol == 'https:';
 
+  // prefer `hostname` over `host`, and set the `port` if needed
   proxy.host = proxy.hostname || proxy.host;
   proxy.port = +proxy.port || (this.secure ? 443 : 80);
 
   if (proxy.host && proxy.path) {
-    // XXX: if both a `host` and `path` are specified then it's most likely the
+    // if both a `host` and `path` are specified then it's most likely the
     // result of a `url.parse()` call... we need to remove the `path` portion so
     // that `net.connect()` doesn't attempt to open that as a unix socket file.
     delete proxy.path;
