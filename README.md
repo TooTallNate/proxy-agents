@@ -5,6 +5,13 @@ https-proxy-agent
 This module provides an `http.Agent` implementation that connects to a specified
 HTTP or HTTPS proxy server, and can be used with the built-in `https` module.
 
+Specifically, this `Agent` implementation connects to an intermediary "proxy"
+server and issues the CONNECT HTTP method, which tells the proxy to open a
+direct TCP connection to the endpoint server.
+
+Since this agent implements the CONNECT HTTP method, it also works with other
+protocols that use this method when connecting over proxies (i.e. WebSockets).
+
 
 Installation
 ------------
