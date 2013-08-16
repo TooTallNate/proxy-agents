@@ -26,14 +26,18 @@ function HttpsProxyAgent (opts) {
   if (!(this instanceof HttpsProxyAgent)) return new HttpsProxyAgent(opts);
   if ('string' == typeof opts) opts = url.parse(opts);
   if (!opts) throw new Error('an HTTP(S) proxy server `host` and `port` must be specified!');
-  var proxy = clone(opts, {});
   Agent.call(this);
 
-  this.secure = proxy.protocol && proxy.protocol == 'https:';
+  var proxy = clone(opts, {});
+  this.secureProxy = proxy.protocol && proxy.protocol == 'https:';
+  this.secureEndpoint = opts.secureEndpoint !== false; // `true` by default
+  if (!this.secureEndpoint) {
+    this.defaultPort = 80;
+  }
 
   // prefer `hostname` over `host`, and set the `port` if needed
   proxy.host = proxy.hostname || proxy.host;
-  proxy.port = +proxy.port || (this.secure ? 443 : 80);
+  proxy.port = +proxy.port || (this.secureProxy ? 443 : 80);
 
   if (proxy.host && proxy.path) {
     // if both a `host` and `path` are specified then it's most likely the
@@ -60,7 +64,7 @@ Agent.prototype.defaultPort = 443;
 
 HttpsProxyAgent.prototype.createConnection = function (opts, fn) {
   var socket;
-  if (this.secure) {
+  if (this.secureProxy) {
     socket = tls.connect(this.proxy);
   } else {
     socket = net.connect(this.proxy);
@@ -72,18 +76,22 @@ HttpsProxyAgent.prototype.createConnection = function (opts, fn) {
     else socket.once('readable', read);
   }
 
+  var self = this;
   function ondata (b) {
     //console.log(b.length, b, b.toString());
     // TODO: verify that the socket is properly connected, check response...
 
     // since the proxy is connecting to an SSL server, we have
     // to upgrade this socket connection to an SSL connection
-    var secure = tls.connect({
-      socket: socket,
-      servername: opts.host
-    });
+    var sock = socket;
+    if (self.secureEndpoint) {
+      sock = tls.connect({
+        socket: socket,
+        servername: opts.host
+      });
+    }
 
-    fn(null, secure);
+    fn(null, sock);
   }
 
   if (socket.read) {
