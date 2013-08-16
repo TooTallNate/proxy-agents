@@ -92,8 +92,9 @@ HttpsProxyAgent.prototype.createConnection = function (opts, fn) {
     socket.once('data', ondata);
   }
 
-  var msg = 'CONNECT ' + opts.host + ':' + opts.port + ' HTTP/1.1\r\n' +
-    'Host: ' + opts.host + ':' + opts.port + '\r\n' +
+  var hostname = opts.host + ':' + opts.port;
+  var msg = 'CONNECT ' + hostname + ' HTTP/1.1\r\n' +
+    'Host: ' + hostname + '\r\n' +
     '\r\n';
   socket.write(msg);
 };
