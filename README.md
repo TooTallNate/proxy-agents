@@ -36,7 +36,7 @@ var proxy = process.env.http_proxy || 'http://168.63.76.32:3128';
 console.log('using proxy server %j', proxy);
 
 // HTTPS endpoint for the proxy to connect to
-var endpoint = process.argv[2] || 'https://gist.github.com/TooTallNate/5952254/raw/07972db49b5b70a212c39dfee56ed3ab82f8179c/agent.js';
+var endpoint = process.argv[2] || 'https://graph.facebook.com/tootallnate';
 console.log('attempting to GET %j', endpoint);
 var opts = url.parse(endpoint);
 
