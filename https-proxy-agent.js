@@ -81,10 +81,11 @@ HttpsProxyAgent.prototype.createConnection = function (opts, fn) {
     //console.log(b.length, b, b.toString());
     // TODO: verify that the socket is properly connected, check response...
 
-    // since the proxy is connecting to an SSL server, we have
-    // to upgrade this socket connection to an SSL connection
     var sock = socket;
+
     if (self.secureEndpoint) {
+      // since the proxy is connecting to an SSL server, we have
+      // to upgrade this socket connection to an SSL connection
       sock = tls.connect({
         socket: socket,
         servername: opts.host
