@@ -11,6 +11,7 @@ direct TCP connection to the endpoint server.
 
 Since this agent implements the CONNECT HTTP method, it also works with other
 protocols that use this method when connecting over proxies (i.e. WebSockets).
+See the "Examples" section below for more.
 
 
 Installation
@@ -23,8 +24,10 @@ $ npm install https-proxy-agent
 ```
 
 
-Example
--------
+Examples
+--------
+
+#### `https` module example
 
 ``` js
 var url = require('url');
@@ -50,6 +53,44 @@ https.get(opts, function (res) {
 });
 ```
 
+#### `ws` WebSocket connection example
+
+``` js
+var url = require('url');
+var WebSocket = require('ws');
+var HttpsProxyAgent = require('https-proxy-agent');
+
+// HTTP/HTTPS proxy to connect to
+var proxy = process.env.http_proxy || 'http://168.63.76.32:3128';
+console.log('using proxy server %j', proxy);
+
+// WebSocket endpoint for the proxy to connect to
+var endpoint = process.argv[2] || 'ws://echo.websocket.org';
+var parsed = url.parse(endpoint);
+console.log('attempting to connect to WebSocket %j', endpoint);
+
+// create an instance of the `HttpsProxyAgent` class with the proxy server information
+var opts = url.parse(proxy);
+
+// IMPORTANT! Set the `secureEndpoint` property to `false` when connecting
+//            over "ws://", but `true` when connecting over "wss://"
+opts.secureEndpoint = parsed.protocol && parsed.protocol == 'wss:';
+
+var agent = new HttpsProxyAgent(opts);
+
+// finally, initiate the WebSocket connection
+var socket = new WebSocket(endpoint, { agent: agent });
+
+socket.on('open', function () {
+  console.log('"open" event!');
+  socket.send('hello world');
+});
+
+socket.on('message', function (data, flags) {
+  console.log('"message" event! %j %j', data, flags);
+  socket.close();
+});
+```
 
 License
 -------
