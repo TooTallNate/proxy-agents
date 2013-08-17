@@ -72,7 +72,7 @@ console.log('attempting to connect to WebSocket %j', endpoint);
 // create an instance of the `HttpsProxyAgent` class with the proxy server information
 var opts = url.parse(proxy);
 
-// IMPORTANT! Set the `secureEndpoint` property to `false` when connecting
+// IMPORTANT! Set the `secureEndpoint` option to `false` when connecting
 //            over "ws://", but `true` when connecting over "wss://"
 opts.secureEndpoint = parsed.protocol && parsed.protocol == 'wss:';
 
