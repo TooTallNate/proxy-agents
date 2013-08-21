@@ -1,3 +1,11 @@
+0.1.0 / 2013-07-21
+==================
+
+ - rename `secure` to `secureProxy`
+ - added `secureEndpoint` option
+ - various optimizations
+ - README improvements
+
 0.0.2 / 2013-07-11
 ==================
 
