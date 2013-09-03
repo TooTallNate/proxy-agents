@@ -102,8 +102,12 @@ HttpsProxyAgent.prototype.createConnection = function (opts, fn) {
   }
 
   var hostname = opts.host + ':' + opts.port;
-  var msg = 'CONNECT ' + hostname + ' HTTP/1.1\r\n' +
-    'Host: ' + hostname + '\r\n' +
+  var msg = 'CONNECT ' + hostname + ' HTTP/1.1\r\n';
+  var auth = this.proxy.auth;
+  if (auth) {
+    msg += 'Proxy-Authorization: Basic ' + new Buffer(auth).toString('base64') + '\r\n';
+  }
+  msg += 'Host: ' + hostname + '\r\n' +
     '\r\n';
   socket.write(msg);
 };
