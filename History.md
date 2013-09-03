@@ -1,3 +1,8 @@
+0.2.0 / 2013-09-03
+==================
+
+ - Add initial "Proxy-Authorization" Basic authentication support
+
 0.1.0 / 2013-07-21
 ==================
 
