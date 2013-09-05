@@ -8,6 +8,7 @@ var tls = require('tls');
 var url = require('url');
 var Agent = require('agent-base');
 var inherits = require('util').inherits;
+var debug = require('debug')('https-proxy-agent');
 
 /**
  * Module exports.
@@ -26,6 +27,8 @@ function HttpsProxyAgent (opts) {
   if (!(this instanceof HttpsProxyAgent)) return new HttpsProxyAgent(opts);
   if ('string' == typeof opts) opts = url.parse(opts);
   if (!opts) throw new Error('an HTTP(S) proxy server `host` and `port` must be specified!');
+  debug('creating new HttpsProxyAgent instance: %j', opts);
+
   Agent.call(this);
 
   var proxy = clone(opts, {});
