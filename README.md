@@ -99,7 +99,7 @@ API
 
 The `HttpsProxyAgent` class implements an `http.Agent` subclass that connects
 to the specified "HTTP(s) proxy server" in order to proxy HTTPS and/or WebSocket
-requests. This is acheived by using the HTTP `CONNECT` method.
+requests. This is achieved by using the HTTP `CONNECT` method.
 
 The `opts` argument may either be a string URI of the proxy server to use, or an
 "options" object with more specific properties:
