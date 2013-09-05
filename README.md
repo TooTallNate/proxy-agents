@@ -95,7 +95,7 @@ socket.on('message', function (data, flags) {
 API
 ---
 
-## new HttpsProxyAgent(opts)
+### new HttpsProxyAgent(opts)
 
 The `HttpsProxyAgent` class implements an `http.Agent` subclass that connects
 to the specified "HTTP(s) proxy server" in order to proxy HTTPS and/or WebSocket
