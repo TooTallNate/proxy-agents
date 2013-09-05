@@ -92,6 +92,25 @@ socket.on('message', function (data, flags) {
 });
 ```
 
+API
+---
+
+## new HttpsProxyAgent(opts)
+
+The `HttpsProxyAgent` class implements an `http.Agent` subclass that connects
+to the specified "HTTP(s) proxy server" in order to proxy HTTPS and/or WebSocket
+requests. This is acheived by using the HTTP `CONNECT` method.
+
+The `opts` argument may either be a string URI of the proxy server to use, or an
+"options" object with more specific properties:
+
+  * `host` - String - Proxy host to connect to (may use `hostname` as well). Required.
+  * `port` - Number - Proxy port to connect to. Required.
+  * `secureProxy` - Boolean - If `true`, then use TLS to connect to the proxy. Defaults to `false`.
+  * `secureEndpoint` - Boolean - If `true` then then a TLS connection to the endpoint will be established on top of the proxy socket. Defaults to `true`.
+  * Any other options given are passed to the `net.connect()`/`tls.connect()` functions.
+
+
 License
 -------
 
