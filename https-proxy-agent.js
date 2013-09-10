@@ -60,6 +60,7 @@ inherits(HttpsProxyAgent, Agent);
  */
 
 function connect (req, opts, fn) {
+  if (null == opts.port) opts.port = 443;
 
   var socket;
   if (this.secureProxy) {
