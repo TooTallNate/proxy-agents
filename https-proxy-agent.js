@@ -28,15 +28,15 @@ function HttpsProxyAgent (opts) {
   if ('string' == typeof opts) opts = url.parse(opts);
   if (!opts) throw new Error('an HTTP(S) proxy server `host` and `port` must be specified!');
   debug('creating new HttpsProxyAgent instance: %j', opts);
-
-  Agent.call(this);
+  Agent.call(this, connect);
 
   var proxy = clone(opts, {});
-  this.secureProxy = proxy.protocol && proxy.protocol == 'https:';
-  this.secureEndpoint = opts.secureEndpoint !== false; // `true` by default
-  if (!this.secureEndpoint) {
-    this.defaultPort = 80;
-  }
+
+  // if `true`, then connect to the proxy server over TLS. defaults to `false`.
+  this.secureProxy = proxy.protocol ? proxy.protocol == 'https:' : false;
+
+  // if `true`, then connect to the destination endpoint over TLS, defaults to `true`
+  this.secureEndpoint = opts.secureEndpoint !== false;
 
   // prefer `hostname` over `host`, and set the `port` if needed
   proxy.host = proxy.hostname || proxy.host;
@@ -54,18 +54,13 @@ function HttpsProxyAgent (opts) {
 inherits(HttpsProxyAgent, Agent);
 
 /**
- * Default port to connect to.
- */
-
-Agent.prototype.defaultPort = 443;
-
-/**
- * Initiates a TCP connection to the specified HTTP proxy server.
+ * Called when the node-core HTTP client library is creating a new HTTP request.
  *
- * @api protected
+ * @api public
  */
 
-HttpsProxyAgent.prototype.createConnection = function (opts, fn) {
+function connect (req, opts, fn) {
+
   var socket;
   if (this.secureProxy) {
     socket = tls.connect(this.proxy);
