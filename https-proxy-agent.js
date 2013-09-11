@@ -85,10 +85,12 @@ function connect (req, opts, fn) {
     if (self.secureEndpoint) {
       // since the proxy is connecting to an SSL server, we have
       // to upgrade this socket connection to an SSL connection
-      sock = tls.connect({
-        socket: socket,
-        servername: opts.host
-      });
+      opts.socket = socket;
+      opts.servername = opts.host;
+      opts.host = null;
+      opts.hostname = null;
+      opts.port = null;
+      sock = tls.connect(opts);
     }
 
     fn(null, sock);
