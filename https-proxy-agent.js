@@ -58,7 +58,8 @@ inherits(HttpsProxyAgent, Agent);
  * Default options for the "connect" opts object.
  */
 
-var defaults = { port: 443 };
+var defaults = { port: 80 };
+var secureDefaults = { port: 443 };
 
 /**
  * Called when the node-core HTTP client library is creating a new HTTP request.
@@ -68,14 +69,18 @@ var defaults = { port: 443 };
 
 function connect (req, _opts, fn) {
 
+  var proxy = this.proxy;
+  var secureProxy = this.secureProxy;
+  var secureEndpoint = this.secureEndpoint;
+
   // these `opts` are the connect options to connect to the destination endpoint
-  var opts = extend({}, this.proxy, defaults, _opts);
+  var opts = extend({}, proxy, secureEndpoint ? secureDefaults : defaults, _opts);
 
   var socket;
-  if (this.secureProxy) {
-    socket = tls.connect(this.proxy);
+  if (secureProxy) {
+    socket = tls.connect(proxy);
   } else {
-    socket = net.connect(this.proxy);
+    socket = net.connect(proxy);
   }
 
   function read () {
@@ -84,14 +89,13 @@ function connect (req, _opts, fn) {
     else socket.once('readable', read);
   }
 
-  var self = this;
   function ondata (b) {
     //console.log(b.length, b, b.toString());
     // TODO: verify that the socket is properly connected, check response...
 
     var sock = socket;
 
-    if (self.secureEndpoint) {
+    if (secureEndpoint) {
       // since the proxy is connecting to an SSL server, we have
       // to upgrade this socket connection to an SSL connection
       opts.socket = socket;
@@ -113,7 +117,7 @@ function connect (req, _opts, fn) {
 
   var hostname = opts.host + ':' + opts.port;
   var msg = 'CONNECT ' + hostname + ' HTTP/1.1\r\n';
-  var auth = this.proxy.auth;
+  var auth = proxy.auth;
   if (auth) {
     msg += 'Proxy-Authorization: Basic ' + new Buffer(auth).toString('base64') + '\r\n';
   }
