@@ -55,7 +55,7 @@ function HttpsProxyAgent (opts) {
 inherits(HttpsProxyAgent, Agent);
 
 /**
- * Defaults for the "connect" opts object.
+ * Default options for the "connect" opts object.
  */
 
 var defaults = { port: 443 };
@@ -67,6 +67,8 @@ var defaults = { port: 443 };
  */
 
 function connect (req, _opts, fn) {
+
+  // these `opts` are the connect options to connect to the destination endpoint
   var opts = extend({}, this.proxy, defaults, _opts);
 
   var socket;
