@@ -173,6 +173,21 @@ describe('HttpsProxyAgent', function () {
         });
       });
     });
+    it('should emit an "error" event on the `http.ClientRequest` if the proxy does not exist', function (done) {
+      // port 4 is a reserved, but "unassigned" port
+      var proxyUri = 'http://127.0.0.1:4';
+      var agent = new HttpsProxyAgent(proxyUri);
+
+      var opts = url.parse('http://nodejs.org');
+      opts.agent = agent;
+
+      var req = http.get(opts);
+      req.once('error', function (err) {
+        assert.equal('ECONNREFUSED', err.code);
+        req.abort();
+        done();
+      });
+    });
   });
 
 });
