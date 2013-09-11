@@ -6,6 +6,7 @@
 var net = require('net');
 var tls = require('tls');
 var url = require('url');
+var extend = require('extend');
 var Agent = require('agent-base');
 var inherits = require('util').inherits;
 var debug = require('debug')('https-proxy-agent');
@@ -30,7 +31,7 @@ function HttpsProxyAgent (opts) {
   debug('creating new HttpsProxyAgent instance: %j', opts);
   Agent.call(this, connect);
 
-  var proxy = clone(opts, {});
+  var proxy = extend({}, opts);
 
   // if `true`, then connect to the proxy server over TLS. defaults to `false`.
   this.secureProxy = proxy.protocol ? proxy.protocol == 'https:' : false;
@@ -54,13 +55,19 @@ function HttpsProxyAgent (opts) {
 inherits(HttpsProxyAgent, Agent);
 
 /**
+ * Defaults for the "connect" opts object.
+ */
+
+var defaults = { port: 443 };
+
+/**
  * Called when the node-core HTTP client library is creating a new HTTP request.
  *
  * @api public
  */
 
-function connect (req, opts, fn) {
-  if (null == opts.port) opts.port = 443;
+function connect (req, _opts, fn) {
+  var opts = extend({}, this.proxy, defaults, _opts);
 
   var socket;
   if (this.secureProxy) {
@@ -112,8 +119,3 @@ function connect (req, opts, fn) {
     '\r\n';
   socket.write(msg);
 };
-
-function clone (src, dest) {
-  for (var i in src) dest[i] = src[i];
-  return dest;
-}

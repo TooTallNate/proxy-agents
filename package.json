@@ -23,7 +23,8 @@
   },
   "dependencies": {
     "agent-base": "~1.0.1",
-    "debug": "~0.7.2"
+    "debug": "~0.7.2",
+    "extend": "~1.2.0"
   },
   "devDependencies": {
     "mocha": "~1.12.0",
