@@ -89,6 +89,17 @@ function connect (req, _opts, fn) {
     else socket.once('readable', read);
   }
 
+  function cleanup () {
+    socket.removeListener('data', ondata);
+    socket.removeListener('error', onerror);
+    socket.removeListener('readable', read);
+  }
+
+  function onerror (err) {
+    cleanup();
+    fn(err);
+  }
+
   function ondata (b) {
     //console.log(b.length, b, b.toString());
     // TODO: verify that the socket is properly connected, check response...
@@ -106,8 +117,11 @@ function connect (req, _opts, fn) {
       sock = tls.connect(opts);
     }
 
+    cleanup();
     fn(null, sock);
   }
+
+  socket.on('error', onerror);
 
   if (socket.read) {
     read();
