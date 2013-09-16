@@ -116,6 +116,11 @@ describe('HttpsProxyAgent', function () {
   });
 
   describe('"http" module', function () {
+
+    beforeEach(function () {
+      delete proxy.authenticate;
+    });
+
     it('should receive the 407 authorization code on the `http.ClientResponse`', function (done) {
       // set a proxy authentication function for this test
       proxy.authenticate = function (req, fn) {
@@ -141,7 +146,6 @@ describe('HttpsProxyAgent', function () {
         res.on('end', function () {
           console.error('"end"', arguments);
         });
-        delete proxy.authenticate;
         done();
       });
 
