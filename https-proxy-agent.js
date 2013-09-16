@@ -83,6 +83,13 @@ function connect (req, _opts, fn) {
     socket = net.connect(proxy);
   }
 
+  // we need to buffer any HTTP traffic that happens with the proxy before we get
+  // the CONNECT response, so that if the response is anything other than an "200"
+  // response code, then we can re-play the "data" events on the socket once the
+  // HTTP parser is hooked up...
+  var buffers = [];
+  var buffersLength = 0;
+
   function read () {
     var b = socket.read();
     if (b) ondata(b);
@@ -91,8 +98,18 @@ function connect (req, _opts, fn) {
 
   function cleanup () {
     socket.removeListener('data', ondata);
+    socket.removeListener('end', onend);
     socket.removeListener('error', onerror);
+    socket.removeListener('close', onclose);
     socket.removeListener('readable', read);
+  }
+
+  function onclose (err) {
+    console.error('onclose');
+  }
+
+  function onend (err) {
+    console.error('onend');
   }
 
   function onerror (err) {
@@ -101,27 +118,96 @@ function connect (req, _opts, fn) {
   }
 
   function ondata (b) {
-    //console.log(b.length, b, b.toString());
-    // TODO: verify that the socket is properly connected, check response...
+    buffers.push(b);
+    buffersLength += b.length;
+    var buffered = Buffer.concat(buffers, buffersLength);
+    var str = buffered.toString('ascii');
 
-    var sock = socket;
-
-    if (secureEndpoint) {
-      // since the proxy is connecting to an SSL server, we have
-      // to upgrade this socket connection to an SSL connection
-      opts.socket = socket;
-      opts.servername = opts.host;
-      opts.host = null;
-      opts.hostname = null;
-      opts.port = null;
-      sock = tls.connect(opts);
+    if (!~str.indexOf('\r\n\r\n')) {
+      // keep buffering
+      debug('have not received end of HTTP headers yet... %j');
+      if (socket.read) {
+        read();
+      } else {
+        socket.once('data', ondata);
+      }
+      return;
     }
 
-    cleanup();
-    fn(null, sock);
+    var firstLine = str.substring(0, str.indexOf('\r\n'));
+    var statusCode = +firstLine.split(' ')[1];
+    debug('got proxy server response: "%s"', firstLine);
+    //console.log('statusCode: %d', statusCode);
+    //console.log(b.length, b, b.toString());
+
+    if (200 == statusCode) {
+      // 200 Connected status code!
+      var sock = socket;
+
+      // nullify the buffered data since we won't be needing it
+      buffers = buffered = null;
+
+      if (secureEndpoint) {
+        // since the proxy is connecting to an SSL server, we have
+        // to upgrade this socket connection to an SSL connection
+        debug('upgrading proxy-connected socket to TLS connection: "%s"', opts.host);
+        opts.socket = socket;
+        opts.servername = opts.host;
+        opts.host = null;
+        opts.hostname = null;
+        opts.port = null;
+        sock = tls.connect(opts);
+      }
+
+      cleanup();
+      fn(null, sock);
+    } else {
+      // some other status code that's not 200... need to re-play the HTTP header
+      // "data" events onto the socket once the HTTP machinery is attached so that
+      // the user can parse and handle the error status code
+      cleanup();
+
+      // save a reference to the concat'd Buffer for the `onsocket` callback
+      console.error(0, str);
+      buffers = buffered;
+
+      // need to wait for the "socket" event to re-play the "data" events
+      req.once('socket', onsocket);
+      fn(null, socket);
+    }
+  }
+
+  function onsocket (socket) {
+    // replay the "buffers" Buffer onto the `socket`, since at this point
+    // the HTTP module machinery has been hooked up for the user
+    if ('function' == typeof socket.ondata) {
+      // node <= v0.11.3, the `ondata` function is set on the socket
+      socket.ondata(buffers, 0, buffers.length);
+    } else if (socket.listeners('data').length > 0) {
+      // node > v0.11.3, the "data" event is listened for directly
+      socket.emit('data', buffers);
+    } else {
+      // never?
+      throw new Error('should not happen...');
+    }
+    buffers = null;
+
+    // XXX: not sure if forcing "end" here is appropriate, but otherwise the
+    // socket never closes and the tests fail since the proxy server never shuts
+    // down...
+    /*
+    if ('function' == typeof socket.onend) {
+      socket.onend();
+    } else {
+      socket.emit('end');
+    }
+    */
+    //socket.destroy();
   }
 
   socket.on('error', onerror);
+  socket.on('close', onclose);
+  socket.on('end', onend);
 
   if (socket.read) {
     read();
@@ -136,6 +222,7 @@ function connect (req, _opts, fn) {
     msg += 'Proxy-Authorization: Basic ' + new Buffer(auth).toString('base64') + '\r\n';
   }
   msg += 'Host: ' + hostname + '\r\n' +
-    '\r\n';
+         'Connection: close\r\n' +
+         '\r\n';
   socket.write(msg);
 };
