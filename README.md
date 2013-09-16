@@ -75,7 +75,7 @@ var opts = url.parse(proxy);
 
 // IMPORTANT! Set the `secureEndpoint` option to `false` when connecting
 //            over "ws://", but `true` when connecting over "wss://"
-opts.secureEndpoint = parsed.protocol && parsed.protocol == 'wss:';
+opts.secureEndpoint = parsed.protocol ? parsed.protocol == 'wss:' : false;
 
 var agent = new HttpsProxyAgent(opts);
 
