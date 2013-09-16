@@ -149,6 +149,7 @@ describe('HttpsProxyAgent', function () {
       delete proxy.authenticate;
     });
 
+    it('should receive the 407 authorization code on the `http.ClientResponse`');
     /*
     it('should receive the 407 authorization code on the `http.ClientResponse`', function (done) {
       // set a proxy authentication function for this test
@@ -269,6 +270,8 @@ describe('HttpsProxyAgent', function () {
           });
         });
       });
+    } else {
+      it('should work over an HTTPS proxy');
     }
 
   });
