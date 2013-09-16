@@ -115,6 +115,20 @@ describe('HttpsProxyAgent', function () {
         assert.equal(true, agent.secureEndpoint);
       });
     });
+    describe('secureProxy', function () {
+      it('should default to `false`', function () {
+        var agent = new HttpsProxyAgent({ port: proxyPort });
+        assert.equal(false, agent.secureProxy);
+      });
+      it('should be `false` when "http:" protocol is used', function () {
+        var agent = new HttpsProxyAgent({ port: proxyPort, protocol: 'http:' });
+        assert.equal(false, agent.secureProxy);
+      });
+      it('should be `true` when "https:" protocol is used', function () {
+        var agent = new HttpsProxyAgent({ port: proxyPort, protocol: 'https:' });
+        assert.equal(true, agent.secureProxy);
+      });
+    });
   });
 
   describe('"http" module', function () {
