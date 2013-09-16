@@ -9,6 +9,8 @@ var http = require('http');
 var https = require('https');
 var assert = require('assert');
 var Proxy = require('proxy');
+var Semver = require('semver');
+var version = new Semver(process.version);
 var HttpsProxyAgent = require('../');
 
 describe('HttpsProxyAgent', function () {
@@ -204,36 +206,43 @@ describe('HttpsProxyAgent', function () {
         });
       });
     });
-    it('should work over an HTTPS proxy', function (done) {
-      // set HTTP "request" event handler for this test
-      sslServer.once('request', function (req, res) {
-        res.end(JSON.stringify(req.headers));
-      });
 
-      var proxy = process.env.HTTPS_PROXY || process.env.https_proxy || 'https://127.0.0.1:' + sslProxyPort;
-      proxy = url.parse(proxy);
-      // `rejectUnauthorized` is actually necessary this time since the HTTPS
-      // proxy server itself is using a self-signed SSL certificate…
-      proxy.rejectUnauthorized = false;
-      var agent = new HttpsProxyAgent(proxy);
+    if (version.compare('0.11.3') < 0) {
+      // This test is disabled on node >= 0.11.3, since it currently segfaults :(
+      // See: https://github.com/joyent/node/issues/6204
 
-      var opts = url.parse('https://127.0.0.1:' + sslServerPort);
-      opts.agent = agent;
-      opts.rejectUnauthorized = false;
-
-      https.get(opts, function (res) {
-        var data = '';
-        res.setEncoding('utf8');
-        res.on('data', function (b) {
-          data += b;
+      it('should work over an HTTPS proxy', function (done) {
+        // set HTTP "request" event handler for this test
+        sslServer.once('request', function (req, res) {
+          res.end(JSON.stringify(req.headers));
         });
-        res.on('end', function () {
-          data = JSON.parse(data);
-          assert.equal('127.0.0.1:' + sslServerPort, data.host);
-          done();
+
+        var proxy = process.env.HTTPS_PROXY || process.env.https_proxy || 'https://127.0.0.1:' + sslProxyPort;
+        proxy = url.parse(proxy);
+        // `rejectUnauthorized` is actually necessary this time since the HTTPS
+        // proxy server itself is using a self-signed SSL certificate…
+        proxy.rejectUnauthorized = false;
+        var agent = new HttpsProxyAgent(proxy);
+
+        var opts = url.parse('https://127.0.0.1:' + sslServerPort);
+        opts.agent = agent;
+        opts.rejectUnauthorized = false;
+
+        https.get(opts, function (res) {
+          var data = '';
+          res.setEncoding('utf8');
+          res.on('data', function (b) {
+            data += b;
+          });
+          res.on('end', function () {
+            data = JSON.parse(data);
+            assert.equal('127.0.0.1:' + sslServerPort, data.host);
+            done();
+          });
         });
       });
-    });
+    }
+
   });
 
 });
