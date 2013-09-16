@@ -107,6 +107,63 @@ describe('HttpsProxyAgent', function () {
       assert.equal('127.0.0.1', agent.proxy.host);
       assert.equal(proxyPort, agent.proxy.port);
     });
+    describe('secureEndpoint', function () {
+      it('should default to `true`', function () {
+        var agent = new HttpsProxyAgent('http://127.0.0.1:' + proxyPort);
+        assert.equal(true, agent.secureEndpoint);
+      });
+    });
+  });
+
+  describe('"http" module', function () {
+    it('should receive the 407 authorization code on the `http.ClientResponse`', function (done) {
+      // set a proxy authentication function for this test
+      proxy.authenticate = function (req, fn) {
+        // reject all requests
+        fn(null, false);
+      };
+
+      var proxyUri = process.env.HTTP_PROXY || process.env.http_proxy || 'http://127.0.0.1:' + proxyPort;
+      var agent = new HttpsProxyAgent(proxyUri);
+
+      var opts = {};
+      // `host` and `port` don't really matter since the proxy will reject anyways
+      opts.host = '127.0.0.1';
+      opts.port = 80;
+      opts.agent = agent;
+
+      var req = http.get(opts, function (res) {
+        assert.equal(407, res.statusCode);
+        assert('proxy-authenticate' in res.headers);
+        res.on('data', function () {
+          console.error('"data"', arguments);
+        });
+        res.on('end', function () {
+          console.error('"end"', arguments);
+        });
+        delete proxy.authenticate;
+        done();
+      });
+
+      req.on('close', function () {
+        console.error('"close"', arguments);
+      });
+    });
+    it('should emit an "error" event on the `http.ClientRequest` if the proxy does not exist', function (done) {
+      // port 4 is a reserved, but "unassigned" port
+      var proxyUri = 'http://127.0.0.1:4';
+      var agent = new HttpsProxyAgent(proxyUri);
+
+      var opts = url.parse('http://nodejs.org');
+      opts.agent = agent;
+
+      var req = http.get(opts);
+      req.once('error', function (err) {
+        assert.equal('ECONNREFUSED', err.code);
+        req.abort();
+        done();
+      });
+    });
   });
 
   describe('"https" module', function () {
@@ -171,21 +228,6 @@ describe('HttpsProxyAgent', function () {
           assert.equal('127.0.0.1:' + sslServerPort, data.host);
           done();
         });
-      });
-    });
-    it('should emit an "error" event on the `http.ClientRequest` if the proxy does not exist', function (done) {
-      // port 4 is a reserved, but "unassigned" port
-      var proxyUri = 'http://127.0.0.1:4';
-      var agent = new HttpsProxyAgent(proxyUri);
-
-      var opts = url.parse('http://nodejs.org');
-      opts.agent = agent;
-
-      var req = http.get(opts);
-      req.once('error', function (err) {
-        assert.equal('ECONNREFUSED', err.code);
-        req.abort();
-        done();
       });
     });
   });
