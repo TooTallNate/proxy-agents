@@ -114,6 +114,18 @@ describe('HttpsProxyAgent', function () {
         var agent = new HttpsProxyAgent('http://127.0.0.1:' + proxyPort);
         assert.equal(true, agent.secureEndpoint);
       });
+      it('should be `false` when passed in as an option', function () {
+        var opts = url.parse('http://127.0.0.1:' + proxyPort);
+        opts.secureEndpoint = false;
+        var agent = new HttpsProxyAgent(opts);
+        assert.equal(false, agent.secureEndpoint);
+      });
+      it('should be `true` when passed in as an option', function () {
+        var opts = url.parse('http://127.0.0.1:' + proxyPort);
+        opts.secureEndpoint = true;
+        var agent = new HttpsProxyAgent(opts);
+        assert.equal(true, agent.secureEndpoint);
+      });
     });
     describe('secureProxy', function () {
       it('should default to `false`', function () {
