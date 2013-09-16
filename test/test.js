@@ -149,8 +149,6 @@ describe('HttpsProxyAgent', function () {
       delete proxy.authenticate;
     });
 
-    it('should receive the 407 authorization code on the `http.ClientResponse`');
-    /*
     it('should receive the 407 authorization code on the `http.ClientResponse`', function (done) {
       // set a proxy authentication function for this test
       proxy.authenticate = function (req, fn) {
@@ -170,20 +168,9 @@ describe('HttpsProxyAgent', function () {
       var req = http.get(opts, function (res) {
         assert.equal(407, res.statusCode);
         assert('proxy-authenticate' in res.headers);
-        res.on('data', function () {
-          console.error('"data"', arguments);
-        });
-        res.on('end', function () {
-          console.error('"end"', arguments);
-        });
         done();
       });
-
-      req.on('close', function () {
-        console.error('"close"', arguments);
-      });
     });
-    */
     it('should emit an "error" event on the `http.ClientRequest` if the proxy does not exist', function (done) {
       // port 4 is a reserved, but "unassigned" port
       var proxyUri = 'http://127.0.0.1:4';
