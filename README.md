@@ -7,8 +7,8 @@ This module provides an `http.Agent` implementation that connects to a specified
 HTTP or HTTPS proxy server, and can be used with the built-in `https` module.
 
 Specifically, this `Agent` implementation connects to an intermediary "proxy"
-server and issues the CONNECT HTTP method, which tells the proxy to open a
-direct TCP connection to the endpoint server.
+server and issues the [CONNECT HTTP method][CONNECT], which tells the proxy to
+open a direct TCP connection to the destination server.
 
 Since this agent implements the CONNECT HTTP method, it also works with other
 protocols that use this method when connecting over proxies (i.e. WebSockets).
@@ -100,7 +100,7 @@ API
 
 The `HttpsProxyAgent` class implements an `http.Agent` subclass that connects
 to the specified "HTTP(s) proxy server" in order to proxy HTTPS and/or WebSocket
-requests. This is achieved by using the HTTP `CONNECT` method.
+requests. This is achieved by using the [HTTP `CONNECT` method][CONNECT].
 
 The `opts` argument may either be a string URI of the proxy server to use, or an
 "options" object with more specific properties:
@@ -137,3 +137,5 @@ IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
 CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+[CONNECT]: http://en.wikipedia.org/wiki/HTTP_tunnel#HTTP_CONNECT_Tunneling
