@@ -168,7 +168,6 @@ function connect (req, _opts, fn) {
       cleanup();
 
       // save a reference to the concat'd Buffer for the `onsocket` callback
-      console.error(0, str);
       buffers = buffered;
 
       // need to wait for the "socket" event to re-play the "data" events
