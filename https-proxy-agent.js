@@ -189,19 +189,9 @@ function connect (req, _opts, fn) {
       // never?
       throw new Error('should not happen...');
     }
-    buffers = null;
 
-    // XXX: not sure if forcing "end" here is appropriate, but otherwise the
-    // socket never closes and the tests fail since the proxy server never shuts
-    // down...
-    /*
-    if ('function' == typeof socket.onend) {
-      socket.onend();
-    } else {
-      socket.emit('end');
-    }
-    */
-    //socket.destroy();
+    // nullify the cached Buffer instance
+    buffers = null;
   }
 
   socket.on('error', onerror);
