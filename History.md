@@ -1,3 +1,12 @@
+
+0.3.1 / 2013-11-16
+==================
+
+  * test: enable the HTTPS over HTTPS test on node v0.11.8
+  * https-proxy-agent: create the proxy socket connection first
+  * https-proxy-agent: delete `pathname` from the proxy opts as well
+  * https-proxy-agent: remove dead "end"-emitting code
+
 0.3.0 / 2013-09-16
 ==================
 
