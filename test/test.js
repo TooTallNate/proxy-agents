@@ -223,8 +223,8 @@ describe('HttpsProxyAgent', function () {
       });
     });
 
-    if (version.compare('0.11.3') < 0) {
-      // This test is disabled on node >= 0.11.3, since it currently segfaults :(
+    if (version.compare('0.11.3') < 0 || version.compare('0.11.8') >= 0) {
+      // This test is disabled on node >= 0.11.3 && < 0.11.8, since it segfaults :(
       // See: https://github.com/joyent/node/issues/6204
 
       it('should work over an HTTPS proxy', function (done) {
