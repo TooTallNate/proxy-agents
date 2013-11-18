@@ -133,7 +133,7 @@ function connect (req, _opts, fn) {
 
     if (!~str.indexOf('\r\n\r\n')) {
       // keep buffering
-      debug('have not received end of HTTP headers yet... %j');
+      debug('have not received end of HTTP headers yet...');
       if (socket.read) {
         read();
       } else {
