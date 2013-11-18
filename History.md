@@ -1,4 +1,10 @@
 
+0.3.2 / 2013-11-18
+==================
+
+  * https-proxy-agent: allow "https" without trailing colon
+  * README: fix typo
+
 0.3.1 / 2013-11-16
 ==================
 
