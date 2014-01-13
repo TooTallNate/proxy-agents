@@ -113,11 +113,11 @@ function connect (req, _opts, fn) {
   }
 
   function onclose (err) {
-    console.error('onclose');
+    debug('onclose had error', err);
   }
 
-  function onend (err) {
-    console.error('onend');
+  function onend () {
+    debug('onend');
   }
 
   function onerror (err) {
