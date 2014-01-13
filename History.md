@@ -1,4 +1,11 @@
 
+0.3.3 / 2014-01-13
+==================
+
+  * https-proxy-agnet: use debug() instead of console.error()
+  * https-proxy-agent: fix debug() call
+  * History: fix whitespace
+
 0.3.2 / 2013-11-18
 ==================
 
