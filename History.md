@@ -1,4 +1,10 @@
 
+0.3.4 / 2014-04-09
+==================
+
+  * gitignore: ignore root level ?.js files
+  * package: update outdated dependencies
+
 0.3.3 / 2014-01-13
 ==================
 
