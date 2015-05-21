@@ -89,7 +89,7 @@ function connect (req, _opts, fn) {
   delete proxyOpts.host;
   delete proxyOpts.hostname;
   delete proxyOpts.port;
-  var opts = extend({}, proxyOpts, secureEndpoint ? secureDefaults : defaults, _opts);
+  var opts = extend({}, proxyOpts, _opts, secureEndpoint ? secureDefaults : defaults);
 
   // we need to buffer any HTTP traffic that happens with the proxy before we get
   // the CONNECT response, so that if the response is anything other than an "200"
