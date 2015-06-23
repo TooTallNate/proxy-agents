@@ -27,7 +27,7 @@
     "extend": "~1.2.1"
   },
   "devDependencies": {
-    "mocha": "~1.18.2",
+    "mocha": "2",
     "proxy": "~0.2.3",
     "semver": "~2.2.1"
   }
