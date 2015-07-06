@@ -48,8 +48,8 @@ describe('HttpsProxyAgent', function () {
   before(function (done) {
     // setup target HTTPS server
     var options = {
-      key: fs.readFileSync(__dirname + '/server.key'),
-      cert: fs.readFileSync(__dirname + '/server.crt')
+      key: fs.readFileSync(__dirname + '/ssl-cert-snakeoil.key'),
+      cert: fs.readFileSync(__dirname + '/ssl-cert-snakeoil.pem')
     };
     sslServer = https.createServer(options);
     sslServer.listen(function () {
@@ -61,8 +61,8 @@ describe('HttpsProxyAgent', function () {
   before(function (done) {
     // setup SSL HTTP proxy server
     var options = {
-      key: fs.readFileSync(__dirname + '/server.key'),
-      cert: fs.readFileSync(__dirname + '/server.crt')
+      key: fs.readFileSync(__dirname + '/ssl-cert-snakeoil.key'),
+      cert: fs.readFileSync(__dirname + '/ssl-cert-snakeoil.pem')
     };
     sslProxy = Proxy(https.createServer(options));
     sslProxy.listen(function () {
