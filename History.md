@@ -1,4 +1,13 @@
 
+0.3.6 / 2015-07-06
+==================
+
+  * package: update "extend" to v3
+  * package: update "mocha" to v2
+  * package: update "debug" to v2
+  * travis: test node v0.8, v0.10, and v0.12
+  * test: use ssl-cert-snakeoil self-signed SSL certs
+
 0.3.5 / 2014-06-11
 ==================
 
