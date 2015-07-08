@@ -109,6 +109,7 @@ The `opts` argument may either be a string URI of the proxy server to use, or an
   * `port` - Number - Proxy port to connect to. Required.
   * `secureProxy` - Boolean - If `true`, then use TLS to connect to the proxy. Defaults to `false`.
   * `secureEndpoint` - Boolean - If `true` then a TLS connection to the endpoint will be established on top of the proxy socket. Defaults to `true`.
+  * `timeout` - Number - Proxy response timeout in milliseconds.
   * Any other options given are passed to the `net.connect()`/`tls.connect()` functions.
 
 

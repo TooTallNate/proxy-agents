@@ -43,6 +43,10 @@ function HttpsProxyAgent (opts) {
   proxy.host = proxy.hostname || proxy.host;
   proxy.port = +proxy.port || (this.secureProxy ? 443 : 80);
 
+  if(opts.timeout) {
+    this.timeout = opts.timeout;
+  }
+
   if (proxy.host && proxy.path) {
     // if both a `host` and `path` are specified then it's most likely the
     // result of a `url.parse()` call... we need to remove the `path` portion so
@@ -82,6 +86,10 @@ function connect (req, _opts, fn) {
     socket = net.connect(proxy);
   }
 
+  if(this.timeout) {
+    socket.setTimeout(this.timeout);
+  }
+
   // these `opts` are the connect options to connect to the destination endpoint
   // XXX: we mix in the proxy options so that TLS options like
   // `rejectUnauthorized` get passed to the destination endpoint as well
@@ -110,6 +118,7 @@ function connect (req, _opts, fn) {
     socket.removeListener('error', onerror);
     socket.removeListener('close', onclose);
     socket.removeListener('readable', read);
+    socket.removeListener('timeout', ontimeout);
   }
 
   function onclose (err) {
@@ -122,6 +131,15 @@ function connect (req, _opts, fn) {
 
   function onerror (err) {
     cleanup();
+    fn(err);
+  }
+
+  function ontimeout () {
+    var err = new Error('Proxy connection timed out');
+    err.code = 'ETIMEOUT';
+    cleanup();
+    // prevent unhandled `error` events
+    socket.destroy();
     fn(err);
   }
 
@@ -205,6 +223,7 @@ function connect (req, _opts, fn) {
   socket.on('error', onerror);
   socket.on('close', onclose);
   socket.on('end', onend);
+  socket.on('timeout', ontimeout);
 
   if (socket.read) {
     read();
