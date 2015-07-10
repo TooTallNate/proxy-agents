@@ -28,7 +28,7 @@ function HttpsProxyAgent (opts) {
   if (!(this instanceof HttpsProxyAgent)) return new HttpsProxyAgent(opts);
   if ('string' == typeof opts) opts = url.parse(opts);
   if (!opts) throw new Error('an HTTP(S) proxy server `host` and `port` must be specified!');
-  debug('creating new HttpsProxyAgent instance: %j', opts);
+  debug('creating new HttpsProxyAgent instance: %o', opts);
   Agent.call(this, connect);
 
   var proxy = extend({}, opts);
@@ -113,7 +113,7 @@ function connect (req, _opts, fn) {
   }
 
   function onclose (err) {
-    debug('onclose had error', err);
+    debug('onclose had error %o', err);
   }
 
   function onend () {
@@ -144,9 +144,7 @@ function connect (req, _opts, fn) {
 
     var firstLine = str.substring(0, str.indexOf('\r\n'));
     var statusCode = +firstLine.split(' ')[1];
-    debug('got proxy server response: "%s"', firstLine);
-    //console.log('statusCode: %d', statusCode);
-    //console.log(b.length, b, b.toString());
+    debug('got proxy server response: %o', firstLine);
 
     if (200 == statusCode) {
       // 200 Connected status code!
@@ -158,7 +156,7 @@ function connect (req, _opts, fn) {
       if (secureEndpoint) {
         // since the proxy is connecting to an SSL server, we have
         // to upgrade this socket connection to an SSL connection
-        debug('upgrading proxy-connected socket to TLS connection: "%s"', opts.host);
+        debug('upgrading proxy-connected socket to TLS connection: %o', opts.host);
         opts.socket = socket;
         opts.servername = opts.host;
         opts.host = null;
