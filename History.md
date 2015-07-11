@@ -1,4 +1,12 @@
 
+1.0.0 / 2015-07-10
+==================
+
+  * upgrade to "agent-base" v2 API
+  * test: test case is fixed
+  * use %o debug() formatter
+  * README: use SVG for Travis-CI badge
+
 0.3.6 / 2015-07-06
 ==================
 
