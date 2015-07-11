@@ -160,11 +160,8 @@ describe('HttpsProxyAgent', function () {
       });
       req.once('error', done);
     });
-    // XXX: doesn't fire the HTTP "response" event for some reason :\
-    // TODO: look into this some more and fix, even though proxy servers
-    // over TLS are pretty rare to begin with
-    it.skip('should work over an HTTPS proxy', function (done) {
-      sslServer.once('request', function (req, res) {
+    it('should work over an HTTPS proxy', function (done) {
+      server.once('request', function (req, res) {
         res.end(JSON.stringify(req.headers));
       });
 
