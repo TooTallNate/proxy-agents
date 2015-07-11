@@ -36,9 +36,6 @@ function HttpsProxyAgent (opts) {
   // if `true`, then connect to the proxy server over TLS. defaults to `false`.
   this.secureProxy = proxy.protocol ? /^https:?$/i.test(proxy.protocol) : false;
 
-  // if `true`, then connect to the destination endpoint over TLS, defaults to `true`
-  this.secureEndpoint = opts.secureEndpoint !== false;
-
   // prefer `hostname` over `host`, and set the `port` if needed
   proxy.host = proxy.hostname || proxy.host;
   proxy.port = +proxy.port || (this.secureProxy ? 443 : 80);
@@ -56,40 +53,22 @@ function HttpsProxyAgent (opts) {
 inherits(HttpsProxyAgent, Agent);
 
 /**
- * Default options for the "connect" opts object.
- */
-
-var defaults = { port: 80 };
-var secureDefaults = { port: 443 };
-
-/**
  * Called when the node-core HTTP client library is creating a new HTTP request.
  *
  * @api public
  */
 
-function connect (req, _opts, fn) {
+function connect (req, opts, fn) {
 
   var proxy = this.proxy;
-  var secureProxy = this.secureProxy;
-  var secureEndpoint = this.secureEndpoint;
 
   // create a socket connection to the proxy server
   var socket;
-  if (secureProxy) {
+  if (this.secureProxy) {
     socket = tls.connect(proxy);
   } else {
     socket = net.connect(proxy);
   }
-
-  // these `opts` are the connect options to connect to the destination endpoint
-  // XXX: we mix in the proxy options so that TLS options like
-  // `rejectUnauthorized` get passed to the destination endpoint as well
-  var proxyOpts = extend({}, proxy);
-  delete proxyOpts.host;
-  delete proxyOpts.hostname;
-  delete proxyOpts.port;
-  var opts = extend({}, proxyOpts, secureEndpoint ? secureDefaults : defaults, _opts);
 
   // we need to buffer any HTTP traffic that happens with the proxy before we get
   // the CONNECT response, so that if the response is anything other than an "200"
@@ -153,7 +132,7 @@ function connect (req, _opts, fn) {
       // nullify the buffered data since we won't be needing it
       buffers = buffered = null;
 
-      if (secureEndpoint) {
+      if (opts.secureEndpoint) {
         // since the proxy is connecting to an SSL server, we have
         // to upgrade this socket connection to an SSL connection
         debug('upgrading proxy-connected socket to TLS connection: %o', opts.host);

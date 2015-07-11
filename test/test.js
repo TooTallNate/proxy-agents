@@ -109,24 +109,6 @@ describe('HttpsProxyAgent', function () {
       assert.equal('127.0.0.1', agent.proxy.host);
       assert.equal(proxyPort, agent.proxy.port);
     });
-    describe('secureEndpoint', function () {
-      it('should default to `true`', function () {
-        var agent = new HttpsProxyAgent('http://127.0.0.1:' + proxyPort);
-        assert.equal(true, agent.secureEndpoint);
-      });
-      it('should be `false` when passed in as an option', function () {
-        var opts = url.parse('http://127.0.0.1:' + proxyPort);
-        opts.secureEndpoint = false;
-        var agent = new HttpsProxyAgent(opts);
-        assert.equal(false, agent.secureEndpoint);
-      });
-      it('should be `true` when passed in as an option', function () {
-        var opts = url.parse('http://127.0.0.1:' + proxyPort);
-        opts.secureEndpoint = true;
-        var agent = new HttpsProxyAgent(opts);
-        assert.equal(true, agent.secureEndpoint);
-      });
-    });
     describe('secureProxy', function () {
       it('should default to `false`', function () {
         var agent = new HttpsProxyAgent({ port: proxyPort });
@@ -153,6 +135,61 @@ describe('HttpsProxyAgent', function () {
       delete proxy.authenticate;
     });
 
+    it('should work over an HTTP proxy', function (done) {
+      server.once('request', function (req, res) {
+        res.end(JSON.stringify(req.headers));
+      });
+
+      var proxy = process.env.HTTP_PROXY || process.env.http_proxy || 'http://127.0.0.1:' + proxyPort;
+      var agent = new HttpsProxyAgent(proxy);
+
+      var opts = url.parse('http://127.0.0.1:' + serverPort);
+      opts.agent = agent;
+
+      var req = http.get(opts, function (res) {
+        var data = '';
+        res.setEncoding('utf8');
+        res.on('data', function (b) {
+          data += b;
+        });
+        res.on('end', function () {
+          data = JSON.parse(data);
+          assert.equal('127.0.0.1:' + serverPort, data.host);
+          done();
+        });
+      });
+      req.once('error', done);
+    });
+    // XXX: doesn't fire the HTTP "response" event for some reason :\
+    // TODO: look into this some more and fix, even though proxy servers
+    // over TLS are pretty rare to begin with
+    it.skip('should work over an HTTPS proxy', function (done) {
+      sslServer.once('request', function (req, res) {
+        res.end(JSON.stringify(req.headers));
+      });
+
+      var proxy = process.env.HTTPS_PROXY || process.env.https_proxy || 'https://127.0.0.1:' + sslProxyPort;
+      proxy = url.parse(proxy);
+      proxy.rejectUnauthorized = false;
+      var agent = new HttpsProxyAgent(proxy);
+
+      var opts = url.parse('http://127.0.0.1:' + serverPort);
+      opts.agent = agent;
+
+      http.get(opts, function (res) {
+        var data = '';
+        res.setEncoding('utf8');
+        res.on('data', function (b) {
+          data += b;
+        });
+        res.on('end', function () {
+          data = JSON.parse(data);
+          console.log(data);
+          assert.equal('127.0.0.1:' + serverPort, data.host);
+          done();
+        });
+      });
+    });
     it('should receive the 407 authorization code on the `http.ClientResponse`', function (done) {
       // set a proxy authentication function for this test
       proxy.authenticate = function (req, fn) {
@@ -194,19 +231,11 @@ describe('HttpsProxyAgent', function () {
 
   describe('"https" module', function () {
     it('should work over an HTTP proxy', function (done) {
-      // set HTTP "request" event handler for this test
       sslServer.once('request', function (req, res) {
         res.end(JSON.stringify(req.headers));
       });
 
       var proxy = process.env.HTTP_PROXY || process.env.http_proxy || 'http://127.0.0.1:' + proxyPort;
-      proxy = url.parse(proxy);
-      // `rejectUnauthorized` shoudn't *technically* be necessary here,
-      // but up until node v0.11.6, the `http.Agent` class didn't have
-      // access to the *entire* request "options" object. Thus,
-      // `https-proxy-agent` will *also* merge in options you pass here
-      // to the destination endpoints…
-      proxy.rejectUnauthorized = false;
       var agent = new HttpsProxyAgent(proxy);
 
       var opts = url.parse('https://127.0.0.1:' + sslServerPort);
@@ -232,15 +261,12 @@ describe('HttpsProxyAgent', function () {
       // See: https://github.com/joyent/node/issues/6204
 
       it('should work over an HTTPS proxy', function (done) {
-        // set HTTP "request" event handler for this test
         sslServer.once('request', function (req, res) {
           res.end(JSON.stringify(req.headers));
         });
 
         var proxy = process.env.HTTPS_PROXY || process.env.https_proxy || 'https://127.0.0.1:' + sslProxyPort;
         proxy = url.parse(proxy);
-        // `rejectUnauthorized` is actually necessary this time since the HTTPS
-        // proxy server itself is using a self-signed SSL certificate…
         proxy.rejectUnauthorized = false;
         var agent = new HttpsProxyAgent(proxy);
 

@@ -22,7 +22,7 @@
     "url": "https://github.com/TooTallNate/node-https-proxy-agent/issues"
   },
   "dependencies": {
-    "agent-base": "~1.0.1",
+    "agent-base": "2",
     "debug": "2",
     "extend": "3"
   },
