@@ -181,7 +181,6 @@ describe('HttpsProxyAgent', function () {
         });
         res.on('end', function () {
           data = JSON.parse(data);
-          console.log(data);
           assert.equal('127.0.0.1:' + serverPort, data.host);
           done();
         });
