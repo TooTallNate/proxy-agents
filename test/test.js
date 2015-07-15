@@ -10,8 +10,9 @@ var https = require('https');
 var assert = require('assert');
 var Proxy = require('proxy');
 var Semver = require('semver');
+var rewire = require("rewire");
 var version = new Semver(process.version);
-var HttpsProxyAgent = require('../');
+var HttpsProxyAgent = rewire('../');
 
 describe('HttpsProxyAgent', function () {
 
@@ -126,6 +127,61 @@ describe('HttpsProxyAgent', function () {
         var agent = new HttpsProxyAgent({ port: proxyPort, protocol: 'https' });
         assert.equal(true, agent.secureProxy);
       });
+    });
+  });
+
+
+  describe('mocking module', function () {
+    var msgSentToSocket;
+    var undoNetMocking;
+
+    var netMock = {
+        connect: function (proxy) {
+            var socketMock = {
+               on: function (event, fn) {},
+               once: function (event, fn) {},
+               write: function (msg) {
+                   msgSentToSocket = msg;
+               }
+            }
+
+            return socketMock;
+        }
+    };
+
+    beforeEach(function () {
+      undoNetMocking = HttpsProxyAgent.__set__('net', netMock);
+    });
+
+    afterEach(function () {
+      undoNetMocking();
+    });
+
+    it('should support additional HTTP headers for connecting to the proxy', function (done) {
+      var proxyOpts = process.env.HTTP_PROXY || process.env.http_proxy || 'http://127.0.0.1:' + proxyPort;
+      proxyOpts = url.parse(proxyOpts);
+
+      proxyOpts.headers = {};
+
+      var headerNames = ['HeaderA', 'HeaderB'];
+      var headerValues = ['ValueA', 'ValueB'];
+
+      var arrayLength = headerNames.length;
+      for (var i = 0; i < arrayLength; i++) {
+          proxyOpts.headers[headerNames[i]] = headerValues[i];
+      }
+
+      var agent = new HttpsProxyAgent(proxyOpts);
+
+      connectFunction = HttpsProxyAgent.__get__('connect');
+      connectFunction.call(agent);
+
+      var expectedHeader;
+      for (i = 0; i < arrayLength; i++) {
+          expectedHeader = headerNames[i] + ': ' + headerValues[i];
+          assert(msgSentToSocket.indexOf(expectedHeader) >= 0, 'Header "' + expectedHeader + '" not found');
+      }
+      done();
     });
   });
 

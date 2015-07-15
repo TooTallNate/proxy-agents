@@ -29,6 +29,7 @@
   "devDependencies": {
     "mocha": "2",
     "proxy": "~0.2.3",
-    "semver": "~2.2.1"
+    "semver": "~2.2.1",
+    "rewire": "~2.1.3"
   }
 }

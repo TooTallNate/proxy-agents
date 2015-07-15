@@ -195,6 +195,13 @@ function connect (req, opts, fn) {
   if (auth) {
     msg += 'Proxy-Authorization: Basic ' + new Buffer(auth).toString('base64') + '\r\n';
   }
+  if (opts.headers) {
+     // Adding additional HTTP headers
+    for (var headerName in opts.headers) {
+       var headerValue = opts.headers[headerName];
+       msg += headerName + ': ' + headerValue + '\r\n';
+    }
+  }
   msg += 'Host: ' + hostname + '\r\n' +
          'Connection: close\r\n' +
          '\r\n';
