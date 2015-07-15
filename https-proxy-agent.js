@@ -191,12 +191,16 @@ function connect (req, opts, fn) {
 
   var hostname = opts.host + ':' + opts.port;
   var msg = 'CONNECT ' + hostname + ' HTTP/1.1\r\n';
-  var auth = proxy.auth;
-  if (auth) {
-    msg += 'Proxy-Authorization: Basic ' + new Buffer(auth).toString('base64') + '\r\n';
+
+  var headers = extend({}, proxy.headers);
+  if (proxy.auth) {
+    headers['Proxy-Authorization'] = 'Basic ' + new Buffer(proxy.auth).toString('base64');
   }
-  msg += 'Host: ' + hostname + '\r\n' +
-         'Connection: close\r\n' +
-         '\r\n';
-  socket.write(msg);
+  headers['Host'] = hostname;
+  headers['Connection'] = 'close';
+  Object.keys(headers).forEach(function (name) {
+    msg += name + ': ' + headers[name] + '\r\n';
+  });
+
+  socket.write(msg + '\r\n');
 };

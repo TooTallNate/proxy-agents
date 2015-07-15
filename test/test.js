@@ -223,6 +223,31 @@ describe('HttpsProxyAgent', function () {
         done();
       });
     });
+
+    it('should allow custom proxy "headers"', function (done) {
+      server.once('connect', function (req, socket, head) {
+        assert.equal('CONNECT', req.method);
+        assert.equal('bar', req.headers.foo);
+        socket.destroy();
+        done();
+      });
+
+      var uri = 'http://127.0.0.1:' + serverPort;
+      var proxyOpts = url.parse(uri);
+      proxyOpts.headers = {
+        'Foo': 'bar'
+      };
+      var agent = new HttpsProxyAgent(proxyOpts);
+
+      var opts = {};
+      // `host` and `port` don't really matter since the proxy will reject anyways
+      opts.host = '127.0.0.1';
+      opts.port = 80;
+      opts.agent = agent;
+
+      http.get(opts);
+    });
+
   });
 
   describe('"https" module', function () {
