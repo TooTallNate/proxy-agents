@@ -135,7 +135,7 @@ HttpsProxyAgent.prototype.callback = function connect (req, opts, fn) {
         // to upgrade this socket connection to an SSL connection
         debug('upgrading proxy-connected socket to TLS connection: %o', opts.host);
         opts.socket = socket;
-        opts.servername = opts.host;
+        opts.servername = opts.servername?opts.servername:opts.host;
         opts.host = null;
         opts.hostname = null;
         opts.port = null;
