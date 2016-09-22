@@ -40,6 +40,10 @@ function HttpsProxyAgent (opts) {
   proxy.host = proxy.hostname || proxy.host;
   proxy.port = +proxy.port || (this.secureProxy ? 443 : 80);
 
+  if (opts.timeout) {
+    this.timeout = opts.timeout;
+  }
+
   if (proxy.host && proxy.path) {
     // if both a `host` and `path` are specified then it's most likely the
     // result of a `url.parse()` call... we need to remove the `path` portion so
@@ -70,6 +74,10 @@ function connect (req, opts, fn) {
     socket = net.connect(proxy);
   }
 
+  if (this.timeout) {
+    socket.setTimeout(this.timeout);
+  }
+
   // we need to buffer any HTTP traffic that happens with the proxy before we get
   // the CONNECT response, so that if the response is anything other than an "200"
   // response code, then we can re-play the "data" events on the socket once the
@@ -89,10 +97,20 @@ function connect (req, opts, fn) {
     socket.removeListener('error', onerror);
     socket.removeListener('close', onclose);
     socket.removeListener('readable', read);
+    socket.removeListener('timeout', ontimeout);
   }
 
   function onclose (err) {
     debug('onclose had error %o', err);
+  }
+
+  function ontimeout () {
+    var err = new Error('Proxy connection timed out');
+    err.code = 'ETIMEOUT';
+    cleanup();
+    // prevent unhandled `error` events
+    socket.destroy();
+    fn(err);
   }
 
   function onend () {
@@ -182,6 +200,7 @@ function connect (req, opts, fn) {
   socket.on('error', onerror);
   socket.on('close', onclose);
   socket.on('end', onend);
+  socket.on('timeout', ontimeout);
 
   if (socket.read) {
     read();

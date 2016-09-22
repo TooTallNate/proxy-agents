@@ -48,8 +48,8 @@ describe('HttpsProxyAgent', function () {
   before(function (done) {
     // setup target HTTPS server
     var options = {
-      key: fs.readFileSync(__dirname + '/ssl-cert-snakeoil.key'),
-      cert: fs.readFileSync(__dirname + '/ssl-cert-snakeoil.pem')
+      key: fs.readFileSync(__dirname '/ssl-cert-snakeoil.key'),
+      cert: fs.readFileSync(__dirname '/ssl-cert-snakeoil.pem')
     };
     sslServer = https.createServer(options);
     sslServer.listen(function () {
@@ -61,8 +61,8 @@ describe('HttpsProxyAgent', function () {
   before(function (done) {
     // setup SSL HTTP proxy server
     var options = {
-      key: fs.readFileSync(__dirname + '/ssl-cert-snakeoil.key'),
-      cert: fs.readFileSync(__dirname + '/ssl-cert-snakeoil.pem')
+      key: fs.readFileSync(__dirname '/ssl-cert-snakeoil.key'),
+      cert: fs.readFileSync(__dirname '/ssl-cert-snakeoil.pem')
     };
     sslProxy = Proxy(https.createServer(options));
     sslProxy.listen(function () {
@@ -99,12 +99,12 @@ describe('HttpsProxyAgent', function () {
       });
     });
     it('should accept a "string" proxy argument', function () {
-      var agent = new HttpsProxyAgent('http://127.0.0.1:' + proxyPort);
+      var agent = new HttpsProxyAgent('http://127.0.0.1:' proxyPort);
       assert.equal('127.0.0.1', agent.proxy.host);
       assert.equal(proxyPort, agent.proxy.port);
     });
     it('should accept a `url.parse()` result object argument', function () {
-      var opts = url.parse('http://127.0.0.1:' + proxyPort);
+      var opts = url.parse('http://127.0.0.1:' proxyPort);
       var agent = new HttpsProxyAgent(opts);
       assert.equal('127.0.0.1', agent.proxy.host);
       assert.equal(proxyPort, agent.proxy.port);
@@ -140,10 +140,10 @@ describe('HttpsProxyAgent', function () {
         res.end(JSON.stringify(req.headers));
       });
 
-      var proxy = process.env.HTTP_PROXY || process.env.http_proxy || 'http://127.0.0.1:' + proxyPort;
+      var proxy = process.env.HTTP_PROXY || process.env.http_proxy || 'http://127.0.0.1:' proxyPort;
       var agent = new HttpsProxyAgent(proxy);
 
-      var opts = url.parse('http://127.0.0.1:' + serverPort);
+      var opts = url.parse('http://127.0.0.1:' serverPort);
       opts.agent = agent;
 
       var req = http.get(opts, function (res) {
@@ -154,7 +154,7 @@ describe('HttpsProxyAgent', function () {
         });
         res.on('end', function () {
           data = JSON.parse(data);
-          assert.equal('127.0.0.1:' + serverPort, data.host);
+          assert.equal('127.0.0.1:' serverPort, data.host);
           done();
         });
       });
@@ -165,12 +165,12 @@ describe('HttpsProxyAgent', function () {
         res.end(JSON.stringify(req.headers));
       });
 
-      var proxy = process.env.HTTPS_PROXY || process.env.https_proxy || 'https://127.0.0.1:' + sslProxyPort;
+      var proxy = process.env.HTTPS_PROXY || process.env.https_proxy || 'https://127.0.0.1:' sslProxyPort;
       proxy = url.parse(proxy);
       proxy.rejectUnauthorized = false;
       var agent = new HttpsProxyAgent(proxy);
 
-      var opts = url.parse('http://127.0.0.1:' + serverPort);
+      var opts = url.parse('http://127.0.0.1:' serverPort);
       opts.agent = agent;
 
       http.get(opts, function (res) {
@@ -181,7 +181,7 @@ describe('HttpsProxyAgent', function () {
         });
         res.on('end', function () {
           data = JSON.parse(data);
-          assert.equal('127.0.0.1:' + serverPort, data.host);
+          assert.equal('127.0.0.1:' serverPort, data.host);
           done();
         });
       });
@@ -193,7 +193,7 @@ describe('HttpsProxyAgent', function () {
         fn(null, false);
       };
 
-      var proxyUri = process.env.HTTP_PROXY || process.env.http_proxy || 'http://127.0.0.1:' + proxyPort;
+      var proxyUri = process.env.HTTP_PROXY || process.env.http_proxy || 'http://127.0.0.1:' proxyPort;
       var agent = new HttpsProxyAgent(proxyUri);
 
       var opts = {};
@@ -232,7 +232,7 @@ describe('HttpsProxyAgent', function () {
         done();
       });
 
-      var uri = 'http://127.0.0.1:' + serverPort;
+      var uri = 'http://127.0.0.1:' serverPort;
       var proxyOpts = url.parse(uri);
       proxyOpts.headers = {
         'Foo': 'bar'
@@ -256,10 +256,10 @@ describe('HttpsProxyAgent', function () {
         res.end(JSON.stringify(req.headers));
       });
 
-      var proxy = process.env.HTTP_PROXY || process.env.http_proxy || 'http://127.0.0.1:' + proxyPort;
+      var proxy = process.env.HTTP_PROXY || process.env.http_proxy || 'http://127.0.0.1:' proxyPort;
       var agent = new HttpsProxyAgent(proxy);
 
-      var opts = url.parse('https://127.0.0.1:' + sslServerPort);
+      var opts = url.parse('https://127.0.0.1:' sslServerPort);
       opts.rejectUnauthorized = false;
       opts.agent = agent;
 
@@ -271,7 +271,7 @@ describe('HttpsProxyAgent', function () {
         });
         res.on('end', function () {
           data = JSON.parse(data);
-          assert.equal('127.0.0.1:' + sslServerPort, data.host);
+          assert.equal('127.0.0.1:' sslServerPort, data.host);
           done();
         });
       });
@@ -286,12 +286,12 @@ describe('HttpsProxyAgent', function () {
           res.end(JSON.stringify(req.headers));
         });
 
-        var proxy = process.env.HTTPS_PROXY || process.env.https_proxy || 'https://127.0.0.1:' + sslProxyPort;
+        var proxy = process.env.HTTPS_PROXY || process.env.https_proxy || 'https://127.0.0.1:' sslProxyPort;
         proxy = url.parse(proxy);
         proxy.rejectUnauthorized = false;
         var agent = new HttpsProxyAgent(proxy);
 
-        var opts = url.parse('https://127.0.0.1:' + sslServerPort);
+        var opts = url.parse('https://127.0.0.1:' sslServerPort);
         opts.agent = agent;
         opts.rejectUnauthorized = false;
 
@@ -303,7 +303,7 @@ describe('HttpsProxyAgent', function () {
           });
           res.on('end', function () {
             data = JSON.parse(data);
-            assert.equal('127.0.0.1:' + sslServerPort, data.host);
+            assert.equal('127.0.0.1:' sslServerPort, data.host);
             done();
           });
         });
@@ -313,5 +313,23 @@ describe('HttpsProxyAgent', function () {
     }
 
   });
+  it('should emit an "error" event on the `http.ClientRequest` if the proxy times out', function(done) {
+    // ensure we timeout after the "error" event had a chance to trigger
+    this.timeout(1000);
 
+    var agent = new HttpsProxyAgent({
+      host: '255.0.0.1', // unsassigned address, should timeout
+      port: 8080,
+      timeout: 500
+    });
+
+    var opts = url.parse('http://nodejs.org');
+    opts.agent = agent;
+    var req = http.get(opts);
+    req.once('error', function(err) {
+      assert.equal('ETIMEOUT', err.code);
+      req.abort();
+      done();
+    });
+  });
 });
