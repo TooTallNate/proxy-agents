@@ -223,7 +223,26 @@ describe('HttpsProxyAgent', function () {
         done();
       });
     });
+    it('should emit an "error" event on the `http.ClientRequest` if the proxy times out', function(done) {
+      // ensure we timeout after the "error" event had a chance to trigger
+      this.timeout(1000);
 
+      var agent = new HttpsProxyAgent({
+        host: '255.0.0.1', // unsassigned address, should timeout
+        port: 8080,
+        timeout: 500
+      });
+
+      var opts = url.parse('http://nodejs.org');
+      opts.agent = agent;
+
+      var req = http.get(opts);
+      req.once('error', function(err) {
+        assert.equal('ETIMEOUT', err.code);
+        req.abort();
+        done();
+      });
+    });
     it('should allow custom proxy "headers"', function (done) {
       server.once('connect', function (req, socket, head) {
         assert.equal('CONNECT', req.method);
