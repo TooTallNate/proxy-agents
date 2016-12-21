@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "agent-base": "2",
-    "debug": "2",
+    "debug": "^2.4.1",
     "extend": "3"
   },
   "devDependencies": {
