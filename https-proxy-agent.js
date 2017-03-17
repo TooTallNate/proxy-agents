@@ -65,7 +65,7 @@ function connect (req, opts, fn) {
   // create a socket connection to the proxy server
   var socket;
   if (this.secureProxy) {
-    socket = tls.connect(proxy);
+    socket = tls.connect(proxy, {ALPNProtocols: ['http 1.1']});
   } else {
     socket = net.connect(proxy);
   }
