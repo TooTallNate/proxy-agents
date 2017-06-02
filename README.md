@@ -104,6 +104,7 @@ The `opts` argument may either be a string URI of the proxy server to use, or an
   * `host` - String - Proxy host to connect to (may use `hostname` as well). Required.
   * `port` - Number - Proxy port to connect to. Required.
   * `secureProxy` - Boolean - If `true`, then use TLS to connect to the proxy. Defaults to `false`.
+  * `timeout` - Number - Proxy response timeout in milliseconds.
   * `headers` - Object - Additional HTTP headers to be sent on the HTTP CONNECT method.
   * Any other options given are passed to the `net.connect()`/`tls.connect()` functions.
 
