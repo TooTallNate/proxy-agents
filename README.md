@@ -42,13 +42,13 @@ console.log('using proxy server %j', proxy);
 // HTTPS endpoint for the proxy to connect to
 var endpoint = process.argv[2] || 'https://graph.facebook.com/tootallnate';
 console.log('attempting to GET %j', endpoint);
-var opts = url.parse(endpoint);
+var options = url.parse(endpoint);
 
 // create an instance of the `HttpsProxyAgent` class with the proxy server information
 var agent = new HttpsProxyAgent(proxy);
-opts.agent = agent;
+options.agent = agent;
 
-https.get(opts, function (res) {
+https.get(options, function (res) {
   console.log('"response" event!', res.headers);
   res.pipe(process.stdout);
 });
@@ -71,9 +71,9 @@ var parsed = url.parse(endpoint);
 console.log('attempting to connect to WebSocket %j', endpoint);
 
 // create an instance of the `HttpsProxyAgent` class with the proxy server information
-var opts = url.parse(proxy);
+var options = url.parse(proxy);
 
-var agent = new HttpsProxyAgent(opts);
+var agent = new HttpsProxyAgent(options);
 
 // finally, initiate the WebSocket connection
 var socket = new WebSocket(endpoint, { agent: agent });
@@ -92,13 +92,13 @@ socket.on('message', function (data, flags) {
 API
 ---
 
-### new HttpsProxyAgent(opts)
+### new HttpsProxyAgent(Object options)
 
 The `HttpsProxyAgent` class implements an `http.Agent` subclass that connects
 to the specified "HTTP(s) proxy server" in order to proxy HTTPS and/or WebSocket
 requests. This is achieved by using the [HTTP `CONNECT` method][CONNECT].
 
-The `opts` argument may either be a string URI of the proxy server to use, or an
+The `options` argument may either be a string URI of the proxy server to use, or an
 "options" object with more specific properties:
 
   * `host` - String - Proxy host to connect to (may use `hostname` as well). Required.
