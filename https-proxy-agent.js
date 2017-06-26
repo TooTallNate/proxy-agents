@@ -6,7 +6,6 @@
 var net = require('net');
 var tls = require('tls');
 var url = require('url');
-var extend = require('extend');
 var Agent = require('agent-base');
 var inherits = require('util').inherits;
 var debug = require('debug')('https-proxy-agent');
@@ -31,7 +30,7 @@ function HttpsProxyAgent (opts) {
   debug('creating new HttpsProxyAgent instance: %o', opts);
   Agent.call(this, connect);
 
-  var proxy = extend({}, opts);
+  var proxy = Object.assign({}, opts);
 
   // if `true`, then connect to the proxy server over TLS. defaults to `false`.
   this.secureProxy = proxy.protocol ? /^https:?$/i.test(proxy.protocol) : false;
@@ -192,7 +191,7 @@ function connect (req, opts, fn) {
   var hostname = opts.host + ':' + opts.port;
   var msg = 'CONNECT ' + hostname + ' HTTP/1.1\r\n';
 
-  var headers = extend({}, proxy.headers);
+  var headers = Object.assign({}, proxy.headers);
   if (proxy.auth) {
     headers['Proxy-Authorization'] = 'Basic ' + new Buffer(proxy.auth).toString('base64');
   }
