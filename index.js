@@ -1,4 +1,3 @@
-
 /**
  * Module dependencies.
  */
@@ -23,10 +22,13 @@ module.exports = HttpsProxyAgent;
  * @api public
  */
 
-function HttpsProxyAgent (opts) {
+function HttpsProxyAgent(opts) {
   if (!(this instanceof HttpsProxyAgent)) return new HttpsProxyAgent(opts);
   if ('string' == typeof opts) opts = url.parse(opts);
-  if (!opts) throw new Error('an HTTP(S) proxy server `host` and `port` must be specified!');
+  if (!opts)
+    throw new Error(
+      'an HTTP(S) proxy server `host` and `port` must be specified!'
+    );
   debug('creating new HttpsProxyAgent instance: %o', opts);
   Agent.call(this, opts);
 
@@ -57,7 +59,7 @@ inherits(HttpsProxyAgent, Agent);
  * @api public
  */
 
-HttpsProxyAgent.prototype.callback = function connect (req, opts, fn) {
+HttpsProxyAgent.prototype.callback = function connect(req, opts, fn) {
   var proxy = this.proxy;
 
   // create a socket connection to the proxy server
@@ -75,13 +77,13 @@ HttpsProxyAgent.prototype.callback = function connect (req, opts, fn) {
   var buffers = [];
   var buffersLength = 0;
 
-  function read () {
+  function read() {
     var b = socket.read();
     if (b) ondata(b);
     else socket.once('readable', read);
   }
 
-  function cleanup () {
+  function cleanup() {
     socket.removeListener('data', ondata);
     socket.removeListener('end', onend);
     socket.removeListener('error', onerror);
@@ -89,20 +91,20 @@ HttpsProxyAgent.prototype.callback = function connect (req, opts, fn) {
     socket.removeListener('readable', read);
   }
 
-  function onclose (err) {
+  function onclose(err) {
     debug('onclose had error %o', err);
   }
 
-  function onend () {
+  function onend() {
     debug('onend');
   }
 
-  function onerror (err) {
+  function onerror(err) {
     cleanup();
     fn(err);
   }
 
-  function ondata (b) {
+  function ondata(b) {
     buffers.push(b);
     buffersLength += b.length;
     var buffered = Buffer.concat(buffers, buffersLength);
@@ -133,9 +135,12 @@ HttpsProxyAgent.prototype.callback = function connect (req, opts, fn) {
       if (opts.secureEndpoint) {
         // since the proxy is connecting to an SSL server, we have
         // to upgrade this socket connection to an SSL connection
-        debug('upgrading proxy-connected socket to TLS connection: %o', opts.host);
+        debug(
+          'upgrading proxy-connected socket to TLS connection: %o',
+          opts.host
+        );
         opts.socket = socket;
-        opts.servername = opts.servername?opts.servername:opts.host;
+        opts.servername = opts.servername || opts.host;
         opts.host = null;
         opts.hostname = null;
         opts.port = null;
@@ -159,7 +164,7 @@ HttpsProxyAgent.prototype.callback = function connect (req, opts, fn) {
     }
   }
 
-  function onsocket (socket) {
+  function onsocket(socket) {
     // replay the "buffers" Buffer onto the `socket`, since at this point
     // the HTTP module machinery has been hooked up for the user
     if ('function' == typeof socket.ondata) {
@@ -192,11 +197,12 @@ HttpsProxyAgent.prototype.callback = function connect (req, opts, fn) {
 
   var headers = Object.assign({}, proxy.headers);
   if (proxy.auth) {
-    headers['Proxy-Authorization'] = 'Basic ' + new Buffer(proxy.auth).toString('base64');
+    headers['Proxy-Authorization'] =
+      'Basic ' + new Buffer(proxy.auth).toString('base64');
   }
   headers['Host'] = hostname;
   headers['Connection'] = 'close';
-  Object.keys(headers).forEach(function (name) {
+  Object.keys(headers).forEach(function(name) {
     msg += name + ': ' + headers[name] + '\r\n';
   });
 
