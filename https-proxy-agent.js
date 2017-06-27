@@ -58,8 +58,6 @@ inherits(HttpsProxyAgent, Agent);
  */
 
 HttpsProxyAgent.prototype.callback = function connect (req, opts, fn) {
-  console.log(opts)
-
   var proxy = this.proxy;
 
   // create a socket connection to the proxy server
