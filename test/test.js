@@ -9,8 +9,6 @@ var http = require('http');
 var https = require('https');
 var assert = require('assert');
 var Proxy = require('proxy');
-var Semver = require('semver');
-var version = new Semver(process.version);
 var HttpsProxyAgent = require('../');
 
 describe('HttpsProxyAgent', function () {
@@ -277,40 +275,33 @@ describe('HttpsProxyAgent', function () {
       });
     });
 
-    if (version.compare('0.11.3') < 0 || version.compare('0.11.8') >= 0) {
-      // This test is disabled on node >= 0.11.3 && < 0.11.8, since it segfaults :(
-      // See: https://github.com/joyent/node/issues/6204
+    it('should work over an HTTPS proxy', function (done) {
+      sslServer.once('request', function (req, res) {
+        res.end(JSON.stringify(req.headers));
+      });
 
-      it('should work over an HTTPS proxy', function (done) {
-        sslServer.once('request', function (req, res) {
-          res.end(JSON.stringify(req.headers));
+      var proxy = process.env.HTTPS_PROXY || process.env.https_proxy || 'https://127.0.0.1:' + sslProxyPort;
+      proxy = url.parse(proxy);
+      proxy.rejectUnauthorized = false;
+      var agent = new HttpsProxyAgent(proxy);
+
+      var opts = url.parse('https://127.0.0.1:' + sslServerPort);
+      opts.agent = agent;
+      opts.rejectUnauthorized = false;
+
+      https.get(opts, function (res) {
+        var data = '';
+        res.setEncoding('utf8');
+        res.on('data', function (b) {
+          data += b;
         });
-
-        var proxy = process.env.HTTPS_PROXY || process.env.https_proxy || 'https://127.0.0.1:' + sslProxyPort;
-        proxy = url.parse(proxy);
-        proxy.rejectUnauthorized = false;
-        var agent = new HttpsProxyAgent(proxy);
-
-        var opts = url.parse('https://127.0.0.1:' + sslServerPort);
-        opts.agent = agent;
-        opts.rejectUnauthorized = false;
-
-        https.get(opts, function (res) {
-          var data = '';
-          res.setEncoding('utf8');
-          res.on('data', function (b) {
-            data += b;
-          });
-          res.on('end', function () {
-            data = JSON.parse(data);
-            assert.equal('127.0.0.1:' + sslServerPort, data.host);
-            done();
-          });
+        res.on('end', function () {
+          data = JSON.parse(data);
+          assert.equal('127.0.0.1:' + sslServerPort, data.host);
+          done();
         });
       });
-    } else {
-      it('should work over an HTTPS proxy');
-    }
+    });
 
   });
 
