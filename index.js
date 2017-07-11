@@ -206,7 +206,15 @@ HttpsProxyAgent.prototype.callback = function connect(req, opts, fn) {
     headers['Proxy-Authorization'] =
       'Basic ' + new Buffer(proxy.auth).toString('base64');
   }
-  headers['Host'] = hostname;
+
+  // the Host header should only include the port
+  // number when it is a non-standard port
+  var host = opts.host;
+  if (!isDefaultPort(opts.port, opts.secureEndpoint)) {
+    host += ':' + opts.port;
+  }
+  headers['Host'] = host;
+
   headers['Connection'] = 'close';
   Object.keys(headers).forEach(function(name) {
     msg += name + ': ' + headers[name] + '\r\n';
@@ -214,3 +222,7 @@ HttpsProxyAgent.prototype.callback = function connect(req, opts, fn) {
 
   socket.write(msg + '\r\n');
 };
+
+function isDefaultPort(port, secure) {
+  return Boolean((!secure && port === 80) || (secure && port === 443));
+}
