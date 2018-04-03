@@ -100,10 +100,12 @@ HttpsProxyAgent.prototype.callback = function connect(req, opts, fn) {
 
   function onclose(err) {
     debug('onclose had error %o', err);
+    fn(null, socket);
   }
 
   function onend() {
     debug('onend');
+    fn(null, socket);
   }
 
   function onerror(err) {
