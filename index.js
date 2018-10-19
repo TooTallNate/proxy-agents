@@ -22,7 +22,7 @@ module.exports = HttpsProxyAgent;
  * @api public
  */
 
-function HttpsProxyAgent(opts) {
+function HttpsProxyAgent(opts, backendOpts) {
   if (!(this instanceof HttpsProxyAgent)) return new HttpsProxyAgent(opts);
   if ('string' == typeof opts) opts = url.parse(opts);
   if (!opts)
@@ -57,6 +57,7 @@ function HttpsProxyAgent(opts) {
 
   this.proxy = proxy;
   this.defaultPort = 443;
+  this.backendOpts = backendOpts
 }
 inherits(HttpsProxyAgent, Agent);
 
@@ -151,6 +152,11 @@ HttpsProxyAgent.prototype.callback = function connect(req, opts, fn) {
         opts.host = null;
         opts.hostname = null;
         opts.port = null;
+        opts.key = null
+        opts.cert = null
+        if (this.backendOpts) {
+         opts = Object.assign({}, opts, this.backendOpts)
+        }
         sock = tls.connect(opts);
       }
 
