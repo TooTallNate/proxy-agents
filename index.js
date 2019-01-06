@@ -68,6 +68,7 @@ inherits(HttpsProxyAgent, Agent);
 
 HttpsProxyAgent.prototype.callback = function connect(req, opts, fn) {
   var proxy = this.proxy;
+  var self = this;
 
   // create a socket connection to the proxy server
   var socket;
@@ -130,6 +131,17 @@ HttpsProxyAgent.prototype.callback = function connect(req, opts, fn) {
 
     var firstLine = str.substring(0, str.indexOf('\r\n'));
     var statusCode = +firstLine.split(' ')[1];
+    var headers = str.split('\r\n').slice(1).reduce(function(p,d) {
+      var match = /(.*):(.*)/.exec(d);
+      if (match) p[match[1]] = match[2].trim();
+      return p;
+    },{});
+
+    self.emit('connect',{
+      statusCode: statusCode,
+      headers: headers
+    });
+    
     debug('got proxy server response: %o', firstLine);
 
     if (200 == statusCode) {
