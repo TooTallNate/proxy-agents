@@ -76,7 +76,14 @@ HttpsProxyAgent.prototype.callback = function connect(req, opts, fn) {
   } else {
     socket = net.connect(proxy);
   }
-
+  if(opts['timeout']) {
+    var timeout = opts['timeout'];
+    var timeoutHandler = setTimeout(function(){
+      socket.destroy();
+      cleanup();
+      fn(new Error('Proxy http tunnel connect time out'));
+    },timeout);
+  }
   // we need to buffer any HTTP traffic that happens with the proxy before we get
   // the CONNECT response, so that if the response is anything other than an "200"
   // response code, then we can re-play the "data" events on the socket once the
@@ -99,14 +106,23 @@ HttpsProxyAgent.prototype.callback = function connect(req, opts, fn) {
   }
 
   function onclose(err) {
+    if(timeoutHandler) {
+      clearTimeout(timeoutHandler);
+    }
     debug('onclose had error %o', err);
   }
 
   function onend() {
+    if(timeoutHandler) {
+      clearTimeout(timeoutHandler);
+    }
     debug('onend');
   }
 
   function onerror(err) {
+    if(timeoutHandler) {
+      clearTimeout(timeoutHandler);
+    }
     cleanup();
     fn(err);
   }
@@ -172,6 +188,11 @@ HttpsProxyAgent.prototype.callback = function connect(req, opts, fn) {
   }
 
   function onsocket(socket) {
+    
+    if(timeoutHandler) {
+      clearTimeout(timeoutHandler);
+    }
+    
     // replay the "buffers" Buffer onto the `socket`, since at this point
     // the HTTP module machinery has been hooked up for the user
     if ('function' == typeof socket.ondata) {
