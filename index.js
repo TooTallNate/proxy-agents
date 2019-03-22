@@ -222,6 +222,15 @@ HttpsProxyAgent.prototype.callback = function connect(req, opts, fn) {
   });
 
   socket.write(msg + '\r\n');
+  
+  if(opts['timeout']) {
+    var timeout = opts['timeout'];
+    setTimeout(function(){
+      socket.destroy();
+      cleanup();
+      fn(new Error('Proxy http tunnel connect time out'));
+    },timeout);
+  }
 };
 
 function isDefaultPort(port, secure) {
