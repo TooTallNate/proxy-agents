@@ -157,17 +157,16 @@ HttpsProxyAgent.prototype.callback = function connect(req, opts, fn) {
       cleanup();
       fn(null, sock);
     } else {
-      // some other status code that's not 200... need to re-play the HTTP header
-      // "data" events onto the socket once the HTTP machinery is attached so that
-      // the user can parse and handle the error status code
+      // We got a bad response to the CONNECT request, so we will not attempt
+      // to upgrade the socket to a TLS connection.
+      //
+      // Destroy the socket and return an error, as the socket has not been
+      // upgraded to a TLS connection. If the socket were returned for use,
+      // plaintext secrets could leak to a network firewall or remote server.
+      buffers = buffered = null;
+      socket.destroy();
       cleanup();
-
-      // save a reference to the concat'd Buffer for the `onsocket` callback
-      buffers = buffered;
-
-      // need to wait for the "socket" event to re-play the "data" events
-      req.once('socket', onsocket);
-      fn(null, socket);
+      fn(new Error(`Could not establish TLS connection. Status code: ${statusCode}`));
     }
   }
 
