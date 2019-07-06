@@ -32,7 +32,15 @@ function HttpsProxyAgent(opts) {
   debug('creating new HttpsProxyAgent instance: %o', opts);
   Agent.call(this, opts);
 
-  var proxy = Object.assign({}, opts);
+  var proxy;
+
+  // If the opts are genearted with the WHATWG API
+  if (Object.getOwnPropertySymbols(opts)[0]) {
+    proxy = Object.keys(opts[Object.getOwnPropertySymbols(opts)[0]]);
+    proxy.protocol = proxy.scheme;
+  } else {
+    proxy = Object.assign({}, opts);
+  }
 
   // if `true`, then connect to the proxy server over TLS. defaults to `false`.
   this.secureProxy = proxy.protocol ? /^https:?$/i.test(proxy.protocol) : false;
