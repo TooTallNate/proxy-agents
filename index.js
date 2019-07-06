@@ -36,7 +36,11 @@ function HttpsProxyAgent(opts) {
 
   // If the opts are genearted with the WHATWG API
   if (Object.getOwnPropertySymbols(opts)[0]) {
-    proxy = Object.keys(opts[Object.getOwnPropertySymbols(opts)[0]]);
+    proxy = {};
+    let urlContext = opts[Object.getOwnPropertySymbols(opts)[0]];
+    for (let key of Object.keys(urlContext)) {
+      proxy[key] = urlContext[key];
+    }
     proxy.protocol = proxy.scheme;
   } else {
     proxy = Object.assign({}, opts);
