@@ -150,6 +150,7 @@ HttpsProxyAgent.prototype.callback = function connect(req, opts, fn) {
       }
 
       cleanup();
+      req.once('socket', resume);
       fn(null, sock);
     } else {
       // some other status code that's not 200... need to re-play the HTTP header
@@ -176,6 +177,7 @@ HttpsProxyAgent.prototype.callback = function connect(req, opts, fn) {
       throw new Error('should not happen...');
     }
 
+    socket.resume();
     // nullify the cached Buffer instance
     buffers = null;
   }
@@ -210,6 +212,17 @@ HttpsProxyAgent.prototype.callback = function connect(req, opts, fn) {
 
   socket.write(msg + '\r\n');
 };
+
+/**
+ * Resumes a socket.
+ *
+ * @param {(net.Socket|tls.Socket)} socket The socket to resume
+ * @api public
+ */
+
+function resume(socket) {
+  socket.resume();
+}
 
 function isDefaultPort(port, secure) {
   return Boolean((!secure && port === 80) || (secure && port === 443));
