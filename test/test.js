@@ -189,7 +189,7 @@ describe('HttpsProxyAgent', function () {
         });
       });
     });
-    it('should receive the 407 authorization code on the `http.ClientResponse`', function (done) {
+    it('should emit an "error" event on `http.ClientRequest` on proxy 407 authentication required response', function (done) {
       // set a proxy authentication function for this test
       proxy.authenticate = function (req, fn) {
         // reject all requests
@@ -206,8 +206,11 @@ describe('HttpsProxyAgent', function () {
       opts.agent = agent;
 
       var req = http.get(opts, function (res) {
-        assert.equal(407, res.statusCode);
-        assert('proxy-authenticate' in res.headers);
+        assert.fail('Got an unexpected response with status ' + res.statusCode);
+      });
+      req.once('error', function (err) {
+        assert.equal('Could not establish TLS connection. Status code: 407', err.message);
+        req.abort();
         done();
       });
     });
