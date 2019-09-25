@@ -209,7 +209,7 @@ describe('HttpsProxyAgent', function () {
         assert.fail('Got an unexpected response with status ' + res.statusCode);
       });
       req.once('error', function (err) {
-        assert.equal('Could not establish TLS connection. Status code: 407', err.message);
+        assert.equal('Could not establish connection to proxy server. Status code: 407', err.message);
         req.abort();
         done();
       });

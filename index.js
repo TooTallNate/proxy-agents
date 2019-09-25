@@ -157,16 +157,16 @@ HttpsProxyAgent.prototype.callback = function connect(req, opts, fn) {
       cleanup();
       fn(null, sock);
     } else {
-      // We got a bad response to the CONNECT request, so we will not attempt
-      // to upgrade the socket to a TLS connection.
+      // We got a bad response to the CONNECT request. Destroy the socket and
+      // return an error.
       //
-      // Destroy the socket and return an error, as the socket has not been
-      // upgraded to a TLS connection. If the socket were returned for use,
-      // plaintext secrets could leak to a network firewall or remote server.
+      // If a secure endpoint is targeted, returning a socket without upgrading
+      // it to a TLS connection could result in plaintext secrets leaking to a
+      // network firewall or remote server.
       buffers = buffered = null;
       socket.destroy();
       cleanup();
-      fn(new Error(`Could not establish TLS connection. Status code: ${statusCode}`));
+      fn(new Error(`Could not establish connection to proxy server. Status code: ${statusCode}`));
     }
   }
 
