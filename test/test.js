@@ -71,23 +71,23 @@ describe('HttpsProxyAgent', function () {
 
   // shut down test HTTP server
   after(function (done) {
+    server.once('close', function () { done(); });
     server.close();
-    done();
   });
 
   after(function (done) {
+    proxy.once('close', function () { done(); });
     proxy.close();
-    done();
   });
 
   after(function (done) {
+    sslServer.once('close', function () { done(); });
     sslServer.close();
-    done();
   });
 
   after(function (done) {
+    sslProxy.once('close', function () { done(); });
     sslProxy.close();
-    done();
   });
 
   describe('constructor', function () {
