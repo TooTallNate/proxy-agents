@@ -4,7 +4,7 @@ declare module 'https-proxy-agent' {
     namespace HttpsProxyAgent {
         interface HttpsProxyAgentOptions {
             host: string
-            port: number
+            port: number | string
             secureProxy?: boolean
             headers?: {
                 [key: string]: string
