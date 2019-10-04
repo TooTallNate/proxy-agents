@@ -1,5 +1,3 @@
-sudo: false
-
 language: node_js
 
 node_js:
@@ -8,8 +6,13 @@ node_js:
   - "10"
   - "12"
 
+os:
+  - linux
+  - osx
+  - windows
+
 install:
-  - PATH="`npm bin`:`npm bin -g`:$PATH"
+  # - PATH="`npm bin`:`npm bin -g`:$PATH"
   # Install dependencies and build
   - npm install
 
