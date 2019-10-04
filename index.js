@@ -91,7 +91,6 @@ HttpsProxyAgent.prototype.callback = function connect(req, opts, fn) {
   }
 
   function cleanup() {
-    socket.removeListener('data', ondata);
     socket.removeListener('end', onend);
     socket.removeListener('error', onerror);
     socket.removeListener('close', onclose);
@@ -120,11 +119,7 @@ HttpsProxyAgent.prototype.callback = function connect(req, opts, fn) {
     if (!~str.indexOf('\r\n\r\n')) {
       // keep buffering
       debug('have not received end of HTTP headers yet...');
-      if (socket.read) {
-        read();
-      } else {
-        socket.once('data', ondata);
-      }
+      read();
       return;
     }
 
@@ -155,6 +150,7 @@ HttpsProxyAgent.prototype.callback = function connect(req, opts, fn) {
       }
 
       cleanup();
+      req.once('socket', resume);
       fn(null, sock);
     } else {
       // some other status code that's not 200... need to re-play the HTTP header
@@ -174,17 +170,14 @@ HttpsProxyAgent.prototype.callback = function connect(req, opts, fn) {
   function onsocket(socket) {
     // replay the "buffers" Buffer onto the `socket`, since at this point
     // the HTTP module machinery has been hooked up for the user
-    if ('function' == typeof socket.ondata) {
-      // node <= v0.11.3, the `ondata` function is set on the socket
-      socket.ondata(buffers, 0, buffers.length);
-    } else if (socket.listeners('data').length > 0) {
-      // node > v0.11.3, the "data" event is listened for directly
+    if (socket.listenerCount('data') > 0) {
       socket.emit('data', buffers);
     } else {
       // never?
       throw new Error('should not happen...');
     }
 
+    socket.resume();
     // nullify the cached Buffer instance
     buffers = null;
   }
@@ -193,11 +186,7 @@ HttpsProxyAgent.prototype.callback = function connect(req, opts, fn) {
   socket.on('close', onclose);
   socket.on('end', onend);
 
-  if (socket.read) {
-    read();
-  } else {
-    socket.once('data', ondata);
-  }
+  read();
 
   var hostname = opts.host + ':' + opts.port;
   var msg = 'CONNECT ' + hostname + ' HTTP/1.1\r\n';
@@ -223,6 +212,17 @@ HttpsProxyAgent.prototype.callback = function connect(req, opts, fn) {
 
   socket.write(msg + '\r\n');
 };
+
+/**
+ * Resumes a socket.
+ *
+ * @param {(net.Socket|tls.Socket)} socket The socket to resume
+ * @api public
+ */
+
+function resume(socket) {
+  socket.resume();
+}
 
 function isDefaultPort(port, secure) {
   return Boolean((!secure && port === 80) || (secure && port === 443));
