@@ -159,9 +159,10 @@ HttpsProxyAgent.prototype.callback = function connect(req, opts, fn) {
       // that the node core `http` can parse and handle the error status code
       cleanup();
 
-      // The original socket is closed, and a "fake socket" EventEmitter is
-      // returned instead, so that the proxy doesn't get the HTTP request written
-      // to it (which may contain `Authorization` headers or other sensitive data.
+      // the original socket is closed, and a "fake socket" EventEmitter is
+      // returned instead, so that the proxy doesn't get the HTTP request
+      // written to it (which may contain `Authorization` headers or other
+      // sensitive data).
       //
       // See: https://hackerone.com/reports/541502
       socket.destroy();
