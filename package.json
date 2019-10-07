@@ -1,6 +1,6 @@
 {
   "name": "https-proxy-agent",
-  "version": "2.2.2",
+  "version": "3.0.0",
   "description": "An HTTP(s) proxy `http.Agent` implementation for HTTPS",
   "main": "./index.js",
   "types": "./index.d.ts",
