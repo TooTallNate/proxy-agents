@@ -12,7 +12,6 @@ os:
   - windows
 
 install:
-  # - PATH="`npm bin`:`npm bin -g`:$PATH"
   # Install dependencies and build
   - npm install
 
