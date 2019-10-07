@@ -28,7 +28,7 @@
   },
   "devDependencies": {
     "mocha": "^6.2.0",
-    "proxy": "1"
+    "proxy": "1.0.1"
   },
   "engines": {
     "node": ">= 4.5.0"
