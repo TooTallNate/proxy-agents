@@ -5,6 +5,7 @@
 var net = require('net');
 var tls = require('tls');
 var url = require('url');
+var events = require('events');
 var Agent = require('agent-base');
 var inherits = require('util').inherits;
 var debug = require('debug')('https-proxy-agent');
@@ -154,20 +155,32 @@ HttpsProxyAgent.prototype.callback = function connect(req, opts, fn) {
       fn(null, sock);
     } else {
       // some other status code that's not 200... need to re-play the HTTP header
-      // "data" events onto the socket once the HTTP machinery is attached so that
-      // the user can parse and handle the error status code
+      // "data" events onto the socket once the HTTP machinery is attached so
+      // that the node core `http` can parse and handle the error status code
       cleanup();
+
+      // the original socket is closed, and a "fake socket" EventEmitter is
+      // returned instead, so that the proxy doesn't get the HTTP request
+      // written to it (which may contain `Authorization` headers or other
+      // sensitive data).
+      //
+      // See: https://hackerone.com/reports/541502
+      socket.destroy();
+      socket = new events.EventEmitter();
 
       // save a reference to the concat'd Buffer for the `onsocket` callback
       buffers = buffered;
 
       // need to wait for the "socket" event to re-play the "data" events
       req.once('socket', onsocket);
+
       fn(null, socket);
     }
   }
 
   function onsocket(socket) {
+    debug('replaying proxy buffer for failed request');
+
     // replay the "buffers" Buffer onto the `socket`, since at this point
     // the HTTP module machinery has been hooked up for the user
     if (socket.listenerCount('data') > 0) {
@@ -177,7 +190,6 @@ HttpsProxyAgent.prototype.callback = function connect(req, opts, fn) {
       throw new Error('should not happen...');
     }
 
-    socket.resume();
     // nullify the cached Buffer instance
     buffers = null;
   }
