@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "agent-base": "^4.3.0",
-    "debug": "^3.1.0"
+    "debug": "^4.0.0"
   },
   "devDependencies": {
     "mocha": "^6.2.0",
