@@ -2,6 +2,7 @@
  * Module dependencies.
  */
 
+var assert = require('assert');
 var net = require('net');
 var tls = require('tls');
 var url = require('url');
@@ -161,23 +162,16 @@ HttpsProxyAgent.prototype.callback = function connect(req, opts, fn) {
 			// that the node core `http` can parse and handle the error status code
 			cleanup();
 
-			// the original socket is closed, and a "fake socket" Duplex is
+			// the original socket is closed, and a new closed socket is
 			// returned instead, so that the proxy doesn't get the HTTP request
 			// written to it (which may contain `Authorization` headers or other
 			// sensitive data).
 			//
 			// See: https://hackerone.com/reports/541502
 			socket.destroy();
-			socket = new stream.Duplex({
-				read() {},
-				write(chunk, encoding, callback) {
-					callback();
-				}
-			});
+			socket = new net.Socket();
+			socket.readable = true;
 
-			if (process.versions.modules === '48') {
-				socket.destroy = noop;
-			}
 
 			// save a reference to the concat'd Buffer for the `onsocket` callback
 			buffers = buffered;
@@ -191,15 +185,11 @@ HttpsProxyAgent.prototype.callback = function connect(req, opts, fn) {
 
 	function onsocket(socket) {
 		debug('replaying proxy buffer for failed request');
+		assert(socket.listenerCount('data') > 0);
 
 		// replay the "buffers" Buffer onto the `socket`, since at this point
 		// the HTTP module machinery has been hooked up for the user
-		if (socket.listenerCount('data') > 0) {
-			socket.emit('data', buffers);
-		} else {
-			// never?
-			throw new Error('should not happen...');
-		}
+		socket.push(buffers);
 
 		// nullify the cached Buffer instance
 		buffers = null;
@@ -250,5 +240,3 @@ function resume(socket) {
 function isDefaultPort(port, secure) {
 	return Boolean((!secure && port === 80) || (secure && port === 443));
 }
-
-function noop() {}
