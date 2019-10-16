@@ -5,7 +5,7 @@
 var net = require('net');
 var tls = require('tls');
 var url = require('url');
-var events = require('events');
+var stream = require('stream');
 var Agent = require('agent-base');
 var inherits = require('util').inherits;
 var debug = require('debug')('https-proxy-agent');
@@ -161,14 +161,23 @@ HttpsProxyAgent.prototype.callback = function connect(req, opts, fn) {
 			// that the node core `http` can parse and handle the error status code
 			cleanup();
 
-			// the original socket is closed, and a "fake socket" EventEmitter is
+			// the original socket is closed, and a "fake socket" Duplex is
 			// returned instead, so that the proxy doesn't get the HTTP request
 			// written to it (which may contain `Authorization` headers or other
 			// sensitive data).
 			//
 			// See: https://hackerone.com/reports/541502
 			socket.destroy();
-			socket = new events.EventEmitter();
+			socket = new stream.Duplex({
+				read() {},
+				write(chunk, encoding, callback) {
+					callback();
+				}
+			});
+
+			if (process.versions.modules === '48') {
+				socket.destroy = noop;
+			}
 
 			// save a reference to the concat'd Buffer for the `onsocket` callback
 			buffers = buffered;
@@ -241,3 +250,5 @@ function resume(socket) {
 function isDefaultPort(port, secure) {
 	return Boolean((!secure && port === 80) || (secure && port === 443));
 }
+
+function noop() {}

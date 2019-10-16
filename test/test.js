@@ -234,6 +234,24 @@ describe('HttpsProxyAgent', function() {
 				done();
 			});
 		});
+    it('should not error if the request is aborted and a fake socket is assigned to it', function(done) {
+      proxy.authenticate = function(req, fn) {
+        fn(null, false);
+      };
+
+      const proxyUri =
+        process.env.HTTP_PROXY ||
+        process.env.http_proxy ||
+        'http://127.0.0.1:' + proxyPort;
+
+      const req = http.get({ agent: new HttpsProxyAgent(proxyUri) });
+
+      req.on('socket', function() {
+        req.abort();
+      })
+
+      req.on('abort', done);
+    });
 		it('should emit an "error" event on the `http.ClientRequest` if the proxy does not exist', function(done) {
 			// port 4 is a reserved, but "unassigned" port
 			var proxyUri = 'http://127.0.0.1:4';
