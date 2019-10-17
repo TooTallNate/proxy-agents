@@ -2,10 +2,11 @@
  * Module dependencies.
  */
 
+var assert = require('assert');
 var net = require('net');
 var tls = require('tls');
 var url = require('url');
-var events = require('events');
+var stream = require('stream');
 var Agent = require('agent-base');
 var inherits = require('util').inherits;
 var debug = require('debug')('https-proxy-agent');
@@ -161,14 +162,16 @@ HttpsProxyAgent.prototype.callback = function connect(req, opts, fn) {
 			// that the node core `http` can parse and handle the error status code
 			cleanup();
 
-			// the original socket is closed, and a "fake socket" EventEmitter is
+			// the original socket is closed, and a new closed socket is
 			// returned instead, so that the proxy doesn't get the HTTP request
 			// written to it (which may contain `Authorization` headers or other
 			// sensitive data).
 			//
 			// See: https://hackerone.com/reports/541502
 			socket.destroy();
-			socket = new events.EventEmitter();
+			socket = new net.Socket();
+			socket.readable = true;
+
 
 			// save a reference to the concat'd Buffer for the `onsocket` callback
 			buffers = buffered;
@@ -182,15 +185,11 @@ HttpsProxyAgent.prototype.callback = function connect(req, opts, fn) {
 
 	function onsocket(socket) {
 		debug('replaying proxy buffer for failed request');
+		assert(socket.listenerCount('data') > 0);
 
 		// replay the "buffers" Buffer onto the `socket`, since at this point
 		// the HTTP module machinery has been hooked up for the user
-		if (socket.listenerCount('data') > 0) {
-			socket.emit('data', buffers);
-		} else {
-			// never?
-			throw new Error('should not happen...');
-		}
+		socket.push(buffers);
 
 		// nullify the cached Buffer instance
 		buffers = null;
