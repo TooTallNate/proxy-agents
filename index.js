@@ -2,11 +2,10 @@
  * Module dependencies.
  */
 
-var assert = require('assert');
 var net = require('net');
 var tls = require('tls');
 var url = require('url');
-var stream = require('stream');
+var assert = require('assert');
 var Agent = require('agent-base');
 var inherits = require('util').inherits;
 var debug = require('debug')('https-proxy-agent');
