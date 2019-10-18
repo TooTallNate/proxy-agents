@@ -157,17 +157,16 @@ HttpsProxyAgent.prototype.callback = function connect(req, opts, fn) {
       cleanup();
       fn(null, sock);
     } else {
-      // some other status code that's not 200... need to re-play the HTTP header
-      // "data" events onto the socket once the HTTP machinery is attached so that
-      // the user can parse and handle the error status code
+      // We got a bad response to the CONNECT request. Destroy the socket and
+      // return an error.
+      //
+      // If a secure endpoint is targeted, returning a socket without upgrading
+      // it to a TLS connection could result in plaintext secrets leaking to a
+      // network firewall or remote server.
+      buffers = buffered = null;
+      socket.destroy();
       cleanup();
-
-      // save a reference to the concat'd Buffer for the `onsocket` callback
-      buffers = buffered;
-
-      // need to wait for the "socket" event to re-play the "data" events
-      req.once('socket', onsocket);
-      fn(null, socket);
+      fn(new Error(`Could not establish connection to proxy server. Status code: ${statusCode}`));
     }
   }
 
