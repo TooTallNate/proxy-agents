@@ -27,7 +27,7 @@
     "debug": "^3.1.0"
   },
   "devDependencies": {
-    "mocha": "5",
+    "mocha": "^6.2.0",
     "proxy": "1"
   },
   "engines": {
