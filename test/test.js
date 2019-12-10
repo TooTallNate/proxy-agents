@@ -103,20 +103,15 @@ describe('HttpsProxyAgent', function() {
 			});
 		});
 		it('should accept a "string" proxy argument', function() {
-			var agent = new HttpsProxyAgent('http://127.0.0.1:' + proxyPort);
-			assert.equal('127.0.0.1', agent.proxy.host);
+			var agent = new HttpsProxyAgent('http://localhost:' + proxyPort);
+			assert.equal('localhost', agent.proxy.host);
 			assert.equal(proxyPort, agent.proxy.port);
 		});
 		it('should accept a `url.parse()` result object argument', function() {
-			var opts = url.parse('http://127.0.0.1:' + proxyPort);
+			var opts = url.parse('http://localhost:' + proxyPort);
 			var agent = new HttpsProxyAgent(opts);
-			assert.equal('127.0.0.1', agent.proxy.host);
+			assert.equal('localhost', agent.proxy.host);
 			assert.equal(proxyPort, agent.proxy.port);
-		});
-		it('should set a `defaultPort` property', function() {
-			var opts = url.parse('http://127.0.0.1:' + proxyPort);
-			var agent = new HttpsProxyAgent(opts);
-			assert.equal(443, agent.defaultPort);
 		});
 		describe('secureProxy', function() {
 			it('should default to `false`', function() {
@@ -160,10 +155,10 @@ describe('HttpsProxyAgent', function() {
 			var proxy =
 				process.env.HTTP_PROXY ||
 				process.env.http_proxy ||
-				'http://127.0.0.1:' + proxyPort;
+				'http://localhost:' + proxyPort;
 			var agent = new HttpsProxyAgent(proxy);
 
-			var opts = url.parse('http://127.0.0.1:' + serverPort);
+			var opts = url.parse('http://localhost:' + serverPort);
 			opts.agent = agent;
 
 			var req = http.get(opts, function(res) {
@@ -174,7 +169,7 @@ describe('HttpsProxyAgent', function() {
 				});
 				res.on('end', function() {
 					data = JSON.parse(data);
-					assert.equal('127.0.0.1:' + serverPort, data.host);
+					assert.equal('localhost:' + serverPort, data.host);
 					done();
 				});
 			});
@@ -188,12 +183,12 @@ describe('HttpsProxyAgent', function() {
 			var proxy =
 				process.env.HTTPS_PROXY ||
 				process.env.https_proxy ||
-				'https://127.0.0.1:' + sslProxyPort;
+				'https://localhost:' + sslProxyPort;
 			proxy = url.parse(proxy);
 			proxy.rejectUnauthorized = false;
 			var agent = new HttpsProxyAgent(proxy);
 
-			var opts = url.parse('http://127.0.0.1:' + serverPort);
+			var opts = url.parse('http://localhost:' + serverPort);
 			opts.agent = agent;
 
 			http.get(opts, function(res) {
@@ -204,7 +199,7 @@ describe('HttpsProxyAgent', function() {
 				});
 				res.on('end', function() {
 					data = JSON.parse(data);
-					assert.equal('127.0.0.1:' + serverPort, data.host);
+					assert.equal('localhost:' + serverPort, data.host);
 					done();
 				});
 			});
@@ -219,12 +214,12 @@ describe('HttpsProxyAgent', function() {
 			var proxyUri =
 				process.env.HTTP_PROXY ||
 				process.env.http_proxy ||
-				'http://127.0.0.1:' + proxyPort;
+				'http://localhost:' + proxyPort;
 			var agent = new HttpsProxyAgent(proxyUri);
 
 			var opts = {};
 			// `host` and `port` don't really matter since the proxy will reject anyways
-			opts.host = '127.0.0.1';
+			opts.host = 'localhost';
 			opts.port = 80;
 			opts.agent = agent;
 
@@ -242,7 +237,7 @@ describe('HttpsProxyAgent', function() {
 			const proxyUri =
 				process.env.HTTP_PROXY ||
 				process.env.http_proxy ||
-				'http://127.0.0.1:' + proxyPort;
+				'http://localhost:' + proxyPort;
 
 			const req = http.get({
 				agent: new HttpsProxyAgent(proxyUri)
@@ -255,7 +250,7 @@ describe('HttpsProxyAgent', function() {
 		});
 		it('should emit an "error" event on the `http.ClientRequest` if the proxy does not exist', function(done) {
 			// port 4 is a reserved, but "unassigned" port
-			var proxyUri = 'http://127.0.0.1:4';
+			var proxyUri = 'http://localhost:4';
 			var agent = new HttpsProxyAgent(proxyUri);
 
 			var opts = url.parse('http://nodejs.org');
@@ -277,7 +272,7 @@ describe('HttpsProxyAgent', function() {
 				done();
 			});
 
-			var uri = 'http://127.0.0.1:' + serverPort;
+			var uri = 'http://localhost:' + serverPort;
 			var proxyOpts = url.parse(uri);
 			proxyOpts.headers = {
 				Foo: 'bar'
@@ -286,7 +281,7 @@ describe('HttpsProxyAgent', function() {
 
 			var opts = {};
 			// `host` and `port` don't really matter since the proxy will reject anyways
-			opts.host = '127.0.0.1';
+			opts.host = 'localhost';
 			opts.port = 80;
 			opts.agent = agent;
 
@@ -303,10 +298,10 @@ describe('HttpsProxyAgent', function() {
 			var proxy =
 				process.env.HTTP_PROXY ||
 				process.env.http_proxy ||
-				'http://127.0.0.1:' + proxyPort;
+				'http://localhost:' + proxyPort;
 			var agent = new HttpsProxyAgent(proxy);
 
-			var opts = url.parse('https://127.0.0.1:' + sslServerPort);
+			var opts = url.parse('https://localhost:' + sslServerPort);
 			opts.rejectUnauthorized = false;
 			opts.agent = agent;
 
@@ -318,7 +313,7 @@ describe('HttpsProxyAgent', function() {
 				});
 				res.on('end', function() {
 					data = JSON.parse(data);
-					assert.equal('127.0.0.1:' + sslServerPort, data.host);
+					assert.equal('localhost:' + sslServerPort, data.host);
 					done();
 				});
 			});
@@ -332,12 +327,12 @@ describe('HttpsProxyAgent', function() {
 			var proxy =
 				process.env.HTTPS_PROXY ||
 				process.env.https_proxy ||
-				'https://127.0.0.1:' + sslProxyPort;
+				'https://localhost:' + sslProxyPort;
 			proxy = url.parse(proxy);
 			proxy.rejectUnauthorized = false;
 			var agent = new HttpsProxyAgent(proxy);
 
-			var opts = url.parse('https://127.0.0.1:' + sslServerPort);
+			var opts = url.parse('https://localhost:' + sslServerPort);
 			opts.agent = agent;
 			opts.rejectUnauthorized = false;
 
@@ -349,7 +344,7 @@ describe('HttpsProxyAgent', function() {
 				});
 				res.on('end', function() {
 					data = JSON.parse(data);
-					assert.equal('127.0.0.1:' + sslServerPort, data.host);
+					assert.equal('localhost:' + sslServerPort, data.host);
 					done();
 				});
 			});
@@ -363,13 +358,13 @@ describe('HttpsProxyAgent', function() {
 			var proxy =
 				process.env.HTTPS_PROXY ||
 				process.env.https_proxy ||
-				'https://127.0.0.1:' + sslProxyPort;
+				'https://localhost:' + sslProxyPort;
 			proxy = url.parse(proxy);
 			proxy.rejectUnauthorized = false;
 			var agent = new HttpsProxyAgent(proxy);
 			agent.defaultPort = sslServerPort;
 
-			var opts = url.parse('https://127.0.0.1:' + sslServerPort);
+			var opts = url.parse('https://localhost:' + sslServerPort);
 			opts.agent = agent;
 			opts.rejectUnauthorized = false;
 
@@ -381,7 +376,7 @@ describe('HttpsProxyAgent', function() {
 				});
 				res.on('end', function() {
 					data = JSON.parse(data);
-					assert.equal('127.0.0.1', data.host);
+					assert.equal('localhost', data.host);
 					done();
 				});
 			});
