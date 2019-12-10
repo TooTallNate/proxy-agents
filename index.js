@@ -170,7 +170,6 @@ HttpsProxyAgent.prototype.callback = function connect(req, opts, fn) {
 			socket = new net.Socket();
 			socket.readable = true;
 
-
 			// save a reference to the concat'd Buffer for the `onsocket` callback
 			buffers = buffered;
 

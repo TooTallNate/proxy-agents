@@ -239,12 +239,15 @@ describe('HttpsProxyAgent', function() {
 				process.env.http_proxy ||
 				'http://localhost:' + proxyPort;
 
-			const req = http.get({
-				agent: new HttpsProxyAgent(proxyUri)
-			}, function(res) {
-				assert.equal(407, res.statusCode);
-				req.abort();
-			});
+			const req = http.get(
+				{
+					agent: new HttpsProxyAgent(proxyUri)
+				},
+				function(res) {
+					assert.equal(407, res.statusCode);
+					req.abort();
+				}
+			);
 
 			req.on('abort', done);
 		});
