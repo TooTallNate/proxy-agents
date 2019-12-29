@@ -78,7 +78,16 @@ HttpsProxyAgent.prototype.callback = function connect(req, opts, fn) {
 	} else {
 		socket = net.connect(proxy);
 	}
+	
+	// when request timeouted or occured other errors,
+	// we need to close the socket which is still connecting to the proxy
+	req.on('error',onreqerror);
 
+	function onreqerror(err){
+		socket.destroy();
+		onerror(err);
+	}
+  
 	// we need to buffer any HTTP traffic that happens with the proxy before we get
 	// the CONNECT response, so that if the response is anything other than an "200"
 	// response code, then we can re-play the "data" events on the socket once the
@@ -93,6 +102,7 @@ HttpsProxyAgent.prototype.callback = function connect(req, opts, fn) {
 	}
 
 	function cleanup() {
+		req.removeListener('error', onreqerror);
 		socket.removeListener('end', onend);
 		socket.removeListener('error', onerror);
 		socket.removeListener('close', onclose);
