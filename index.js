@@ -187,6 +187,7 @@ HttpsProxyAgent.prototype.callback = function connect(req, opts, fn) {
 		// replay the "buffers" Buffer onto the `socket`, since at this point
 		// the HTTP module machinery has been hooked up for the user
 		socket.push(buffers);
+		socket.push(null);
 
 		// nullify the cached Buffer instance
 		buffers = null;
