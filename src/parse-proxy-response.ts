@@ -44,6 +44,7 @@ export default function parseProxyResponse(
 
 		function onerror(err: Error) {
 			cleanup();
+			debug('onerror %o', err);
 			reject(err);
 		}
 

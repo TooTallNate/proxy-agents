@@ -147,12 +147,13 @@ export default class HttpsProxyAgent extends Agent {
 
 			return socket;
 		} else {
-			// Some other status code that's not 200... need to re-play the HTTP header
-			// "data" events onto the socket once the HTTP machinery is attached so
-			// that the node core `http` can parse and handle the error status code
+			// Some other status code that's not 200... need to re-play the HTTP
+			// header "data" events onto the socket once the HTTP machinery is
+			// attached so that the node core `http` can parse and handle the
+			// error status code.
 
-			// the original socket is closed, and a new closed socket is
-			// returned instead, so that the proxy doesn't get the HTTP request
+			// Close the original socket, and a new "fake" socket is returned
+			// instead, so that the proxy doesn't get the HTTP request
 			// written to it (which may contain `Authorization` headers or other
 			// sensitive data).
 			//
@@ -162,13 +163,14 @@ export default class HttpsProxyAgent extends Agent {
 			const fakeSocket = new net.Socket();
 			fakeSocket.readable = true;
 
-			// need to wait for the "socket" event to re-play the "data" events
+			// Need to wait for the "socket" event to re-play the "data" events.
 			req.once('socket', (s: net.Socket) => {
 				debug('replaying proxy buffer for failed request');
 				assert(s.listenerCount('data') > 0);
 
-				// replay the "buffers" Buffer onto the `socket`, since at this point
-				// the HTTP module machinery has been hooked up for the user
+				// Replay the "buffers" Buffer onto the fake `socket`, since at
+				// this point the HTTP module machinery has been hooked up for
+				// the user.
 				s.push(Buffer.concat(buffers));
 			});
 
