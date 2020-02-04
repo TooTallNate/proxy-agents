@@ -10,7 +10,9 @@ export interface ProxyResponse {
 	leftover?: Buffer;
 }
 
-export default function parseProxyResponse(socket: Readable): Promise<ProxyResponse> {
+export default function parseProxyResponse(
+	socket: Readable
+): Promise<ProxyResponse> {
 	return new Promise((resolve, reject) => {
 		// we need to buffer any HTTP traffic that happens with the proxy before we get
 		// the CONNECT response, so that if the response is anything other than an "200"
@@ -69,7 +71,7 @@ export default function parseProxyResponse(socket: Readable): Promise<ProxyRespo
 			resolve({
 				statusCode,
 				buffers,
-				buffersLength,
+				buffersLength
 			});
 		}
 
