@@ -125,7 +125,7 @@ export default class HttpsProxyAgent extends Agent {
 
 		socket.write(`${payload}\r\n`);
 
-		const { statusCode, buffers, leftover } = await proxyResponsePromise;
+		const { statusCode, buffers, buffersLength } = await proxyResponsePromise;
 
 		if (statusCode === 200) {
 			req.once('socket', resume);
@@ -171,7 +171,8 @@ export default class HttpsProxyAgent extends Agent {
 				// Replay the "buffers" Buffer onto the fake `socket`, since at
 				// this point the HTTP module machinery has been hooked up for
 				// the user.
-				s.push(Buffer.concat(buffers));
+				s.push(Buffer.concat(buffers, buffersLength));
+				s.push(null);
 			});
 
 			return fakeSocket;

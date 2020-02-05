@@ -251,6 +251,28 @@ describe('HttpsProxyAgent', function() {
 
 			req.on('abort', done);
 		});
+		it('should emit an "end" event on the `http.IncomingMessage` if the proxy responds with non-200 status code', function(done) {
+			proxy.authenticate = function(req, fn) {
+				fn(null, false);
+			};
+
+			const proxyUri =
+				process.env.HTTP_PROXY ||
+				process.env.http_proxy ||
+				'http://localhost:' + proxyPort;
+
+			const req = http.get(
+				{
+					agent: new HttpsProxyAgent(proxyUri)
+				},
+				function(res) {
+					assert.equal(407, res.statusCode);
+
+					res.resume();
+					res.on('end', done);
+				}
+			);
+		});
 		it('should emit an "error" event on the `http.ClientRequest` if the proxy does not exist', function(done) {
 			// port 4 is a reserved, but "unassigned" port
 			let proxyUri = 'http://localhost:4';

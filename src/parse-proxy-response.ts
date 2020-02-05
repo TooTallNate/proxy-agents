@@ -7,7 +7,6 @@ export interface ProxyResponse {
 	statusCode: number;
 	buffers: Buffer[];
 	buffersLength: number;
-	leftover?: Buffer;
 }
 
 export default function parseProxyResponse(
