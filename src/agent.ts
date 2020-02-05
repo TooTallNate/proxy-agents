@@ -104,19 +104,20 @@ export default class HttpsProxyAgent extends Agent {
 
 		// Inject the `Proxy-Authorization` header if necessary.
 		if (proxy.auth) {
-			headers['Proxy-Authorization'] =
-				'Basic ' + Buffer.from(proxy.auth).toString('base64');
+			headers['Proxy-Authorization'] = `Basic ${Buffer.from(
+				proxy.auth
+			).toString('base64')}`;
 		}
 
 		// The `Host` header should only include the port
 		// number when it is not the default port.
 		let { host, port, secureEndpoint } = opts;
 		if (!isDefaultPort(port, secureEndpoint)) {
-			host += ':' + port;
+			host += `:${port}`;
 		}
-		headers['Host'] = host;
+		headers.Host = host;
 
-		headers['Connection'] = 'close';
+		headers.Connection = 'close';
 		for (const name of Object.keys(headers)) {
 			payload += `${name}: ${headers[name]}\r\n`;
 		}
@@ -125,7 +126,11 @@ export default class HttpsProxyAgent extends Agent {
 
 		socket.write(`${payload}\r\n`);
 
-		const { statusCode, buffers, buffersLength } = await proxyResponsePromise;
+		const {
+			statusCode,
+			buffers,
+			buffersLength
+		} = await proxyResponsePromise;
 
 		if (statusCode === 200) {
 			req.once('socket', resume);
@@ -146,37 +151,37 @@ export default class HttpsProxyAgent extends Agent {
 			}
 
 			return socket;
-		} else {
-			// Some other status code that's not 200... need to re-play the HTTP
-			// header "data" events onto the socket once the HTTP machinery is
-			// attached so that the node core `http` can parse and handle the
-			// error status code.
-
-			// Close the original socket, and a new "fake" socket is returned
-			// instead, so that the proxy doesn't get the HTTP request
-			// written to it (which may contain `Authorization` headers or other
-			// sensitive data).
-			//
-			// See: https://hackerone.com/reports/541502
-			socket.destroy();
-
-			const fakeSocket = new net.Socket();
-			fakeSocket.readable = true;
-
-			// Need to wait for the "socket" event to re-play the "data" events.
-			req.once('socket', (s: net.Socket) => {
-				debug('replaying proxy buffer for failed request');
-				assert(s.listenerCount('data') > 0);
-
-				// Replay the "buffers" Buffer onto the fake `socket`, since at
-				// this point the HTTP module machinery has been hooked up for
-				// the user.
-				s.push(Buffer.concat(buffers, buffersLength));
-				s.push(null);
-			});
-
-			return fakeSocket;
 		}
+
+		// Some other status code that's not 200... need to re-play the HTTP
+		// header "data" events onto the socket once the HTTP machinery is
+		// attached so that the node core `http` can parse and handle the
+		// error status code.
+
+		// Close the original socket, and a new "fake" socket is returned
+		// instead, so that the proxy doesn't get the HTTP request
+		// written to it (which may contain `Authorization` headers or other
+		// sensitive data).
+		//
+		// See: https://hackerone.com/reports/541502
+		socket.destroy();
+
+		const fakeSocket = new net.Socket();
+		fakeSocket.readable = true;
+
+		// Need to wait for the "socket" event to re-play the "data" events.
+		req.once('socket', (s: net.Socket) => {
+			debug('replaying proxy buffer for failed request');
+			assert(s.listenerCount('data') > 0);
+
+			// Replay the "buffers" Buffer onto the fake `socket`, since at
+			// this point the HTTP module machinery has been hooked up for
+			// the user.
+			s.push(Buffer.concat(buffers, buffersLength));
+			s.push(null);
+		});
+
+		return fakeSocket;
 	}
 }
 
