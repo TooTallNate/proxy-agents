@@ -259,7 +259,7 @@ describe('HttpsProxyAgent', function() {
 			const proxyUri =
 				process.env.HTTP_PROXY ||
 				process.env.http_proxy ||
-				'http://localhost:' + proxyPort;
+				`http://localhost:${proxyPort}`;
 
 			const req = http.get(
 				{
