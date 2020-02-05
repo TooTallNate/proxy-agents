@@ -5,8 +5,7 @@ const debug = createDebug('https-proxy-agent:parse-proxy-response');
 
 export interface ProxyResponse {
 	statusCode: number;
-	buffers: Buffer[];
-	buffersLength: number;
+	buffered: Buffer;
 }
 
 export default function parseProxyResponse(
@@ -70,8 +69,7 @@ export default function parseProxyResponse(
 			debug('got proxy server response: %o', firstLine);
 			resolve({
 				statusCode,
-				buffers,
-				buffersLength
+				buffered
 			});
 		}
 
