@@ -27,7 +27,8 @@ const debug = createDebug('https-proxy-agent:agent');
 export default class HttpsProxyAgent extends Agent {
 	private secureProxy: boolean;
 	private proxy: HttpsProxyAgentOptions;
-
+	public timeout: number | null
+	
 	constructor(_opts: string | HttpsProxyAgentOptions) {
 		let opts: HttpsProxyAgentOptions;
 		if (typeof _opts === 'string') {
@@ -42,6 +43,8 @@ export default class HttpsProxyAgent extends Agent {
 		}
 		debug('creating new HttpsProxyAgent instance: %o', opts);
 		super(opts);
+
+		this.timeout = opts.timeout || null;
 
 		const proxy: HttpsProxyAgentOptions = { ...opts };
 
@@ -96,6 +99,14 @@ export default class HttpsProxyAgent extends Agent {
 		} else {
 			debug('Creating `net.Socket`: %o', proxy);
 			socket = net.connect(proxy as net.NetConnectOpts);
+		}
+
+		if (this.timeout) {
+			socket.setTimeout(this.timeout);
+
+			socket.on('timeout', () => {
+				socket.end();
+			});
 		}
 
 		const headers: OutgoingHttpHeaders = { ...proxy.headers };

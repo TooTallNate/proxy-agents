@@ -18,6 +18,7 @@ namespace createHttpsProxyAgent {
 		host?: string | null;
 		path?: string | null;
 		port?: string | number | null;
+		timeout?: number;
 	}
 
 	export interface HttpsProxyAgentOptions
