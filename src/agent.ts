@@ -27,7 +27,7 @@ const debug = createDebug('https-proxy-agent:agent');
 export default class HttpsProxyAgent extends Agent {
 	private secureProxy: boolean;
 	private proxy: HttpsProxyAgentOptions;
-	public timeout: number | null
+	public timeout: number | null;
 	
 	constructor(_opts: string | HttpsProxyAgentOptions) {
 		let opts: HttpsProxyAgentOptions;
