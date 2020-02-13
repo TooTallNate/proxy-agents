@@ -135,13 +135,10 @@ export default class HttpsProxyAgent extends Agent {
 			req.once('socket', resume);
 
 			if (opts.secureEndpoint) {
-				const servername = opts.servername || opts.host;
-				if (!servername) {
-					throw new Error('Could not determine "servername"');
-				}
 				// The proxy is connecting to a TLS server, so upgrade
 				// this socket connection to a TLS connection.
 				debug('Upgrading socket connection to TLS');
+				const servername = opts.servername || opts.host;
 				return tls.connect({
 					...omit(opts, 'host', 'hostname', 'path', 'port'),
 					socket,
