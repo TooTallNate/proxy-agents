@@ -15,6 +15,7 @@ namespace createHttpsProxyAgent {
 	interface BaseHttpsProxyAgentOptions {
 		headers?: OutgoingHttpHeaders;
 		secureProxy?: boolean;
+		connectHost?: string | null;
 		host?: string | null;
 		path?: string | null;
 		port?: string | number | null;

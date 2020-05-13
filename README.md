@@ -104,6 +104,7 @@ The `options` argument may either be a string URI of the proxy server to use, or
   * `host` - String - Proxy host to connect to (may use `hostname` as well). Required.
   * `port` - Number - Proxy port to connect to. Required.
   * `protocol` - String - If `https:`, then use TLS to connect to the proxy.
+  * `connectHost` - String - Overridden host to be sent on the HTTP CONNECT method. 
   * `headers` - Object - Additional HTTP headers to be sent on the HTTP CONNECT method.
   * Any other options given are passed to the `net.connect()`/`tls.connect()` functions.
 
