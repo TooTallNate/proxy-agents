@@ -162,7 +162,7 @@ export default class HttpsProxyAgent extends Agent {
 		// See: https://hackerone.com/reports/541502
 		socket.destroy();
 
-		const fakeSocket = new net.Socket();
+		const fakeSocket = new net.Socket({ writable: false });
 		fakeSocket.readable = true;
 
 		// Need to wait for the "socket" event to re-play the "data" events.
