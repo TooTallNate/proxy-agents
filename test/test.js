@@ -44,8 +44,8 @@ describe('HttpsProxyAgent', function() {
 	before(function(done) {
 		// setup target HTTPS server
 		let options = {
-			key: fs.readFileSync(`${__dirname}/ssl-cert-snakeoil.key`),
-			cert: fs.readFileSync(`${__dirname}/ssl-cert-snakeoil.pem`)
+			key: fs.readFileSync(`${__dirname}/server.key`),
+			cert: fs.readFileSync(`${__dirname}/server.pem`),
 		};
 		sslServer = https.createServer(options);
 		sslServer.listen(function() {
@@ -57,8 +57,8 @@ describe('HttpsProxyAgent', function() {
 	before(function(done) {
 		// setup SSL HTTP proxy server
 		let options = {
-			key: fs.readFileSync(`${__dirname}/ssl-cert-snakeoil.key`),
-			cert: fs.readFileSync(`${__dirname}/ssl-cert-snakeoil.pem`)
+			key: fs.readFileSync(`${__dirname}/server.key`),
+			cert: fs.readFileSync(`${__dirname}/server.pem`)
 		};
 		sslProxy = Proxy(https.createServer(options));
 		sslProxy.listen(function() {
@@ -174,6 +174,39 @@ describe('HttpsProxyAgent', function() {
 				});
 			});
 			req.once('error', done);
+		});
+		it('should work over an HTTP proxy with certs', function(done) {
+			sslServer.once('request', function(req, res) {
+				res.end(JSON.stringify(req.headers));
+			});
+
+			let proxy =
+				process.env.HTTPS_PROXY ||
+				process.env.https_proxy ||
+				`http://localhost:${proxyPort}`;
+			proxy = url.parse(proxy);
+			proxy.rejectUnauthorized = false;
+
+			let agent = new HttpsProxyAgent({
+				...proxy,
+				ca: fs.readFileSync(`${__dirname}/cacert.pem`),
+			});
+
+			let opts = url.parse(`https://localhost:${sslServerPort}`);
+			opts.agent = agent;
+
+			https.get(opts, function(res) {
+				let data = '';
+				res.setEncoding('utf8');
+				res.on('data', function(b) {
+					data += b;
+				});
+				res.on('end', function() {
+					data = JSON.parse(data);
+					assert.equal(`localhost:${sslServerPort}`, data.host);
+					done();
+				});
+			});
 		});
 		it('should work over an HTTPS proxy', function(done) {
 			server.once('request', function(req, res) {
