@@ -187,10 +187,9 @@ describe('HttpsProxyAgent', function() {
 			proxy = url.parse(proxy);
 			proxy.rejectUnauthorized = false;
 
-			let agent = new HttpsProxyAgent({
-				...proxy,
-				ca: fs.readFileSync(`${__dirname}/cacert.pem`),
-			});
+			let agent = new HttpsProxyAgent(Object.assign({}, proxy, {
+				ca: fs.readFileSync(`${__dirname}/cacert.pem`)
+			}));
 
 			let opts = url.parse(`https://localhost:${sslServerPort}`);
 			opts.agent = agent;
