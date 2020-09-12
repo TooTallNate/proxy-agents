@@ -117,7 +117,7 @@ export default class HttpsProxyAgent extends Agent {
 		}
 		headers.Host = host;
 
-		headers.Connection = 'close';
+		headers.Connection = headers.Connection || 'close';
 		for (const name of Object.keys(headers)) {
 			payload += `${name}: ${headers[name]}\r\n`;
 		}

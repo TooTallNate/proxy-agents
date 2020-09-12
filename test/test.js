@@ -312,6 +312,30 @@ describe('HttpsProxyAgent', function() {
 
 			http.get(opts);
 		});
+
+		it('should allow set custom Connection header', function(done) {
+			server.once('connect', function(req, socket, head) {
+				assert.equal('CONNECT', req.method);
+				assert.equal('Keep-Alive', req.headers.connection);
+				socket.destroy();
+				done();
+			});
+
+			let uri = `http://localhost:${serverPort}`;
+			let proxyOpts = url.parse(uri);
+			proxyOpts.headers = {
+				Connection: 'Keep-Alive'
+			};
+			let agent = new HttpsProxyAgent(proxyOpts);
+
+			let opts = {};
+			// `host` and `port` don't really matter since the proxy will reject anyways
+			opts.host = 'localhost';
+			opts.port = 80;
+			opts.agent = agent;
+
+			http.get(opts);
+		});
 	});
 
 	describe('"https" module', function() {
