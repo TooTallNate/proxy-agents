@@ -39,7 +39,7 @@ export default function parseProxyResponse(
 
 		function onend() {
 			debug('onend');
-			reject(null);
+			reject(new Error('Socket was closed by other party!'));
 		}
 
 		function onerror(err: Error) {
