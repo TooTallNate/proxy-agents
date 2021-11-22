@@ -3,7 +3,7 @@
   "version": "5.0.0",
   "description": "An HTTP(s) proxy `http.Agent` implementation for HTTPS",
   "main": "dist/index",
-  "types": "dist/index",
+  "types": "dist/index.d.ts",
   "files": [
     "dist"
   ],
