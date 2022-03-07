@@ -109,15 +109,9 @@ export default class HttpsProxyAgent extends Agent {
 			).toString('base64')}`;
 		}
 
-		// The `Host` header should only include the port
-		// number when it is not the default port.
-		let { host, port, secureEndpoint } = opts;
-		if (!isDefaultPort(port, secureEndpoint)) {
-			host += `:${port}`;
-		}
-		headers.Host = host;
-
+		headers.Host = hostname;
 		headers.Connection = 'close';
+
 		for (const name of Object.keys(headers)) {
 			payload += `${name}: ${headers[name]}\r\n`;
 		}
