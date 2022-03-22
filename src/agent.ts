@@ -1,5 +1,5 @@
-import net from 'net';
-import tls from 'tls';
+import * as net from 'net';
+import * as tls from 'tls';
 import url from 'url';
 import assert from 'assert';
 import createDebug from 'debug';

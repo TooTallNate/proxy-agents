@@ -1,5 +1,5 @@
-import net from 'net';
-import tls from 'tls';
+import * as net from 'net';
+import * as tls from 'tls';
 import { Url } from 'url';
 import { AgentOptions } from 'agent-base';
 import { OutgoingHttpHeaders } from 'http';
