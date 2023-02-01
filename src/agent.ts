@@ -5,6 +5,7 @@ import assert from 'assert';
 import createDebug from 'debug';
 import { OutgoingHttpHeaders } from 'http';
 import { Agent, ClientRequest, RequestOptions } from 'agent-base';
+import ip from 'ip-regex';
 import { HttpsProxyAgentOptions } from '.';
 import parseProxyResponse from './parse-proxy-response';
 
@@ -98,8 +99,12 @@ export default class HttpsProxyAgent extends Agent {
 			socket = net.connect(proxy as net.NetConnectOpts);
 		}
 
+		let { host, port, secureEndpoint } = opts;
 		const headers: OutgoingHttpHeaders = { ...proxy.headers };
-		const hostname = `${opts.host}:${opts.port}`;
+		if (isUnbracketedIPv6(host)) {
+			host = `[${host}]`;
+		}
+		const hostname = `${host}:${opts.port}`;
 		let payload = `CONNECT ${hostname} HTTP/1.1\r\n`;
 
 		// Inject the `Proxy-Authorization` header if necessary.
@@ -111,7 +116,6 @@ export default class HttpsProxyAgent extends Agent {
 
 		// The `Host` header should only include the port
 		// number when it is not the default port.
-		let { host, port, secureEndpoint } = opts;
 		if (!isDefaultPort(port, secureEndpoint)) {
 			host += `:${port}`;
 		}
@@ -191,6 +195,10 @@ function isDefaultPort(port: number, secure: boolean): boolean {
 
 function isHTTPS(protocol?: string | null): boolean {
 	return typeof protocol === 'string' ? /^https:?$/i.test(protocol) : false;
+}
+
+function isUnbracketedIPv6(host?: string | null): boolean {
+	return host != null && ip.v6({exact: false}).test(host) && !/^\[.*\]$/.test(host);
 }
 
 function omit<T extends object, K extends [...(keyof T)[]]>(
