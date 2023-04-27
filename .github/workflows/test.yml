@@ -26,3 +26,21 @@ jobs:
     - run: pnpm install --frozen-lockfile
     - run: pnpm build
     - run: pnpm test
+
+  lint:
+    name: Lint
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: pnpm/action-setup@v2
+      with:
+        version: 7.32.2
+    - name: Use Node.js 20.x
+      uses: actions/setup-node@v3
+      with:
+        node-version: 20.x
+        cache: 'pnpm'
+    - run: pnpm install --frozen-lockfile
+    - run: pnpm lint
