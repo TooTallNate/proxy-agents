@@ -1,0 +1,47 @@
+{
+  "name": "data-uri-to-buffer",
+  "version": "4.0.1",
+  "description": "Generate a Buffer instance from a Data URI string",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "jest --env node --verbose --bail",
+    "lint": "eslint . --ext .ts",
+    "prepublishOnly": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/TooTallNate/node-data-uri-to-buffer.git"
+  },
+  "engines": {
+    "node": ">= 14"
+  },
+  "keywords": [
+    "data",
+    "uri",
+    "datauri",
+    "data-uri",
+    "buffer",
+    "convert",
+    "rfc2397",
+    "2397"
+  ],
+  "author": "Nathan Rajlich <nathan@tootallnate.net> (http://n8.io/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/TooTallNate/node-data-uri-to-buffer/issues"
+  },
+  "homepage": "https://github.com/TooTallNate/node-data-uri-to-buffer",
+  "devDependencies": {
+    "@types/jest": "^27.0.2",
+    "@types/node": "^14.18.43",
+    "jest": "^29.5.0",
+    "ts-jest": "^29.1.0",
+    "tsconfig": "workspace:*",
+    "typescript": "^5.0.4"
+  }
+}

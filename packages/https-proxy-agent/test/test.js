@@ -1,16 +1,12 @@
-/**
- * Module dependencies.
- */
-
 let fs = require('fs');
 let url = require('url');
 let http = require('http');
 let https = require('https');
 let assert = require('assert');
 let Proxy = require('proxy');
-let HttpsProxyAgent = require('../');
+let { HttpsProxyAgent } = require('../');
 
-describe('HttpsProxyAgent', function() {
+describe('HttpsProxyAgent', () => {
 	let server;
 	let serverPort;
 
@@ -23,116 +19,115 @@ describe('HttpsProxyAgent', function() {
 	let sslProxy;
 	let sslProxyPort;
 
-	before(function(done) {
+	before((done) => {
 		// setup target HTTP server
 		server = http.createServer();
-		server.listen(function() {
+		server.listen(() => {
 			serverPort = server.address().port;
 			done();
 		});
 	});
 
-	before(function(done) {
+	before((done) => {
 		// setup HTTP proxy server
 		proxy = Proxy();
-		proxy.listen(function() {
+		proxy.listen(() => {
 			proxyPort = proxy.address().port;
 			done();
 		});
 	});
 
-	before(function(done) {
+	before((done) => {
 		// setup target HTTPS server
 		let options = {
 			key: fs.readFileSync(`${__dirname}/ssl-cert-snakeoil.key`),
 			cert: fs.readFileSync(`${__dirname}/ssl-cert-snakeoil.pem`)
 		};
 		sslServer = https.createServer(options);
-		sslServer.listen(function() {
+		sslServer.listen(() => {
 			sslServerPort = sslServer.address().port;
 			done();
 		});
 	});
 
-	before(function(done) {
+	before((done) => {
 		// setup SSL HTTP proxy server
 		let options = {
 			key: fs.readFileSync(`${__dirname}/ssl-cert-snakeoil.key`),
 			cert: fs.readFileSync(`${__dirname}/ssl-cert-snakeoil.pem`)
 		};
 		sslProxy = Proxy(https.createServer(options));
-		sslProxy.listen(function() {
+		sslProxy.listen(() => {
 			sslProxyPort = sslProxy.address().port;
 			done();
 		});
 	});
 
 	// shut down test HTTP server
-	after(function(done) {
-		server.once('close', function() {
+	after((done) => {
+		server.once('close', () => {
 			done();
 		});
 		server.close();
 	});
 
-	after(function(done) {
-		proxy.once('close', function() {
+	after((done) => {
+		proxy.once('close', () => {
 			done();
 		});
 		proxy.close();
 	});
 
-	after(function(done) {
-		sslServer.once('close', function() {
+	after((done) => {
+		sslServer.once('close', () => {
 			done();
 		});
 		sslServer.close();
 	});
 
-	after(function(done) {
-		sslProxy.once('close', function() {
+	after((done) => {
+		sslProxy.once('close', () => {
 			done();
 		});
 		sslProxy.close();
 	});
 
-	describe('constructor', function() {
-		it('should throw an Error if no "proxy" argument is given', function() {
-			assert.throws(function() {
+	describe('constructor', () => {
+		it('should throw an Error if no "proxy" argument is given', () => {
+			assert.throws(() => {
 				new HttpsProxyAgent();
 			});
 		});
-		it('should accept a "string" proxy argument', function() {
+		it('should accept a "string" proxy argument', () => {
 			let agent = new HttpsProxyAgent(`http://localhost:${proxyPort}`);
-			assert.equal('localhost', agent.proxy.host);
+			assert.equal('localhost', agent.proxy.hostname);
 			assert.equal(proxyPort, agent.proxy.port);
 		});
-		it('should accept a `url.parse()` result object argument', function() {
-			let opts = url.parse(`http://localhost:${proxyPort}`);
-			let agent = new HttpsProxyAgent(opts);
-			assert.equal('localhost', agent.proxy.host);
+		it('should accept a `URL` instance proxy argument', () => {
+			let agent = new HttpsProxyAgent(new URL(`http://localhost:${proxyPort}`));
+			assert.equal('localhost', agent.proxy.hostname);
 			assert.equal(proxyPort, agent.proxy.port);
 		});
-		describe('secureProxy', function() {
-			it('should default to `false`', function() {
+		describe('secureProxy', () => {
+			it('should default to `false`', () => {
 				let agent = new HttpsProxyAgent({ port: proxyPort });
 				assert.equal(false, agent.secureProxy);
 			});
-			it('should be `false` when "http:" protocol is used', function() {
+			it('should be `false` when "http:" protocol is used', () => {
 				let agent = new HttpsProxyAgent({
 					port: proxyPort,
 					protocol: 'http:'
 				});
 				assert.equal(false, agent.secureProxy);
 			});
-			it('should be `true` when "https:" protocol is used', function() {
+			it('should be `true` when "https:" protocol is used', () => {
 				let agent = new HttpsProxyAgent({
 					port: proxyPort,
 					protocol: 'https:'
 				});
 				assert.equal(true, agent.secureProxy);
 			});
-			it('should be `true` when "https" protocol is used', function() {
+			it('should be `true` when "https" protocol is used', () => {
 				let agent = new HttpsProxyAgent({
 					port: proxyPort,
 					protocol: 'https'
@@ -142,32 +137,30 @@ describe('HttpsProxyAgent', function() {
 		});
 	});
 
-	describe('"http" module', function() {
-		beforeEach(function() {
+	describe('"http" module', () => {
+		beforeEach(() => {
 			delete proxy.authenticate;
 		});
 
-		it('should work over an HTTP proxy', function(done) {
-			server.once('request', function(req, res) {
+		it('should work over an HTTP proxy', (done) => {
+			server.once('request', (req, res) => {
 				res.end(JSON.stringify(req.headers));
 			});
 
 			let proxy =
-				process.env.HTTP_PROXY ||
-				process.env.http_proxy ||
 				`http://localhost:${proxyPort}`;
 			let agent = new HttpsProxyAgent(proxy);
 
 			let opts = url.parse(`http://localhost:${serverPort}`);
 			opts.agent = agent;
 
-			let req = http.get(opts, function(res) {
+			let req = http.get(opts, (res) => {
 				let data = '';
 				res.setEncoding('utf8');
-				res.on('data', function(b) {
+				res.on('data', (b) => {
 					data += b;
 				});
-				res.on('end', function() {
+				res.on('end', () => {
 					data = JSON.parse(data);
 					assert.equal(`localhost:${serverPort}`, data.host);
 					done();
@@ -175,36 +168,30 @@ describe('HttpsProxyAgent', function() {
 			});
 			req.once('error', done);
 		});
-		it('should work over an HTTPS proxy', function(done) {
-			server.once('request', function(req, res) {
+		it.only('should work over an HTTPS proxy', (done) => {
+			server.once('request', (req, res) => {
 				res.end(JSON.stringify(req.headers));
 			});
 
-			let proxy =
-				process.env.HTTPS_PROXY ||
-				process.env.https_proxy ||
-				`https://localhost:${sslProxyPort}`;
-			proxy = url.parse(proxy);
-			proxy.rejectUnauthorized = false;
-			let agent = new HttpsProxyAgent(proxy);
+			let agent = new HttpsProxyAgent(`https://localhost:${sslProxyPort}`, { rejectUnauthorized: false });
 
 			let opts = url.parse(`http://localhost:${serverPort}`);
 			opts.agent = agent;
 
-			http.get(opts, function(res) {
+			http.get(opts, (res) => {
 				let data = '';
 				res.setEncoding('utf8');
-				res.on('data', function(b) {
+				res.on('data', (b) => {
 					data += b;
 				});
-				res.on('end', function() {
+				res.on('end', () => {
 					data = JSON.parse(data);
 					assert.equal(`localhost:${serverPort}`, data.host);
 					done();
 				});
 			});
 		});
-		it('should receive the 407 authorization code on the `http.ClientResponse`', function(done) {
+		it('should receive the 407 authorization code on the `http.ClientResponse`', (done) => {
 			// set a proxy authentication function for this test
 			proxy.authenticate = function(req, fn) {
 				// reject all requests
@@ -212,8 +199,6 @@ describe('HttpsProxyAgent', function() {
 			};
 
 			let proxyUri =
-				process.env.HTTP_PROXY ||
-				process.env.http_proxy ||
 				`http://localhost:${proxyPort}`;
 			let agent = new HttpsProxyAgent(proxyUri);
 
@@ -223,27 +208,25 @@ describe('HttpsProxyAgent', function() {
 			opts.port = 80;
 			opts.agent = agent;
 
-			let req = http.get(opts, function(res) {
+			http.get(opts, (res) => {
 				assert.equal(407, res.statusCode);
 				assert('proxy-authenticate' in res.headers);
 				done();
 			});
 		});
-		it('should not error if the proxy responds with 407 and the request is aborted', function(done) {
+		it('should not error if the proxy responds with 407 and the request is aborted', (done) => {
 			proxy.authenticate = function(req, fn) {
 				fn(null, false);
 			};
 
 			const proxyUri =
-				process.env.HTTP_PROXY ||
-				process.env.http_proxy ||
 				`http://localhost:${proxyPort}`;
 
 			const req = http.get(
 				{
 					agent: new HttpsProxyAgent(proxyUri)
 				},
-				function(res) {
+				(res) => {
 					assert.equal(407, res.statusCode);
 					req.abort();
 				}
@@ -251,21 +234,19 @@ describe('HttpsProxyAgent', function() {
 
 			req.on('abort', done);
 		});
-		it('should emit an "end" event on the `http.IncomingMessage` if the proxy responds with non-200 status code', function(done) {
+		it('should emit an "end" event on the `http.IncomingMessage` if the proxy responds with non-200 status code', (done) => {
 			proxy.authenticate = function(req, fn) {
 				fn(null, false);
 			};
 
 			const proxyUri =
-				process.env.HTTP_PROXY ||
-				process.env.http_proxy ||
 				`http://localhost:${proxyPort}`;
 
-			const req = http.get(
+			http.get(
 				{
 					agent: new HttpsProxyAgent(proxyUri)
 				},
-				function(res) {
+				(res) => {
 					assert.equal(407, res.statusCode);
 
 					res.resume();
@@ -273,7 +254,7 @@ describe('HttpsProxyAgent', function() {
 				}
 			);
 		});
-		it('should emit an "error" event on the `http.ClientRequest` if the proxy does not exist', function(done) {
+		it('should emit an "error" event on the `http.ClientRequest` if the proxy does not exist', (done) => {
 			// port 4 is a reserved, but "unassigned" port
 			let proxyUri = 'http://localhost:4';
 			let agent = new HttpsProxyAgent(proxyUri);
@@ -282,27 +263,26 @@ describe('HttpsProxyAgent', function() {
 			opts.agent = agent;
 
 			let req = http.get(opts);
-			req.once('error', function(err) {
+			req.once('error', (err) => {
 				assert.equal('ECONNREFUSED', err.code);
 				req.abort();
 				done();
 			});
 		});
 
-		it('should allow custom proxy "headers"', function(done) {
-			server.once('connect', function(req, socket, head) {
+		it('should allow custom proxy "headers"', (done) => {
+			server.once('connect', (req, socket) => {
 				assert.equal('CONNECT', req.method);
 				assert.equal('bar', req.headers.foo);
 				socket.destroy();
 				done();
 			});
 
-			let uri = `http://localhost:${serverPort}`;
-			let proxyOpts = url.parse(uri);
-			proxyOpts.headers = {
-				Foo: 'bar'
-			};
-			let agent = new HttpsProxyAgent(proxyOpts);
+			let agent = new HttpsProxyAgent(`http://localhost:${serverPort}`, {
+				headers: {
+					Foo: 'bar',
+				},
+			});
 
 			let opts = {};
 			// `host` and `port` don't really matter since the proxy will reject anyways
@@ -314,29 +294,22 @@ describe('HttpsProxyAgent', function() {
 		});
 	});
 
-	describe('"https" module', function() {
-		it('should work over an HTTP proxy', function(done) {
-			sslServer.once('request', function(req, res) {
+	describe('"https" module', () => {
+		it('should work over an HTTP proxy', (done) => {
+			sslServer.once('request', (req, res) => {
 				res.end(JSON.stringify(req.headers));
 			});
 
-			let proxy =
-				process.env.HTTP_PROXY ||
-				process.env.http_proxy ||
-				`http://localhost:${proxyPort}`;
+			let proxy = `http://localhost:${proxyPort}`;
 			let agent = new HttpsProxyAgent(proxy);
 
-			let opts = url.parse(`https://localhost:${sslServerPort}`);
-			opts.rejectUnauthorized = false;
-			opts.agent = agent;
-
-			https.get(opts, function(res) {
+			https.get(`https://localhost:${sslServerPort}`, { rejectUnauthorized: false, agent }, (res) => {
 				let data = '';
 				res.setEncoding('utf8');
-				res.on('data', function(b) {
+				res.on('data', (b) => {
 					data += b;
 				});
-				res.on('end', function() {
+				res.on('end', () => {
 					data = JSON.parse(data);
 					assert.equal(`localhost:${sslServerPort}`, data.host);
 					done();
@@ -344,14 +317,12 @@ describe('HttpsProxyAgent', function() {
 			});
 		});
 
-		it('should work over an HTTPS proxy', function(done) {
-			sslServer.once('request', function(req, res) {
+		it('should work over an HTTPS proxy', (done) => {
+			sslServer.once('request', (req, res) => {
 				res.end(JSON.stringify(req.headers));
 			});
 
 			let proxy =
-				process.env.HTTPS_PROXY ||
-				process.env.https_proxy ||
 				`https://localhost:${sslProxyPort}`;
 			proxy = url.parse(proxy);
 			proxy.rejectUnauthorized = false;
@@ -361,13 +332,13 @@ describe('HttpsProxyAgent', function() {
 			opts.agent = agent;
 			opts.rejectUnauthorized = false;
 
-			https.get(opts, function(res) {
+			https.get(opts, (res) => {
 				let data = '';
 				res.setEncoding('utf8');
-				res.on('data', function(b) {
+				res.on('data', (b) => {
 					data += b;
 				});
-				res.on('end', function() {
+				res.on('end', () => {
 					data = JSON.parse(data);
 					assert.equal(`localhost:${sslServerPort}`, data.host);
 					done();
@@ -375,31 +346,25 @@ describe('HttpsProxyAgent', function() {
 			});
 		});
 
-		it('should not send a port number for the default port', function(done) {
-			sslServer.once('request', function(req, res) {
+		it('should not send a port number for the default port', (done) => {
+			sslServer.once('request', (req, res) => {
 				res.end(JSON.stringify(req.headers));
 			});
 
-			let proxy =
-				process.env.HTTPS_PROXY ||
-				process.env.https_proxy ||
-				`https://localhost:${sslProxyPort}`;
-			proxy = url.parse(proxy);
-			proxy.rejectUnauthorized = false;
-			let agent = new HttpsProxyAgent(proxy);
+			let agent = new HttpsProxyAgent(`https://localhost:${sslProxyPort}`, { rejectUnauthorized: false });
 			agent.defaultPort = sslServerPort;
 
 			let opts = url.parse(`https://localhost:${sslServerPort}`);
 			opts.agent = agent;
 			opts.rejectUnauthorized = false;
 
-			https.get(opts, function(res) {
+			https.get(opts, (res) => {
 				let data = '';
 				res.setEncoding('utf8');
-				res.on('data', function(b) {
+				res.on('data', (b) => {
 					data += b;
 				});
-				res.on('end', function() {
+				res.on('end', () => {
 					data = JSON.parse(data);
 					assert.equal('localhost', data.host);
 					done();

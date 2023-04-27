@@ -8,10 +8,9 @@
     "dist"
   ],
   "scripts": {
-    "prebuild": "rimraf dist",
     "build": "tsc",
     "test": "mocha --reporter spec",
-    "test-lint": "eslint src --ext .js,.ts",
+    "lint": "eslint src --ext .js,.ts",
     "prepublishOnly": "npm run build"
   },
   "repository": {
@@ -30,27 +29,18 @@
     "url": "https://github.com/TooTallNate/node-https-proxy-agent/issues"
   },
   "dependencies": {
-    "agent-base": "6",
+    "agent-base": "^6.0.2",
     "debug": "4"
   },
   "devDependencies": {
     "@types/debug": "4",
-    "@types/node": "^12.12.11",
-    "@typescript-eslint/eslint-plugin": "1.6.0",
-    "@typescript-eslint/parser": "1.1.0",
-    "eslint": "5.16.0",
-    "eslint-config-airbnb": "17.1.0",
-    "eslint-config-prettier": "4.1.0",
-    "eslint-import-resolver-typescript": "1.1.1",
-    "eslint-plugin-import": "2.16.0",
-    "eslint-plugin-jsx-a11y": "6.2.1",
-    "eslint-plugin-react": "7.12.4",
+    "@types/node": "^14.18.43",
     "mocha": "^6.2.2",
     "proxy": "1",
-    "rimraf": "^3.0.0",
-    "typescript": "^3.5.3"
+    "tsconfig": "workspace:*",
+    "typescript": "^5.0.4"
   },
   "engines": {
-    "node": ">= 6"
+    "node": ">= 14"
   }
 }
