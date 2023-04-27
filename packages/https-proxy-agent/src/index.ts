@@ -39,7 +39,7 @@ export class HttpsProxyAgent extends Agent {
 		super();
 		this.proxy = typeof proxy === 'string' ? new URL(proxy) : proxy;
 		this.proxyHeaders = opts?.headers ?? {};
-		debug('creating new HttpsProxyAgent instance: %o', opts);
+		debug('creating new HttpsProxyAgent instance: %o', this.proxy.href);
 
 		const host = this.proxy.hostname || this.proxy.host;
 		const port = this.proxy.port
@@ -52,12 +52,6 @@ export class HttpsProxyAgent extends Agent {
 			host,
 			port,
 		};
-
-		// ALPN is supported by Node.js >= v5.
-		// attempt to negotiate http/1.1 for proxy servers that support http/2
-		if (this.secureProxy && !('ALPNProtocols' in this.connectOpts)) {
-			this.connectOpts.ALPNProtocols = ['http 1.1'];
-		}
 	}
 
 	/**

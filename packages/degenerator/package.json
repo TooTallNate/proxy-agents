@@ -19,7 +19,7 @@
     "url": "git://github.com/TooTallNate/node-degenerator.git"
   },
   "engines": {
-    "node": ">= 6"
+    "node": ">= 14"
   },
   "license": "MIT",
   "dependencies": {

@@ -149,25 +149,19 @@ describe('PacProxyAgent', function () {
 
 	describe('constructor', function () {
 		it('should throw an Error if no "proxy" argument is given', function () {
-			assert.throws(function () {
+			assert.throws(() => {
 				new PacProxyAgent();
 			});
 		});
 		it('should accept a "string" proxy argument', function () {
 			let agent = new PacProxyAgent('pac+ftp://example.com/proxy.pac');
-			assert.equal('ftp://example.com/proxy.pac', agent.uri);
+			assert.equal('ftp://example.com/proxy.pac', agent.uri.href);
 		});
 		it('should accept a `URL` instance proxy argument', function () {
 			let agent = new PacProxyAgent(
 				new URL('pac+ftp://example.com/proxy.pac')
 			);
-			assert.equal('ftp://example.com/proxy.pac', agent.uri);
-		});
-		it('should accept a `uri` on the options object', function () {
-			let agent = new PacProxyAgent({
-				uri: 'pac+ftp://example.com/proxy.pac',
-			});
-			assert.equal('ftp://example.com/proxy.pac', agent.uri);
+			assert.equal('ftp://example.com/proxy.pac', agent.uri.href);
 		});
 	});
 
@@ -213,9 +207,7 @@ describe('PacProxyAgent', function () {
 			let uri = `data:,${encodeURIComponent(
 				FindProxyForURL.toString().replace('PORT', proxyHttpsPort)
 			)}`;
-			let proxy = url.parse(uri);
-			proxy.rejectUnauthorized = false;
-			let agent = new PacProxyAgent(proxy);
+			let agent = new PacProxyAgent(uri, { rejectUnauthorized: false });
 
 			let opts = url.parse(`http://localhost:${httpPort}/test`);
 			opts.agent = agent;

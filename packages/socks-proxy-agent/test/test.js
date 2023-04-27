@@ -24,7 +24,7 @@ describe('SocksProxyAgent', function () {
 
 	before(function (done) {
 		// setup SOCKS proxy server
-		socksServer = socks.createServer(function (info, accept, deny) {
+		socksServer = socks.createServer(function (_info, accept) {
 			accept();
 		});
 		socksServer.listen(0, '127.0.0.1', function () {
@@ -118,7 +118,7 @@ describe('SocksProxyAgent', function () {
 				headers: { foo: 'bar' },
 			};
 
-			const req = http.get(opts, function () {});
+			const req = http.get(opts);
 
 			req.once('error', (err) => {
 				assert.equal(err.message, 'socket hang up');
@@ -245,7 +245,7 @@ describe('SocksProxyAgent', function () {
 			);
 			opts.agent = agent;
 
-			opts.lookup = (hostname, opts, callback) => {
+			opts.lookup = (hostname, _opts, callback) => {
 				if (hostname === 'non-existent-domain.test')
 					callback(null, '127.0.0.1');
 				else callback(new Error('Bad domain'));
@@ -253,10 +253,7 @@ describe('SocksProxyAgent', function () {
 
 			let req = http.get(opts, function (res) {
 				assert.equal(404, res.statusCode);
-				getRawBody(res, 'utf8', function (err, buf) {
-					if (err) return done(err);
-					done();
-				});
+				done();
 			});
 			req.once('error', done);
 		});

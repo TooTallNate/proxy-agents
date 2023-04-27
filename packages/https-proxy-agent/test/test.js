@@ -169,7 +169,7 @@ describe('HttpsProxyAgent', () => {
 			});
 			req.once('error', done);
 		});
-		it.only('should work over an HTTPS proxy', (done) => {
+		it('should work over an HTTPS proxy', (done) => {
 			server.once('request', (req, res) => {
 				res.end(JSON.stringify(req.headers));
 			});
@@ -328,26 +328,26 @@ describe('HttpsProxyAgent', () => {
 			});
 
 			let proxy = `https://localhost:${sslProxyPort}`;
-			proxy = url.parse(proxy);
-			proxy.rejectUnauthorized = false;
-			let agent = new HttpsProxyAgent(proxy);
-
-			let opts = url.parse(`https://localhost:${sslServerPort}`);
-			opts.agent = agent;
-			opts.rejectUnauthorized = false;
-
-			https.get(opts, (res) => {
-				let data = '';
-				res.setEncoding('utf8');
-				res.on('data', (b) => {
-					data += b;
-				});
-				res.on('end', () => {
-					data = JSON.parse(data);
-					assert.equal(`localhost:${sslServerPort}`, data.host);
-					done();
-				});
+			let agent = new HttpsProxyAgent(proxy, {
+				rejectUnauthorized: false,
 			});
+
+			https.get(
+				`https://localhost:${sslServerPort}`,
+				{ agent, rejectUnauthorized: false },
+				(res) => {
+					let data = '';
+					res.setEncoding('utf8');
+					res.on('data', (b) => {
+						data += b;
+					});
+					res.on('end', () => {
+						data = JSON.parse(data);
+						assert.equal(`localhost:${sslServerPort}`, data.host);
+						done();
+					});
+				}
+			);
 		});
 
 		it('should not send a port number for the default port', (done) => {

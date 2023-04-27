@@ -45,19 +45,22 @@ export const protocols = Object.keys(gProtocols);
  *   - "pac+https", "https" - refers to an HTTPS endpoint
  */
 export class PacProxyAgent extends Agent {
-	uri: string;
+	uri: URL;
 	opts: PacProxyAgentOptions;
 	cache?: Readable;
 	resolver?: FindProxyForURL;
 	resolverHash: string;
 	resolverPromise?: Promise<FindProxyForURL>;
 
-	constructor(uri: string, opts?: PacProxyAgentOptions) {
+	constructor(uri: string | URL, opts?: PacProxyAgentOptions) {
 		super();
-		debug('Creating PacProxyAgent with URI %o and options %o', uri, opts);
 
 		// Strip the "pac+" prefix
-		this.uri = uri.replace(/^pac\+/i, '');
+		const uriStr = typeof uri === 'string' ? uri : uri.href;
+		this.uri = new URL(uriStr.replace(/^pac\+/i, ''));
+
+		debug('Creating PacProxyAgent with URI %o', this.uri.href);
+
 		this.opts = { port: 0, ...opts };
 		this.cache = undefined;
 		this.resolver = undefined;
@@ -66,7 +69,7 @@ export class PacProxyAgent extends Agent {
 
 		// For `PacResolver`
 		if (!this.opts.filename) {
-			this.opts.filename = uri;
+			this.opts.filename = this.uri.href;
 		}
 	}
 
