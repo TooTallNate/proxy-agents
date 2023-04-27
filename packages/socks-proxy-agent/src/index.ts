@@ -63,14 +63,14 @@ function parseSocksURL(url: URL): { lookup: boolean; proxy: SocksProxy } {
 
 	if (url.username) {
 		Object.defineProperty(proxy, 'userId', {
-			value: url.username,
+			value: decodeURIComponent(url.username),
 			enumerable: false,
 		});
 	}
 
 	if (url.password != null) {
 		Object.defineProperty(proxy, 'password', {
-			value: url.password,
+			value: decodeURIComponent(url.password),
 			enumerable: false,
 		});
 	}

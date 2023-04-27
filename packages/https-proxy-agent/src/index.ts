@@ -80,7 +80,9 @@ export class HttpsProxyAgent extends Agent {
 
 		// Inject the `Proxy-Authorization` header if necessary.
 		if (proxy.username || proxy.password) {
-			const auth = `${proxy.username}:${proxy.password}`;
+			const auth = `${decodeURIComponent(
+				proxy.username
+			)}:${decodeURIComponent(proxy.password)}`;
 			headers['Proxy-Authorization'] = `Basic ${Buffer.from(
 				auth
 			).toString('base64')}`;
