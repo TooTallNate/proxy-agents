@@ -48,9 +48,9 @@ export const ftp: GetUriProtocol<FTPOptions> = async (url, opts = {}) => {
 		// try the MDTM command first, which is an optional extension command.
 		try {
 			lastModified = await client.lastMod(filepath);
-		} catch (err: any) {
+		} catch (err: unknown) {
 			// handle the "file not found" error code
-			if (err.code === 550) {
+			if ((err as { code: number }).code === 550) {
 				throw new NotFoundError();
 			}
 		}

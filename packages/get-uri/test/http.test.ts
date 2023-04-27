@@ -16,7 +16,7 @@ describe('get-uri', () => {
 			// setup target HTTP server
 			server = http.createServer(st(__dirname));
 			await listen(server);
-			// @ts-expect-error
+			// @ts-expect-error `port` definitely exists
 			port = server.address().port;
 		});
 

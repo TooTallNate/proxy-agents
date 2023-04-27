@@ -69,7 +69,7 @@ export default function parseProxyResponse(
 			debug('got proxy server response: %o', firstLine);
 			resolve({
 				statusCode,
-				buffered
+				buffered,
 			});
 		}
 

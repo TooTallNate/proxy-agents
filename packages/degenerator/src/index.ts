@@ -14,10 +14,7 @@ import { VM, VMScript } from 'vm2';
  * @api public
  */
 
-export function degenerator(
-	code: string,
-	_names: DegeneratorNames
-): string {
+export function degenerator(code: string, _names: DegeneratorNames): string {
 	if (!Array.isArray(_names)) {
 		throw new TypeError('an array of async function "names" is required');
 	}
@@ -124,45 +121,45 @@ export function degenerator(
 	return generate(ast);
 }
 
-	export type DegeneratorName = string | RegExp;
-	export type DegeneratorNames = DegeneratorName[];
-	export interface CompileOptions extends RunningScriptOptions {
-		sandbox?: Context;
+export type DegeneratorName = string | RegExp;
+export type DegeneratorNames = DegeneratorName[];
+export interface CompileOptions extends RunningScriptOptions {
+	sandbox?: Context;
+}
+export function compile<R = unknown, A extends unknown[] = []>(
+	code: string,
+	returnName: string,
+	names: DegeneratorNames,
+	options: CompileOptions = {}
+): (...args: A) => Promise<R> {
+	const compiled = degenerator(code, names);
+	const vm = new VM(options);
+	const script = new VMScript(`${compiled};${returnName}`, {
+		filename: options.filename,
+	});
+	const fn = vm.run(script);
+	if (typeof fn !== 'function') {
+		throw new Error(
+			`Expected a "function" to be returned for \`${returnName}\`, but got "${typeof fn}"`
+		);
 	}
-	export function compile<R = unknown, A extends unknown[] = []>(
-		code: string,
-		returnName: string,
-		names: DegeneratorNames,
-		options: CompileOptions = {}
-	): (...args: A) => Promise<R> {
-		const compiled = degenerator(code, names);
-		const vm = new VM(options);
-		const script = new VMScript(`${compiled};${returnName}`, {
-			filename: options.filename,
-		});
-		const fn = vm.run(script);
-		if (typeof fn !== "function") {
-			throw new Error(
-				`Expected a "function" to be returned for \`${returnName}\`, but got "${typeof fn}"`
-			);
-		}
-		const r = function (this: unknown, ...args: A): Promise<R> {
-			try {
-				const p = fn.apply(this, args);
-				if (typeof p?.then === "function") {
-					return p;
-				}
-				return Promise.resolve(p);
-			} catch (err) {
-				return Promise.reject(err);
+	const r = function (this: unknown, ...args: A): Promise<R> {
+		try {
+			const p = fn.apply(this, args);
+			if (typeof p?.then === 'function') {
+				return p;
 			}
-		};
-		Object.defineProperty(r, "toString", {
-			value: fn.toString.bind(fn),
-			enumerable: false,
-		});
-		return r;
-	}
+			return Promise.resolve(p);
+		} catch (err) {
+			return Promise.reject(err);
+		}
+	};
+	Object.defineProperty(r, 'toString', {
+		value: fn.toString.bind(fn),
+		enumerable: false,
+	});
+	return r;
+}
 
 /**
  * Returns `true` if `node` has a matching name to one of the entries in the

@@ -1,5 +1,5 @@
 import ip from 'ip';
-import net, {AddressInfo} from 'net';
+import net, { AddressInfo } from 'net';
 
 /**
  * Returns the IP address of the host that the Navigator is running on, as

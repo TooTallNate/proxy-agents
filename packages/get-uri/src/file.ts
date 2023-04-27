@@ -55,7 +55,7 @@ export const file: GetUriProtocol<FileOptions> = async (
 
 		// `fs.ReadStream` takes care of calling `fs.close()` on the
 		// fd after it's done reading
-		// @ts-ignore - `@types/node` doesn't allow `null` as file path :/
+		// @ts-expect-error `@types/node` doesn't allow `null` as file path :/
 		const rs = createReadStream(null, {
 			autoClose: true,
 			...opts,
@@ -63,8 +63,8 @@ export const file: GetUriProtocol<FileOptions> = async (
 		}) as FileReadable;
 		rs.stat = stat;
 		return rs;
-	} catch (err: any) {
-		if (err.code === 'ENOENT') {
+	} catch (err: unknown) {
+		if ((err as NodeJS.ErrnoException).code === 'ENOENT') {
 			throw new NotFoundError();
 		}
 		throw err;

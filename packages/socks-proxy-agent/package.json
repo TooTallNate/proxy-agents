@@ -112,26 +112,13 @@
     "socks": "^2.7.1"
   },
   "devDependencies": {
-    "@commitlint/cli": "latest",
-    "@commitlint/config-conventional": "latest",
     "@types/debug": "latest",
     "@types/node": "latest",
     "cacheable-lookup": "latest",
-    "conventional-github-releaser": "latest",
     "dns2": "latest",
-    "finepack": "latest",
-    "git-authors-cli": "latest",
     "mocha": "^9.2.2",
-    "nano-staged": "latest",
-    "npm-check-updates": "latest",
-    "prettier-standard": "latest",
     "raw-body": "latest",
-    "simple-git-hooks": "latest",
     "socksv5": "github:TooTallNate/socksv5#fix/dstSock-close-event",
-    "standard": "latest",
-    "standard-markdown": "latest",
-    "standard-version": "latest",
-    "ts-standard": "latest",
     "tsconfig": "workspace:*",
     "typescript": "^5.0.4"
   },
@@ -143,38 +130,9 @@
   ],
   "scripts": {
     "build": "tsc",
-    "contributors": "(git-authors-cli && finepack && git add package.json && git commit -m 'build: contributors' --no-verify) || true",
-    "lint": "ts-standard",
-    "postrelease": "npm run release:tags && npm run release:github && (ci-publish || npm publish --access=public)",
-    "prepublishOnly": "npm run build",
-    "prerelease": "npm run update:check && npm run contributors",
-    "release": "standard-version -a",
-    "release:github": "conventional-github-releaser -p angular",
-    "release:tags": "git push --follow-tags origin HEAD:master",
     "test": "mocha --reporter spec",
-    "update": "ncu -u",
-    "update:check": "ncu -- --error-level 2"
+    "lint": "eslint . --ext .ts",
+    "prepublishOnly": "npm run build"
   },
-  "license": "MIT",
-  "commitlint": {
-    "extends": [
-      "@commitlint/config-conventional"
-    ]
-  },
-  "nano-staged": {
-    "*.js": [
-      "prettier-standard"
-    ],
-    "*.md": [
-      "standard-markdown"
-    ],
-    "package.json": [
-      "finepack"
-    ]
-  },
-  "simple-git-hooks": {
-    "commit-msg": "npx commitlint --edit",
-    "pre-commit": "npx nano-staged"
-  },
-  "typings": "dist/index.d.ts"
+  "license": "MIT"
 }

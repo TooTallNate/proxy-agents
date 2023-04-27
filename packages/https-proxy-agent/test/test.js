@@ -41,7 +41,7 @@ describe('HttpsProxyAgent', () => {
 		// setup target HTTPS server
 		let options = {
 			key: fs.readFileSync(`${__dirname}/ssl-cert-snakeoil.key`),
-			cert: fs.readFileSync(`${__dirname}/ssl-cert-snakeoil.pem`)
+			cert: fs.readFileSync(`${__dirname}/ssl-cert-snakeoil.pem`),
 		};
 		sslServer = https.createServer(options);
 		sslServer.listen(() => {
@@ -54,7 +54,7 @@ describe('HttpsProxyAgent', () => {
 		// setup SSL HTTP proxy server
 		let options = {
 			key: fs.readFileSync(`${__dirname}/ssl-cert-snakeoil.key`),
-			cert: fs.readFileSync(`${__dirname}/ssl-cert-snakeoil.pem`)
+			cert: fs.readFileSync(`${__dirname}/ssl-cert-snakeoil.pem`),
 		};
 		sslProxy = Proxy(https.createServer(options));
 		sslProxy.listen(() => {
@@ -104,7 +104,9 @@ describe('HttpsProxyAgent', () => {
 			assert.equal(proxyPort, agent.proxy.port);
 		});
 		it('should accept a `URL` instance proxy argument', () => {
-			let agent = new HttpsProxyAgent(new URL(`http://localhost:${proxyPort}`));
+			let agent = new HttpsProxyAgent(
+				new URL(`http://localhost:${proxyPort}`)
+			);
 			assert.equal('localhost', agent.proxy.hostname);
 			assert.equal(proxyPort, agent.proxy.port);
 		});
@@ -116,21 +118,21 @@ describe('HttpsProxyAgent', () => {
 			it('should be `false` when "http:" protocol is used', () => {
 				let agent = new HttpsProxyAgent({
 					port: proxyPort,
-					protocol: 'http:'
+					protocol: 'http:',
 				});
 				assert.equal(false, agent.secureProxy);
 			});
 			it('should be `true` when "https:" protocol is used', () => {
 				let agent = new HttpsProxyAgent({
 					port: proxyPort,
-					protocol: 'https:'
+					protocol: 'https:',
 				});
 				assert.equal(true, agent.secureProxy);
 			});
 			it('should be `true` when "https" protocol is used', () => {
 				let agent = new HttpsProxyAgent({
 					port: proxyPort,
-					protocol: 'https'
+					protocol: 'https',
 				});
 				assert.equal(true, agent.secureProxy);
 			});
@@ -147,8 +149,7 @@ describe('HttpsProxyAgent', () => {
 				res.end(JSON.stringify(req.headers));
 			});
 
-			let proxy =
-				`http://localhost:${proxyPort}`;
+			let proxy = `http://localhost:${proxyPort}`;
 			let agent = new HttpsProxyAgent(proxy);
 
 			let opts = url.parse(`http://localhost:${serverPort}`);
@@ -173,7 +174,10 @@ describe('HttpsProxyAgent', () => {
 				res.end(JSON.stringify(req.headers));
 			});
 
-			let agent = new HttpsProxyAgent(`https://localhost:${sslProxyPort}`, { rejectUnauthorized: false });
+			let agent = new HttpsProxyAgent(
+				`https://localhost:${sslProxyPort}`,
+				{ rejectUnauthorized: false }
+			);
 
 			let opts = url.parse(`http://localhost:${serverPort}`);
 			opts.agent = agent;
@@ -193,13 +197,12 @@ describe('HttpsProxyAgent', () => {
 		});
 		it('should receive the 407 authorization code on the `http.ClientResponse`', (done) => {
 			// set a proxy authentication function for this test
-			proxy.authenticate = function(req, fn) {
+			proxy.authenticate = function (req, fn) {
 				// reject all requests
 				fn(null, false);
 			};
 
-			let proxyUri =
-				`http://localhost:${proxyPort}`;
+			let proxyUri = `http://localhost:${proxyPort}`;
 			let agent = new HttpsProxyAgent(proxyUri);
 
 			let opts = {};
@@ -215,16 +218,15 @@ describe('HttpsProxyAgent', () => {
 			});
 		});
 		it('should not error if the proxy responds with 407 and the request is aborted', (done) => {
-			proxy.authenticate = function(req, fn) {
+			proxy.authenticate = function (req, fn) {
 				fn(null, false);
 			};
 
-			const proxyUri =
-				`http://localhost:${proxyPort}`;
+			const proxyUri = `http://localhost:${proxyPort}`;
 
 			const req = http.get(
 				{
-					agent: new HttpsProxyAgent(proxyUri)
+					agent: new HttpsProxyAgent(proxyUri),
 				},
 				(res) => {
 					assert.equal(407, res.statusCode);
@@ -235,16 +237,15 @@ describe('HttpsProxyAgent', () => {
 			req.on('abort', done);
 		});
 		it('should emit an "end" event on the `http.IncomingMessage` if the proxy responds with non-200 status code', (done) => {
-			proxy.authenticate = function(req, fn) {
+			proxy.authenticate = function (req, fn) {
 				fn(null, false);
 			};
 
-			const proxyUri =
-				`http://localhost:${proxyPort}`;
+			const proxyUri = `http://localhost:${proxyPort}`;
 
 			http.get(
 				{
-					agent: new HttpsProxyAgent(proxyUri)
+					agent: new HttpsProxyAgent(proxyUri),
 				},
 				(res) => {
 					assert.equal(407, res.statusCode);
@@ -303,18 +304,22 @@ describe('HttpsProxyAgent', () => {
 			let proxy = `http://localhost:${proxyPort}`;
 			let agent = new HttpsProxyAgent(proxy);
 
-			https.get(`https://localhost:${sslServerPort}`, { rejectUnauthorized: false, agent }, (res) => {
-				let data = '';
-				res.setEncoding('utf8');
-				res.on('data', (b) => {
-					data += b;
-				});
-				res.on('end', () => {
-					data = JSON.parse(data);
-					assert.equal(`localhost:${sslServerPort}`, data.host);
-					done();
-				});
-			});
+			https.get(
+				`https://localhost:${sslServerPort}`,
+				{ rejectUnauthorized: false, agent },
+				(res) => {
+					let data = '';
+					res.setEncoding('utf8');
+					res.on('data', (b) => {
+						data += b;
+					});
+					res.on('end', () => {
+						data = JSON.parse(data);
+						assert.equal(`localhost:${sslServerPort}`, data.host);
+						done();
+					});
+				}
+			);
 		});
 
 		it('should work over an HTTPS proxy', (done) => {
@@ -322,8 +327,7 @@ describe('HttpsProxyAgent', () => {
 				res.end(JSON.stringify(req.headers));
 			});
 
-			let proxy =
-				`https://localhost:${sslProxyPort}`;
+			let proxy = `https://localhost:${sslProxyPort}`;
 			proxy = url.parse(proxy);
 			proxy.rejectUnauthorized = false;
 			let agent = new HttpsProxyAgent(proxy);
@@ -351,7 +355,10 @@ describe('HttpsProxyAgent', () => {
 				res.end(JSON.stringify(req.headers));
 			});
 
-			let agent = new HttpsProxyAgent(`https://localhost:${sslProxyPort}`, { rejectUnauthorized: false });
+			let agent = new HttpsProxyAgent(
+				`https://localhost:${sslProxyPort}`,
+				{ rejectUnauthorized: false }
+			);
 			agent.defaultPort = sslServerPort;
 
 			let opts = url.parse(`https://localhost:${sslServerPort}`);

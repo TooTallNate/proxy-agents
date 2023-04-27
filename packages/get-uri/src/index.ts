@@ -10,6 +10,7 @@ import { https } from './https';
 
 const debug = createDebug('get-uri');
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 type Protocol<T> = T extends `${infer Protocol}:${infer _}` ? Protocol : never;
 
 export type GetUriProtocol<T> = (parsed: URL, opts?: T) => Promise<Readable>;
@@ -72,5 +73,5 @@ export async function getUri<Uri extends string>(
 	}
 
 	const getter = protocols[protocol];
-	return getter(url, opts as any);
+	return getter(url, opts as never);
 }

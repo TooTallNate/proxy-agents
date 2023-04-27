@@ -11,10 +11,10 @@ describe('get-uri', () => {
 
 		beforeAll(async () => {
 			server = new FtpServer('127.0.0.1', {
-				// @ts-ignore
+				// @ts-expect-error ...
 				logLevel: -1,
 				getInitialCwd(_socket, fn) {
-					// @ts-expect-error
+					// @ts-expect-error ...
 					fn?.(undefined, '/');
 				},
 				getRoot() {
@@ -24,21 +24,21 @@ describe('get-uri', () => {
 
 			server.on('client:connected', (conn) => {
 				let username: string;
-				// @ts-expect-error
-				conn.on('command:user', (user, success, failure) => {
+				// @ts-expect-error ...
+				conn.on('command:user', (user, success) => {
 					username = user;
 					success();
 				});
-				// @ts-expect-error
-				conn.on('command:pass', (pass, success, failure) => {
+				// @ts-expect-error ...
+				conn.on('command:pass', (pass, success) => {
 					success(username);
 				});
 			});
 
 			port = await new Promise<number>((r) =>
-				// @ts-expect-error
+				// @ts-expect-error ...
 				server.listen(0, () => {
-					// @ts-expect-error
+					// @ts-expect-error ...
 					r(server.server.address().port);
 				})
 			);

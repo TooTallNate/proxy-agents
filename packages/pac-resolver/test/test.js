@@ -78,14 +78,15 @@ describe('FindProxyForURL', function () {
 		);
 
 		it('should return "DIRECT" for "localhost"', function (done) {
-			FindProxyForURL('http://localhost/hello', 'localhost', function (
-				err,
-				res
-			) {
-				if (err) return done(err);
-				assert.equal('DIRECT', res);
-				done();
-			});
+			FindProxyForURL(
+				'http://localhost/hello',
+				'localhost',
+				function (err, res) {
+					if (err) return done(err);
+					assert.equal('DIRECT', res);
+					done();
+				}
+			);
 		});
 
 		it('should return "DIRECT" for "foo.netscape.com"', function (done) {
@@ -101,14 +102,18 @@ describe('FindProxyForURL', function () {
 		});
 
 		it('should return "PROXY …" for "google.com"', function (done) {
-			FindProxyForURL('http://google.com/t', 'google.com', function (
-				err,
-				res
-			) {
-				if (err) return done(err);
-				assert.equal('PROXY w3proxy.netscape.com:8080; DIRECT', res);
-				done();
-			});
+			FindProxyForURL(
+				'http://google.com/t',
+				'google.com',
+				function (err, res) {
+					if (err) return done(err);
+					assert.equal(
+						'PROXY w3proxy.netscape.com:8080; DIRECT',
+						res
+					);
+					done();
+				}
+			);
 		});
 	});
 
@@ -127,14 +132,15 @@ describe('FindProxyForURL', function () {
 		);
 
 		it('should return "DIRECT" for "localhost"', function (done) {
-			FindProxyForURL('http://localhost/hello', 'localhost', function (
-				err,
-				res
-			) {
-				if (err) return done(err);
-				assert.equal('DIRECT', res);
-				done();
-			});
+			FindProxyForURL(
+				'http://localhost/hello',
+				'localhost',
+				function (err, res) {
+					if (err) return done(err);
+					assert.equal('DIRECT', res);
+					done();
+				}
+			);
 		});
 
 		it('should return "DIRECT" for "foo.netscape.com"', function (done) {
@@ -303,25 +309,27 @@ describe('FindProxyForURL', function () {
 		);
 
 		it('should return "HTTPS proxy.example.com" for "http://10.1.2.3/bar.html"', function (done) {
-			FindProxyForURL('http://10.1.2.3/bar.html', '10.1.2.3', function (
-				err,
-				res
-			) {
-				if (err) return done(err);
-				assert.equal('HTTPS proxy.example.com', res);
-				done();
-			});
+			FindProxyForURL(
+				'http://10.1.2.3/bar.html',
+				'10.1.2.3',
+				function (err, res) {
+					if (err) return done(err);
+					assert.equal('HTTPS proxy.example.com', res);
+					done();
+				}
+			);
 		});
 
 		it('should return "DIRECT" for "http://foo.com/bar.html"', function (done) {
-			FindProxyForURL('http://foo.com/bar.html', 'foo.com', function (
-				err,
-				res
-			) {
-				if (err) return done(err);
-				assert.equal('DIRECT', res);
-				done();
-			});
+			FindProxyForURL(
+				'http://foo.com/bar.html',
+				'foo.com',
+				function (err, res) {
+					if (err) return done(err);
+					assert.equal('DIRECT', res);
+					done();
+				}
+			);
 		});
 	});
 

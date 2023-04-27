@@ -37,8 +37,8 @@ export function dataUriToBuffer(uri: string): MimeBuffer {
 	for (let i = 1; i < meta.length; i++) {
 		if (meta[i] === 'base64') {
 			base64 = true;
-		} else if(meta[i]) {
-			typeFull += `;${  meta[i]}`;
+		} else if (meta[i]) {
+			typeFull += `;${meta[i]}`;
 			if (meta[i].indexOf('charset=') === 0) {
 				charset = meta[i].substring(8);
 			}

@@ -100,13 +100,13 @@ export const http: GetUriProtocol<HttpOptions> = async (url, opts = {}) => {
 	debug('got %o response status code', code);
 
 	// any 2xx response is a "success" code
-	let type = (code / 100) | 0;
+	const type = (code / 100) | 0;
 
 	// check for a 3xx "redirect" status code
-	let location = res.headers.location;
+	const location = res.headers.location;
 	if (type === 3 && location) {
 		if (!opts.redirects) opts.redirects = [];
-		let redirects = opts.redirects;
+		const redirects = opts.redirects;
 
 		if (redirects.length < maxRedirects) {
 			debug('got a "redirect" status code with Location: %o', location);
@@ -117,10 +117,10 @@ export const http: GetUriProtocol<HttpOptions> = async (url, opts = {}) => {
 			// hang on to this Response object for the "redirects" Array
 			redirects.push(res);
 
-			let newUri = new URL(location, url.href);
+			const newUri = new URL(location, url.href);
 			debug('resolved redirect URL: %o', newUri.href);
 
-			let left = maxRedirects - redirects.length;
+			const left = maxRedirects - redirects.length;
 			debug('%o more redirects allowed after this one', left);
 
 			// check if redirecting to a different protocol

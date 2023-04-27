@@ -1,22 +1,22 @@
-import { parse } from "url";
-import { Context } from "vm";
-import { CompileOptions, compile } from "degenerator";
+import { parse } from 'url';
+import { Context } from 'vm';
+import { CompileOptions, compile } from 'degenerator';
 
 /**
  * Built-in PAC functions.
  */
-import dateRange from "./dateRange";
-import dnsDomainIs from "./dnsDomainIs";
-import dnsDomainLevels from "./dnsDomainLevels";
-import dnsResolve from "./dnsResolve";
-import isInNet from "./isInNet";
-import isPlainHostName from "./isPlainHostName";
-import isResolvable from "./isResolvable";
-import localHostOrDomainIs from "./localHostOrDomainIs";
-import myIpAddress from "./myIpAddress";
-import shExpMatch from "./shExpMatch";
-import timeRange from "./timeRange";
-import weekdayRange from "./weekdayRange";
+import dateRange from './dateRange';
+import dnsDomainIs from './dnsDomainIs';
+import dnsDomainLevels from './dnsDomainLevels';
+import dnsResolve from './dnsResolve';
+import isInNet from './isInNet';
+import isPlainHostName from './isPlainHostName';
+import isResolvable from './isResolvable';
+import localHostOrDomainIs from './localHostOrDomainIs';
+import myIpAddress from './myIpAddress';
+import shExpMatch from './shExpMatch';
+import timeRange from './timeRange';
+import weekdayRange from './weekdayRange';
 
 /**
  * Returns an asynchronous `FindProxyForURL()` function
@@ -26,7 +26,7 @@ export function createPacResolver(
 	_str: string | Buffer,
 	_opts: PacResolverOptions = {}
 ) {
-	const str = Buffer.isBuffer(_str) ? _str.toString("utf8") : _str;
+	const str = Buffer.isBuffer(_str) ? _str.toString('utf8') : _str;
 
 	// The sandbox to use for the `vm` context.
 	const context: Context = {
@@ -35,7 +35,7 @@ export function createPacResolver(
 	};
 
 	const opts: PacResolverOptions = {
-		filename: "proxy.pac",
+		filename: 'proxy.pac',
 		..._opts,
 		sandbox: context,
 	};
@@ -48,7 +48,7 @@ export function createPacResolver(
 	// Compile the JS `FindProxyForURL()` function into an async function.
 	const resolver = compile<string, [url: string, host: string]>(
 		str,
-		"FindProxyForURL",
+		'FindProxyForURL',
 		names,
 		opts
 	);
@@ -72,13 +72,13 @@ export function createPacResolver(
 		let host: string | null = null;
 		let callback: FindProxyForURLCallback | null = null;
 
-		if (typeof _callback === "function") {
+		if (typeof _callback === 'function') {
 			callback = _callback;
 		}
 
-		if (typeof _host === "string") {
+		if (typeof _host === 'string') {
 			host = _host;
-		} else if (typeof _host === "function") {
+		} else if (typeof _host === 'function') {
 			callback = _host;
 		}
 
@@ -87,19 +87,19 @@ export function createPacResolver(
 		}
 
 		if (!host) {
-			throw new TypeError("Could not determine `host`");
+			throw new TypeError('Could not determine `host`');
 		}
 
 		const promise = resolver(url, host);
 
-		if (typeof callback === "function") {
+		if (typeof callback === 'function') {
 			toCallback(promise, callback);
 		} else {
 			return promise;
 		}
 	}
 
-	Object.defineProperty(FindProxyForURL, "toString", {
+	Object.defineProperty(FindProxyForURL, 'toString', {
 		value: () => resolver.toString(),
 		enumerable: false,
 	});
@@ -107,7 +107,7 @@ export function createPacResolver(
 	return FindProxyForURL;
 }
 
-export type GMT = "GMT";
+export type GMT = 'GMT';
 export type Hour =
 	| 0
 	| 1
@@ -165,20 +165,20 @@ export type Day =
 	| 29
 	| 30
 	| 31;
-export type Weekday = "SUN" | "MON" | "TUE" | "WED" | "THU" | "FRI" | "SAT";
+export type Weekday = 'SUN' | 'MON' | 'TUE' | 'WED' | 'THU' | 'FRI' | 'SAT';
 export type Month =
-	| "JAN"
-	| "FEB"
-	| "MAR"
-	| "APR"
-	| "MAY"
-	| "JUN"
-	| "JUL"
-	| "AUG"
-	| "SEP"
-	| "OCT"
-	| "NOV"
-	| "DEC";
+	| 'JAN'
+	| 'FEB'
+	| 'MAR'
+	| 'APR'
+	| 'MAY'
+	| 'JUN'
+	| 'JUL'
+	| 'AUG'
+	| 'SEP'
+	| 'OCT'
+	| 'NOV'
+	| 'DEC';
 export type PacResolverOptions = CompileOptions;
 export interface FindProxyForURLCallback {
 	(err?: Error | null, result?: string): void;
@@ -186,7 +186,7 @@ export interface FindProxyForURLCallback {
 export type FindProxyForURL = ReturnType<typeof createPacResolver>;
 
 export const sandbox = Object.freeze({
-	alert: (message = "") => console.log("%s", message),
+	alert: (message = '') => console.log('%s', message),
 	dateRange,
 	dnsDomainIs,
 	dnsDomainLevels,
@@ -210,11 +210,11 @@ function toCallback<T>(
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function isAsyncFunction(v: any): boolean {
-	if (typeof v !== "function") return false;
+	if (typeof v !== 'function') return false;
 	// Native `AsyncFunction`
-	if (v.constructor.name === "AsyncFunction") return true;
+	if (v.constructor.name === 'AsyncFunction') return true;
 	// TypeScript compiled
-	if (String(v).indexOf("__awaiter(") !== -1) return true;
+	if (String(v).indexOf('__awaiter(') !== -1) return true;
 	// Legacy behavior - set `async` property on the function
 	return Boolean(v.async);
 }

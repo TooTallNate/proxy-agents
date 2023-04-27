@@ -9,9 +9,10 @@ import parseProxyResponse from './parse-proxy-response';
 
 const debug = createDebug('https-proxy-agent');
 
-type HttpsProxyAgentOptions = net.TcpNetConnectOpts & tls.ConnectionOptions & {
-	headers?: OutgoingHttpHeaders;
-}
+type HttpsProxyAgentOptions = net.TcpNetConnectOpts &
+	tls.ConnectionOptions & {
+		headers?: OutgoingHttpHeaders;
+	};
 
 /**
  * The `HttpsProxyAgent` implements an HTTP Agent subclass that connects to
@@ -34,10 +35,7 @@ export class HttpsProxyAgent extends Agent {
 		return isHTTPS(this.proxy.protocol);
 	}
 
-	constructor(
-		proxy: string | URL,
-		opts?: HttpsProxyAgentOptions
-	) {
+	constructor(proxy: string | URL, opts?: HttpsProxyAgentOptions) {
 		super();
 		this.proxy = typeof proxy === 'string' ? new URL(proxy) : proxy;
 		this.proxyHeaders = opts?.headers ?? {};
@@ -50,7 +48,7 @@ export class HttpsProxyAgent extends Agent {
 			? 443
 			: 80;
 		this.connectOpts = {
-			...opts ? omit(opts, 'headers') : null,
+			...(opts ? omit(opts, 'headers') : null),
 			host,
 			port,
 		};

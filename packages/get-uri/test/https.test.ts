@@ -14,13 +14,13 @@ describe('get-uri', () => {
 
 		beforeAll(async () => {
 			// setup target HTTPS server
-			let options = {
+			const options = {
 				key: readFileSync(`${__dirname}/server.key`),
 				cert: readFileSync(`${__dirname}/server.crt`),
 			};
 			server = https.createServer(options, st(__dirname));
 			await listen(server);
-			// @ts-expect-error
+			// @ts-expect-error `port` is definitely defined
 			port = server.address().port;
 		});
 
