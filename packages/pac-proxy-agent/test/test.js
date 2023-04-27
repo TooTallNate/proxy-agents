@@ -51,7 +51,7 @@ describe('PacProxyAgent', function () {
 
 	before(function (done) {
 		// setup SOCKS proxy server
-		socksServer = socks.createServer(function (info, accept, deny) {
+		socksServer = socks.createServer(function (_info, accept) {
 			accept();
 		});
 		socksServer.listen(function () {
@@ -116,7 +116,7 @@ describe('PacProxyAgent', function () {
 	it('should allow a `sandbox` to be passed in', function (done) {
 		this.slow(1000);
 
-		function FindProxyForURL(url, host) {
+		function FindProxyForURL() {
 			throw new Error(foo() + bar());
 		}
 
@@ -229,7 +229,7 @@ describe('PacProxyAgent', function () {
 				res.end(JSON.stringify(req.headers));
 			});
 
-			function FindProxyForURL(url, host) {
+			function FindProxyForURL() {
 				return 'SOCKS localhost:PORT;';
 			}
 

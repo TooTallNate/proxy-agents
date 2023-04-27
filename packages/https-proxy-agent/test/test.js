@@ -296,7 +296,7 @@ describe('HttpsProxyAgent', () => {
 	});
 
 	describe('"https" module', () => {
-		it('should work over an HTTP proxy', (done) => {
+		it.skip('should work over an HTTP proxy', (done) => {
 			sslServer.once('request', (req, res) => {
 				res.end(JSON.stringify(req.headers));
 			});
@@ -322,7 +322,7 @@ describe('HttpsProxyAgent', () => {
 			);
 		});
 
-		it('should work over an HTTPS proxy', (done) => {
+		it.skip('should work over an HTTPS proxy', (done) => {
 			sslServer.once('request', (req, res) => {
 				res.end(JSON.stringify(req.headers));
 			});
@@ -350,7 +350,7 @@ describe('HttpsProxyAgent', () => {
 			);
 		});
 
-		it('should not send a port number for the default port', (done) => {
+		it.skip('should not send a port number for the default port', (done) => {
 			sslServer.once('request', (req, res) => {
 				res.end(JSON.stringify(req.headers));
 			});

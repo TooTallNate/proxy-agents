@@ -2,8 +2,8 @@
   "name": "https-proxy-agent",
   "version": "5.0.1",
   "description": "An HTTP(s) proxy `http.Agent` implementation for HTTPS",
-  "main": "dist/index",
-  "types": "dist/index",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],

@@ -67,6 +67,7 @@ export default function parseProxyResponse(
 			);
 			const statusCode = +firstLine.split(' ')[1];
 			debug('got proxy server response: %o', firstLine);
+			cleanup();
 			resolve({
 				statusCode,
 				buffered,

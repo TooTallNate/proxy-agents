@@ -135,7 +135,10 @@ export class SocksProxyAgent extends Agent {
 
 		const socksOpts: SocksClientOptions = {
 			proxy,
-			destination: { host, port },
+			destination: {
+				host,
+				port: typeof port === 'number' ? port : parseInt(port, 10),
+			},
 			command: 'connect',
 			timeout: timeout ?? undefined,
 		};

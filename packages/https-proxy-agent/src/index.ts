@@ -39,7 +39,7 @@ export class HttpsProxyAgent extends Agent {
 		super();
 		this.proxy = typeof proxy === 'string' ? new URL(proxy) : proxy;
 		this.proxyHeaders = opts?.headers ?? {};
-		debug('creating new HttpsProxyAgent instance: %o', this.proxy.href);
+		debug('Creating new HttpsProxyAgent instance: %o', this.proxy.href);
 
 		const host = this.proxy.hostname || this.proxy.host;
 		const port = this.proxy.port
@@ -114,6 +114,7 @@ export class HttpsProxyAgent extends Agent {
 				// this socket connection to a TLS connection.
 				debug('Upgrading socket connection to TLS');
 				const servername = opts.servername || opts.host;
+				console.log({ servername });
 				return tls.connect({
 					...omit(opts, 'host', 'path', 'port'),
 					socket,
@@ -142,7 +143,7 @@ export class HttpsProxyAgent extends Agent {
 
 		// Need to wait for the "socket" event to re-play the "data" events.
 		req.once('socket', (s: net.Socket) => {
-			debug('replaying proxy buffer for failed request');
+			debug('Replaying proxy buffer for failed request');
 			assert(s.listenerCount('data') > 0);
 
 			// Replay the "buffered" Buffer onto the fake `socket`, since at
