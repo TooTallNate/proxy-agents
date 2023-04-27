@@ -9,10 +9,12 @@ import parseProxyResponse from './parse-proxy-response';
 
 const debug = createDebug('https-proxy-agent');
 
-type HttpsProxyAgentOptions = net.TcpNetConnectOpts &
-	tls.ConnectionOptions & {
-		headers?: OutgoingHttpHeaders;
-	};
+export type HttpsProxyAgentOptions = Omit<
+	net.TcpNetConnectOpts & tls.ConnectionOptions,
+	'host' | 'port'
+> & {
+	headers?: OutgoingHttpHeaders;
+};
 
 /**
  * The `HttpsProxyAgent` implements an HTTP Agent subclass that connects to
@@ -116,12 +118,16 @@ export class HttpsProxyAgent extends Agent {
 				// this socket connection to a TLS connection.
 				debug('Upgrading socket connection to TLS');
 				const servername = opts.servername || opts.host;
-				console.log({ servername });
-				return tls.connect({
+				const s = tls.connect({
 					...omit(opts, 'host', 'path', 'port'),
 					socket,
 					servername,
 				});
+				//console.log(s);
+
+				//s.write('GET /foo HTTP/1.1\r\n\r\n');
+				//await new Promise(r => setTimeout(r, 5000));
+				return s;
 			}
 
 			return socket;
