@@ -16,63 +16,67 @@ function isSecureEndpoint(): boolean {
 }
 
 interface HttpConnectOpts extends net.TcpNetConnectOpts {
-    secureEndpoint: false;
+	secureEndpoint: false;
 }
 
 interface HttpsConnectOpts extends tls.ConnectionOptions {
-    port: number;
-    secureEndpoint: true;
+	port: number;
+	secureEndpoint: true;
 }
 
 export type AgentConnectOpts = HttpConnectOpts | HttpsConnectOpts;
 
 export abstract class Agent extends http.Agent {
-    _defaultPort?: number;
-    _protocol?: string;
-    _currentSocket?: Duplex;
+	_defaultPort?: number;
+	_protocol?: string;
+	_currentSocket?: Duplex;
 
-    constructor() {
-        super();
-        this._defaultPort = undefined;
-        this._protocol = undefined;
-    }
+	constructor() {
+		super();
+		this._defaultPort = undefined;
+		this._protocol = undefined;
+	}
 
-    abstract connect(req: http.ClientRequest, options: AgentConnectOpts): Promise<Duplex | http.Agent> | Duplex | http.Agent;
+	abstract connect(
+		req: http.ClientRequest,
+		options: AgentConnectOpts
+	): Promise<Duplex | http.Agent> | Duplex | http.Agent;
 
 	createSocket(
 		req: http.ClientRequest,
-		options: net.NetConnectOpts & tls.ConnectionOptions,
+		options: AgentConnectOpts,
 		cb: (err: Error | null, s?: Duplex) => void
 	) {
-        const secureEndpoint = isSecureEndpoint();
-        Promise.resolve().then(() => this.connect(
-			req,
-			// @ts-expect-error idk :shrug:
-			{ ...options, secureEndpoint }
-		)).then((socket) => {
-			if (socket instanceof http.Agent) {
+		const o = {
+			...options,
+			secureEndpoint: options.secureEndpoint ?? isSecureEndpoint(),
+		};
+		Promise.resolve()
+			.then(() => this.connect(req, o))
+			.then((socket) => {
+				if (socket instanceof http.Agent) {
+					// @ts-expect-error `createSocket()` isn't defined in `@types/node`
+					return socket.createSocket(req, o, cb);
+				}
+				this._currentSocket = socket;
 				// @ts-expect-error `createSocket()` isn't defined in `@types/node`
-				return socket.createSocket(req, options, cb);
-			}
-			this._currentSocket = socket;
-			// @ts-expect-error `createSocket()` isn't defined in `@types/node`
-			super.createSocket(req, options, cb);
-		}, cb);
+				super.createSocket(req, options, cb);
+			}, cb);
 	}
 
-    createConnection(): Duplex {
-        if (!this._currentSocket) {
-            throw new Error('no socket');
-        }
-        return this._currentSocket;
-    }
+	createConnection(): Duplex {
+		if (!this._currentSocket) {
+			throw new Error('no socket');
+		}
+		return this._currentSocket;
+	}
 
-    get defaultPort(): number {
+	get defaultPort(): number {
 		if (typeof this._defaultPort === 'number') {
 			return this._defaultPort;
 		}
 		const port = isSecureEndpoint() ? 443 : 80;
-        return port;
+		return port;
 	}
 
 	set defaultPort(v: number) {
@@ -84,7 +88,7 @@ export abstract class Agent extends http.Agent {
 			return this._protocol;
 		}
 		const p = isSecureEndpoint() ? 'https:' : 'http:';
-        return p;
+		return p;
 	}
 
 	set protocol(v: string) {
