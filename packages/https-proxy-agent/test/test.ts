@@ -13,6 +13,9 @@ const sslOptions = {
 	cert: fs.readFileSync(`${__dirname}/ssl-cert-snakeoil.pem`),
 };
 
+const testIf = (condition: boolean, ...args: Parameters<typeof test>) =>
+	condition ? test(...args) : test.skip(...args);
+
 const req = (
 	url: string,
 	opts: https.RequestOptions
@@ -243,57 +246,71 @@ describe('HttpsProxyAgent', () => {
 	});
 
 	describe('"https" module', () => {
-		it.skip('should work over an HTTP proxy', async () => {
-			sslServer.once('request', (req, res) => {
-				res.end(JSON.stringify(req.headers));
-			});
+		const nodeVersion = parseFloat(process.versions.node);
 
-			const proxy = `http://localhost:${proxyPort}`;
-			const agent = new HttpsProxyAgent(proxy);
+		testIf(
+			nodeVersion >= 18,
+			'should work over an HTTP proxy',
+			async () => {
+				sslServer.once('request', (req, res) => {
+					res.end(JSON.stringify(req.headers));
+				});
 
-			const res = await req(`https://localhost:${sslServerPort}`, {
-				rejectUnauthorized: false,
-				agent,
-			});
-			const body = await json(res);
-			assert.equal(`localhost:${sslServerPort}`, body.host);
-		});
+				const proxy = `http://localhost:${proxyPort}`;
+				const agent = new HttpsProxyAgent(proxy);
 
-		it.skip('should work over an HTTPS proxy', async () => {
-			sslServer.once('request', (req, res) => {
-				res.end(JSON.stringify(req.headers));
-			});
+				const res = await req(`https://localhost:${sslServerPort}`, {
+					rejectUnauthorized: false,
+					agent,
+				});
+				const body = await json(res);
+				assert.equal(`localhost:${sslServerPort}`, body.host);
+			}
+		);
 
-			const proxy = `https://localhost:${sslProxyPort}`;
-			const agent = new HttpsProxyAgent(proxy, {
-				rejectUnauthorized: false,
-			});
+		testIf(
+			nodeVersion >= 18,
+			'should work over an HTTPS proxy',
+			async () => {
+				sslServer.once('request', (req, res) => {
+					res.end(JSON.stringify(req.headers));
+				});
 
-			const res = await req(`https://localhost:${sslServerPort}`, {
-				agent,
-				rejectUnauthorized: false,
-			});
-			const body = await json(res);
-			assert.equal(`localhost:${sslServerPort}`, body.host);
-		});
+				const proxy = `https://localhost:${sslProxyPort}`;
+				const agent = new HttpsProxyAgent(proxy, {
+					rejectUnauthorized: false,
+				});
 
-		it.skip('should not send a port number for the default port', async () => {
-			sslServer.once('request', (req, res) => {
-				res.end(JSON.stringify(req.headers));
-			});
+				const res = await req(`https://localhost:${sslServerPort}`, {
+					agent,
+					rejectUnauthorized: false,
+				});
+				const body = await json(res);
+				assert.equal(`localhost:${sslServerPort}`, body.host);
+			}
+		);
 
-			const agent = new HttpsProxyAgent(
-				`https://localhost:${sslProxyPort}`,
-				{ rejectUnauthorized: false }
-			);
-			agent.defaultPort = sslServerPort;
+		testIf(
+			nodeVersion >= 18,
+			'should not send a port number for the default port',
+			async () => {
+				sslServer.once('request', (req, res) => {
+					res.end(JSON.stringify(req.headers));
+				});
 
-			const res = await req(`https://localhost:${sslServerPort}`, {
-				agent,
-				rejectUnauthorized: false,
-			});
-			const body = await json(res);
-			assert.equal('localhost', body.host);
-		});
+				const agent = new HttpsProxyAgent(
+					`https://localhost:${sslProxyPort}`,
+					{ rejectUnauthorized: false }
+				);
+				agent.defaultPort = sslServerPort;
+
+				const res = await req(`https://localhost:${sslServerPort}`, {
+					agent,
+					rejectUnauthorized: false,
+				});
+				const body = await json(res);
+				assert.equal('localhost', body.host);
+			}
+		);
 	});
 });

@@ -9,10 +9,21 @@ import parseProxyResponse from './parse-proxy-response';
 
 const debug = createDebug('https-proxy-agent');
 
-export type HttpsProxyAgentOptions = Omit<
-	net.TcpNetConnectOpts & tls.ConnectionOptions,
-	'host' | 'port'
-> & {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+type Protocol<T> = T extends `${infer Protocol}:${infer _}` ? Protocol : never;
+
+type ConnectOptsMap = {
+	http: Omit<net.TcpNetConnectOpts, 'host' | 'port'>;
+	https: Omit<tls.ConnectionOptions, 'host' | 'port'>;
+}
+
+type ConnectOpts<T> = {
+	[P in keyof ConnectOptsMap]: Protocol<T> extends P
+		? ConnectOptsMap[P]
+		: never;
+}[keyof ConnectOptsMap];
+
+export type HttpsProxyAgentOptions<T> = ConnectOpts<T> & {
 	headers?: OutgoingHttpHeaders;
 };
 
@@ -28,7 +39,7 @@ export type HttpsProxyAgentOptions = Omit<
  * `https:` requests have their socket connection upgraded to TLS once
  * the connection to the proxy server has been established.
  */
-export class HttpsProxyAgent extends Agent {
+export class HttpsProxyAgent<Uri extends string> extends Agent {
 	readonly proxy: URL;
 	proxyHeaders: OutgoingHttpHeaders;
 	connectOpts: net.TcpNetConnectOpts & tls.ConnectionOptions;
@@ -37,7 +48,7 @@ export class HttpsProxyAgent extends Agent {
 		return isHTTPS(this.proxy.protocol);
 	}
 
-	constructor(proxy: string | URL, opts?: HttpsProxyAgentOptions) {
+	constructor(proxy: Uri | URL, opts?: HttpsProxyAgentOptions<Uri>) {
 		super();
 		this.proxy = typeof proxy === 'string' ? new URL(proxy) : proxy;
 		this.proxyHeaders = opts?.headers ?? {};
