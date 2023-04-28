@@ -23,11 +23,15 @@ export const protocols = {
 	https,
 };
 
-type Protocols = typeof protocols;
+export type Protocols = typeof protocols;
 
-type ProtocolOpts<T> = {
-	[P in keyof Protocols]: Protocol<T> extends P
-		? Parameters<Protocols[P]>[1]
+export type ProtocolsOptions = {
+	[P in keyof Protocols]: NonNullable<Parameters<Protocols[P]>[1]>
+}
+
+export type ProtocolOpts<T> = {
+	[P in keyof ProtocolsOptions]: Protocol<T> extends P
+		? ProtocolsOptions[P]
 		: never;
 }[keyof Protocols];
 

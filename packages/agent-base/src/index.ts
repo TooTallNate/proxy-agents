@@ -3,6 +3,8 @@ import * as tls from 'tls';
 import * as http from 'http';
 import { Duplex } from 'stream';
 
+export * from './helpers';
+
 function isSecureEndpoint(): boolean {
 	const { stack } = new Error();
 	if (typeof stack !== 'string') return false;

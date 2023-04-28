@@ -38,6 +38,8 @@ function isHTTPS(protocol?: string | null): boolean {
  * to the specified "HTTP proxy server" in order to proxy HTTP requests.
  */
 export class HttpProxyAgent<Uri extends string> extends Agent {
+	static protocols = ['http', 'https'] as const;
+
 	readonly proxy: URL;
 	connectOpts: net.TcpNetConnectOpts & tls.ConnectionOptions;
 
@@ -48,9 +50,10 @@ export class HttpProxyAgent<Uri extends string> extends Agent {
 	constructor(proxy: Uri | URL, opts?: HttpProxyAgentOptions<Uri>) {
 		super();
 		this.proxy = typeof proxy === 'string' ? new URL(proxy) : proxy;
-		debug('Creating new HttpProxyAgent instance: %o', this.proxy);
+		debug('Creating new HttpProxyAgent instance: %o', this.proxy.href);
 
-		const host = this.proxy.hostname || this.proxy.host;
+		// Trim off the brackets from IPv6 addresses
+		const host = (this.proxy.hostname || this.proxy.host).replace(/^\[|\]$/g, '');
 		const port = this.proxy.port
 			? parseInt(this.proxy.port, 10)
 			: this.secureProxy
@@ -70,9 +73,12 @@ export class HttpProxyAgent<Uri extends string> extends Agent {
 		const { proxy } = this;
 
 		const protocol = opts.secureEndpoint ? 'https:' : 'http:';
-		const hostname = opts.host || req.getHeader('host') || 'localhost';
-		const base = `${protocol}//${hostname}:${opts.port}`;
+		const hostname = req.getHeader('host') || 'localhost';
+		const base = `${protocol}//${hostname}`;
 		const url = new URL(req.path, base);
+		if (opts.port !== 80) {
+			url.port = String(opts.port);
+		}
 
 		// Change the `http.ClientRequest` instance's "path" field
 		// to the absolute path of the URL that will be requested.
@@ -93,10 +99,10 @@ export class HttpProxyAgent<Uri extends string> extends Agent {
 		// Create a socket connection to the proxy server.
 		let socket: net.Socket;
 		if (this.secureProxy) {
-			debug('Creating `tls.Socket`: %o', proxy);
+			debug('Creating `tls.Socket`: %o', this.connectOpts);
 			socket = tls.connect(this.connectOpts);
 		} else {
-			debug('Creating `net.Socket`: %o', proxy);
+			debug('Creating `net.Socket`: %o', this.connectOpts);
 			socket = net.connect(this.connectOpts);
 		}
 

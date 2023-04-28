@@ -11,10 +11,10 @@ const fs = require('fs');
 const dns2 = require('dns2');
 const CacheableLookup = require('cacheable-lookup');
 
-const getRawBody = require('raw-body');
+const { req, json } = require('agent-base');
 const { SocksProxyAgent } = require('..');
 
-describe('SocksProxyAgent', function () {
+describe('SocksProxyAgent', () => {
 	let httpServer;
 	let httpPort;
 	let httpsServer;
@@ -27,7 +27,7 @@ describe('SocksProxyAgent', function () {
 		socksServer = socks.createServer(function (_info, accept) {
 			accept();
 		});
-		socksServer.listen(0, '127.0.0.1', function () {
+		socksServer.listen(0, '127.0.0.1', () => {
 			socksPort = socksServer.address().port;
 			done();
 		});
@@ -37,7 +37,7 @@ describe('SocksProxyAgent', function () {
 	before(function (done) {
 		// setup target HTTP server
 		httpServer = http.createServer();
-		httpServer.listen(function () {
+		httpServer.listen(() => {
 			httpPort = httpServer.address().port;
 			done();
 		});
@@ -54,43 +54,43 @@ describe('SocksProxyAgent', function () {
 			),
 		};
 		httpsServer = https.createServer(options);
-		httpsServer.listen(function () {
+		httpsServer.listen(() => {
 			httpsPort = httpsServer.address().port;
 			done();
 		});
 	});
 
 	after(function (done) {
-		socksServer.once('close', function () {
+		socksServer.once('close', () => {
 			done();
 		});
 		socksServer.close();
 	});
 
 	after(function (done) {
-		httpServer.once('close', function () {
+		httpServer.once('close', () => {
 			done();
 		});
 		httpServer.close();
 	});
 
 	after(function (done) {
-		httpsServer.once('close', function () {
+		httpsServer.once('close', () => {
 			done();
 		});
 		httpsServer.close();
 	});
 
-	describe('constructor', function () {
-		it('should throw an Error if no "proxy" argument is given', function () {
+	describe('constructor', () => {
+		it('should throw an Error if no "proxy" argument is given', () => {
 			assert.throws(() => new SocksProxyAgent());
 		});
-		it('should accept a "string" proxy argument', function () {
+		it('should accept a "string" proxy argument', () => {
 			const agent = new SocksProxyAgent(`socks://127.0.0.1:${socksPort}`);
 			assert.equal('127.0.0.1', agent.proxy.host);
 			assert.equal(socksPort, agent.proxy.port);
 		});
-		it('should accept a `new URL()` result object argument', function () {
+		it('should accept a `new URL()` result object argument', () => {
 			const opts = new URL(`socks://127.0.0.1:${socksPort}`);
 			const agent = new SocksProxyAgent(opts);
 			assert.equal('127.0.0.1', agent.proxy.host);
@@ -127,40 +127,27 @@ describe('SocksProxyAgent', function () {
 		});
 	});
 
-	describe('"http" module', function () {
-		it('should work against an HTTP endpoint', function (done) {
+	describe('"http" module', () => {
+		it('should work against an HTTP endpoint', async () => {
 			httpServer.once('request', function (req, res) {
 				assert.equal('/foo', req.url);
 				res.statusCode = 404;
 				res.end(JSON.stringify(req.headers));
 			});
 
-			const agent = new SocksProxyAgent(`socks://127.0.0.1:${socksPort}`);
-
-			const opts = {
-				protocol: 'http:',
-				host: `127.0.0.1:${httpPort}`,
-				port: httpPort,
-				hostname: '127.0.0.1',
-				path: '/foo',
-				agent,
+			const res = await req(`http://127.0.0.1:${httpPort}/foo`, {
+				agent: new SocksProxyAgent(`socks://127.0.0.1:${socksPort}`),
 				headers: { foo: 'bar' },
-			};
-			const req = http.get(opts, function (res) {
-				assert.equal(404, res.statusCode);
-				getRawBody(res, 'utf8', function (err, buf) {
-					if (err) return done(err);
-					const data = JSON.parse(buf);
-					assert.equal('bar', data.foo);
-					done();
-				});
 			});
-			req.once('error', done);
+			assert.equal(404, res.statusCode);
+
+			const body = await json(res);
+			assert.equal('bar', body.foo);
 		});
 	});
 
-	describe('"https" module', function () {
-		it('should work against an HTTPS endpoint', function (done) {
+	describe('"https" module', () => {
+		it('should work against an HTTPS endpoint', async () => {
 			httpsServer.once('request', function (req, res) {
 				assert.equal('/foo', req.url);
 				res.statusCode = 404;
@@ -169,31 +156,19 @@ describe('SocksProxyAgent', function () {
 
 			const agent = new SocksProxyAgent(`socks://127.0.0.1:${socksPort}`);
 
-			const opts = {
-				protocol: 'https:',
-				host: `127.0.0.1:${httpsPort}`,
-				port: httpsPort,
-				hostname: '127.0.0.1',
-				path: '/foo',
+			const res = await req(`https://127.0.0.1:${httpsPort}/foo`, {
 				agent,
 				rejectUnauthorized: false,
 				headers: { foo: 'bar' },
-			};
-
-			const req = https.get(opts, function (res) {
-				assert.equal(404, res.statusCode);
-				getRawBody(res, 'utf8', function (err, buf) {
-					if (err) return done(err);
-					const data = JSON.parse(buf);
-					assert.equal('bar', data.foo);
-					done();
-				});
 			});
-			req.once('error', done);
+			assert.equal(404, res.statusCode);
+			
+			const body = await json(res);
+			assert.equal('bar', body.foo);
 		});
 	});
 
-	describe('Custom lookup option', function () {
+	describe('Custom lookup option', () => {
 		let dnsServer;
 		let dnsQueries;
 

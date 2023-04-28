@@ -7,9 +7,9 @@ let url = require('url');
 let http = require('http');
 let https = require('https');
 let assert = require('assert');
-let getRawBody = require('raw-body');
-let Proxy = require('proxy');
 let socks = require('socksv5');
+let { createProxy } = require('proxy');
+let { toBuffer } = require('agent-base');
 let { PacProxyAgent } = require('../');
 
 describe('PacProxyAgent', function () {
@@ -63,7 +63,7 @@ describe('PacProxyAgent', function () {
 
 	before(function (done) {
 		// setup HTTP proxy server
-		proxyServer = Proxy();
+		proxyServer = createProxy();
 		proxyServer.listen(function () {
 			proxyPort = proxyServer.address().port;
 			done();
@@ -76,7 +76,7 @@ describe('PacProxyAgent', function () {
 			key: fs.readFileSync(`${__dirname}/ssl-cert-snakeoil.key`),
 			cert: fs.readFileSync(`${__dirname}/ssl-cert-snakeoil.pem`),
 		};
-		proxyHttpsServer = Proxy(https.createServer(options));
+		proxyHttpsServer = createProxy(https.createServer(options));
 		proxyHttpsServer.listen(function () {
 			proxyHttpsPort = proxyHttpsServer.address().port;
 			done();
@@ -184,9 +184,8 @@ describe('PacProxyAgent', function () {
 			opts.agent = agent;
 
 			let req = http.get(opts, function (res) {
-				getRawBody(res, 'utf8', function (err, buf) {
-					if (err) return done(err);
-					let data = JSON.parse(buf);
+				toBuffer(res).then((buf) => {
+					let data = JSON.parse(buf.toString());
 					assert.equal(`localhost:${httpPort}`, data.host);
 					assert('via' in data);
 					done();
@@ -213,9 +212,8 @@ describe('PacProxyAgent', function () {
 			opts.agent = agent;
 
 			let req = http.get(opts, function (res) {
-				getRawBody(res, 'utf8', function (err, buf) {
-					if (err) return done(err);
-					let data = JSON.parse(buf);
+				toBuffer(res).then((buf) => {
+					let data = JSON.parse(buf.toString());
 					assert.equal(`localhost:${httpPort}`, data.host);
 					assert('via' in data);
 					done();
@@ -242,9 +240,8 @@ describe('PacProxyAgent', function () {
 			opts.agent = agent;
 
 			let req = http.get(opts, function (res) {
-				getRawBody(res, 'utf8', function (err, buf) {
-					if (err) return done(err);
-					let data = JSON.parse(buf);
+				toBuffer(res).then((buf) => {
+					let data = JSON.parse(buf.toString());
 					assert.equal(`localhost:${httpPort}`, data.host);
 					done();
 				});
@@ -273,9 +270,8 @@ describe('PacProxyAgent', function () {
 			opts.agent = agent;
 
 			let req = http.get(opts, function (res) {
-				getRawBody(res, 'utf8', function (err, buf) {
-					if (err) return done(err);
-					let data = JSON.parse(buf);
+				toBuffer(res).then((buf) => {
+					let data = JSON.parse(buf.toString());
 					assert.equal(`localhost:${httpPort}`, data.host);
 					assert.equal(proxyCount, 4);
 					assert(gotReq);
@@ -317,9 +313,8 @@ describe('PacProxyAgent', function () {
 			opts.agent = agent;
 
 			const req = http.get(opts, function (res) {
-				getRawBody(res, 'utf8', function (err, buf) {
-					if (err) return done(err);
-					const data = JSON.parse(buf);
+				toBuffer(res).then((buf) => {
+					let data = JSON.parse(buf.toString());
 					assert.equal(`localhost:${httpPort}`, data.host);
 					assert(gotReq);
 					done();
@@ -349,9 +344,8 @@ describe('PacProxyAgent', function () {
 			opts.rejectUnauthorized = false;
 
 			let req = https.get(opts, function (res) {
-				getRawBody(res, 'utf8', function (err, buf) {
-					if (err) return done(err);
-					let data = JSON.parse(buf);
+				toBuffer(res).then((buf) => {
+					let data = JSON.parse(buf.toString());
 					assert.equal(`localhost:${httpsPort}`, data.host);
 					done();
 				});
@@ -382,9 +376,8 @@ describe('PacProxyAgent', function () {
 			opts.rejectUnauthorized = false;
 
 			let req = https.get(opts, function (res) {
-				getRawBody(res, 'utf8', function (err, buf) {
-					if (err) return done(err);
-					let data = JSON.parse(buf);
+				toBuffer(res).then((buf) => {
+					let data = JSON.parse(buf.toString());
 					assert.equal(`localhost:${httpsPort}`, data.host);
 					assert(gotReq);
 					done();
@@ -414,9 +407,8 @@ describe('PacProxyAgent', function () {
 			opts.rejectUnauthorized = false;
 
 			let req = https.get(opts, function (res) {
-				getRawBody(res, 'utf8', function (err, buf) {
-					if (err) return done(err);
-					let data = JSON.parse(buf);
+				toBuffer(res).then((buf) => {
+					let data = JSON.parse(buf.toString());
 					assert.equal(`localhost:${httpsPort}`, data.host);
 					assert(gotReq);
 					done();
@@ -447,9 +439,8 @@ describe('PacProxyAgent', function () {
 			opts.rejectUnauthorized = false;
 
 			let req = https.get(opts, function (res) {
-				getRawBody(res, 'utf8', function (err, buf) {
-					if (err) return done(err);
-					let data = JSON.parse(buf);
+				toBuffer(res).then((buf) => {
+					let data = JSON.parse(buf.toString());
 					assert.equal(`localhost:${httpsPort}`, data.host);
 					assert.equal(proxyCount, 4);
 					assert(gotReq);

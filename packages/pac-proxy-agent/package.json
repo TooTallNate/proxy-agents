@@ -40,14 +40,13 @@
     "http-proxy-agent": "^5.0.0",
     "https-proxy-agent": "^5.0.1",
     "pac-resolver": "^5.0.1",
-    "raw-body": "^2.5.2",
     "socks-proxy-agent": "^7.0.0"
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",
     "@types/node": "^14.18.43",
     "mocha": "^6.2.3",
-    "proxy": "^1.0.2",
+    "proxy": "workspace:*",
     "socksv5": "0.0.6",
     "tsconfig": "workspace:*",
     "typescript": "^5.0.4"

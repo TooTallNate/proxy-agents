@@ -2,11 +2,11 @@ import fs from 'fs';
 import http from 'http';
 import https from 'https';
 import assert from 'assert';
-import { listen } from 'async-listen';
-// @ts-expect-error "proxy" no types yet
-import Proxy from 'proxy';
-import { HttpsProxyAgent } from '../src';
 import { once } from 'events';
+import { listen } from 'async-listen';
+import { json, req } from 'agent-base';
+import { createProxy, ProxyServer } from 'proxy';
+import { HttpsProxyAgent } from '../src';
 
 const sslOptions = {
 	key: fs.readFileSync(`${__dirname}/ssl-cert-snakeoil.key`),
@@ -16,71 +16,41 @@ const sslOptions = {
 const testIf = (condition: boolean, ...args: Parameters<typeof test>) =>
 	condition ? test(...args) : test.skip(...args);
 
-const req = (
-	url: string,
-	opts: https.RequestOptions
-): Promise<http.IncomingMessage> =>
-	new Promise((resolve, reject) => {
-		(url.startsWith('https:') ? https : http)
-			.request(url, opts, resolve)
-			.once('error', reject)
-			.end();
-	});
-
-function json(res: http.IncomingMessage): Promise<Record<string, string>> {
-	return new Promise((resolve) => {
-		let data = '';
-		res.setEncoding('utf8');
-		res.on('data', (b) => {
-			data += b;
-		});
-		res.on('end', () => resolve(JSON.parse(data)));
-	});
-}
-
 describe('HttpsProxyAgent', () => {
 	let server: http.Server;
-	let serverPort: number;
+	let serverUrl: URL;
 
 	let sslServer: https.Server;
-	let sslServerPort: number;
+	let sslServerUrl: URL;
 
-	let proxy: http.Server;
-	let proxyPort: number;
+	let proxy: ProxyServer;
+	let proxyUrl: URL;
 
-	let sslProxy: https.Server;
-	let sslProxyPort: number;
+	let sslProxy: ProxyServer;
+	let sslProxyUrl: URL;
 
 	beforeAll(async () => {
 		// setup target HTTP server
 		server = http.createServer();
-		await listen(server);
-		// @ts-expect-error `port` is defined
-		serverPort = server.address().port;
+		serverUrl = await listen(server) as URL;
 	});
 
 	beforeAll(async () => {
 		// setup HTTP proxy server
-		proxy = Proxy();
-		await listen(proxy);
-		// @ts-expect-error `port` is defined
-		proxyPort = proxy.address().port;
+		proxy = createProxy();
+		proxyUrl = await listen(proxy) as URL;
 	});
 
 	beforeAll(async () => {
 		// setup target HTTPS server
 		sslServer = https.createServer(sslOptions);
-		await listen(sslServer);
-		// @ts-expect-error `port` is defined
-		sslServerPort = sslServer.address().port;
+		sslServerUrl = await listen(sslServer) as URL;
 	});
 
 	beforeAll(async () => {
 		// setup SSL HTTP proxy server
-		sslProxy = Proxy(https.createServer(sslOptions));
-		await listen(sslProxy);
-		// @ts-expect-error `port` is defined
-		sslProxyPort = sslProxy.address().port;
+		sslProxy = createProxy(https.createServer(sslOptions));
+		sslProxyUrl = await listen(sslProxy) as URL;
 	});
 
 	// shut down the test HTTP servers
@@ -98,27 +68,25 @@ describe('HttpsProxyAgent', () => {
 			});
 		});
 		it('should accept a "string" proxy argument', () => {
-			const agent = new HttpsProxyAgent(`http://localhost:${proxyPort}`);
-			assert.equal('localhost', agent.proxy.hostname);
-			assert.equal(proxyPort, agent.proxy.port);
+			const agent = new HttpsProxyAgent(proxyUrl.href);
+			assert.equal(proxyUrl.hostname, agent.proxy.hostname);
+			assert.equal(proxyUrl.port, agent.proxy.port);
 		});
 		it('should accept a `URL` instance proxy argument', () => {
-			const agent = new HttpsProxyAgent(
-				new URL(`http://localhost:${proxyPort}`)
-			);
-			assert.equal('localhost', agent.proxy.hostname);
-			assert.equal(proxyPort, agent.proxy.port);
+			const agent = new HttpsProxyAgent(proxyUrl);
+			assert.equal(proxyUrl.hostname, agent.proxy.hostname);
+			assert.equal(proxyUrl.port, agent.proxy.port);
 		});
 		describe('secureProxy', () => {
 			it('should be `false` when "http:" protocol is used', () => {
 				const agent = new HttpsProxyAgent(
-					`http://localhost:${proxyPort}`
+					proxyUrl
 				);
 				assert.equal(false, agent.secureProxy);
 			});
 			it('should be `true` when "https:" protocol is used', () => {
 				const agent = new HttpsProxyAgent(
-					`https://localhost:${sslProxyPort}`
+					sslProxyUrl
 				);
 				assert.equal(true, agent.secureProxy);
 			});
@@ -127,7 +95,6 @@ describe('HttpsProxyAgent', () => {
 
 	describe('"http" module', () => {
 		beforeEach(() => {
-			// @ts-expect-error ignore
 			delete proxy.authenticate;
 		});
 
@@ -136,12 +103,11 @@ describe('HttpsProxyAgent', () => {
 				res.end(JSON.stringify(req.headers));
 			});
 
-			const proxy = `http://localhost:${proxyPort}`;
-			const agent = new HttpsProxyAgent(proxy);
+			const agent = new HttpsProxyAgent(proxyUrl);
 
-			const res = await req(`http://localhost:${serverPort}`, { agent });
+			const res = await req(serverUrl, { agent });
 			const body = await json(res);
-			assert.equal(`localhost:${serverPort}`, body.host);
+			assert.equal(serverUrl.host, body.host);
 		});
 
 		it('should work over an HTTPS proxy', async () => {
@@ -149,41 +115,31 @@ describe('HttpsProxyAgent', () => {
 				res.end(JSON.stringify(req.headers));
 			});
 
-			const agent = new HttpsProxyAgent(
-				`https://localhost:${sslProxyPort}`,
-				{ rejectUnauthorized: false }
-			);
+			const agent = new HttpsProxyAgent(sslProxyUrl, {
+				rejectUnauthorized: false,
+			});
 
-			const res = await req(`http://localhost:${serverPort}`, { agent });
+			const res = await req(serverUrl, { agent });
 			const body = await json(res);
-			assert.equal(`localhost:${serverPort}`, body.host);
+			assert.equal(serverUrl.host, body.host);
 		});
 		it('should receive the 407 authorization code on the `http.ClientResponse`', async () => {
-			// set a proxy authentication function for this test
-			// @ts-expect-error ignore
-			proxy.authenticate = function (_req, fn) {
-				// reject all requests
-				fn(null, false);
-			};
+			// reject all auth requests
+			proxy.authenticate = () => false;
 
-			const proxyUri = `http://localhost:${proxyPort}`;
-			const agent = new HttpsProxyAgent(proxyUri);
+			const agent = new HttpsProxyAgent(proxyUrl);
 
 			const res = await req('http://example.com', { agent });
 			assert.equal(407, res.statusCode);
 			assert('proxy-authenticate' in res.headers);
 		});
 		it('should not error if the proxy responds with 407 and the request is aborted', async () => {
-			// @ts-expect-error ignore
-			proxy.authenticate = function (_req, fn) {
-				fn(null, false);
-			};
-
-			const proxyUri = `http://localhost:${proxyPort}`;
+			// reject all auth requests
+			proxy.authenticate = () => false;
 
 			const req = http.get(
 				{
-					agent: new HttpsProxyAgent(proxyUri),
+					agent: new HttpsProxyAgent(proxyUrl),
 				},
 				(res) => {
 					assert.equal(407, res.statusCode);
@@ -194,12 +150,9 @@ describe('HttpsProxyAgent', () => {
 			await once(req, 'abort');
 		});
 		it('should emit an "end" event on the `http.IncomingMessage` if the proxy responds with non-200 status code', async () => {
-			// @ts-expect-error ignore
-			proxy.authenticate = function (_req, fn) {
-				fn(null, false);
-			};
+			proxy.authenticate = () => false;
 
-			const agent = new HttpsProxyAgent(`http://localhost:${proxyPort}`);
+			const agent = new HttpsProxyAgent(proxyUrl);
 
 			const res = await req('http://example.com', {
 				agent,
@@ -226,7 +179,7 @@ describe('HttpsProxyAgent', () => {
 
 		it('should allow custom proxy "headers"', async () => {
 			const agent = new HttpsProxyAgent(
-				`http://localhost:${serverPort}`,
+				serverUrl,
 				{
 					headers: {
 						Foo: 'bar',
@@ -246,6 +199,9 @@ describe('HttpsProxyAgent', () => {
 	});
 
 	describe('"https" module', () => {
+		// Skipping these tests on older Node, since it fails with a strange error.
+		// Possibly related to the `proxy` testing module.
+		// The module does seem to work fine on an actual proxy though.
 		const nodeVersion = parseFloat(process.versions.node);
 
 		testIf(
@@ -256,15 +212,14 @@ describe('HttpsProxyAgent', () => {
 					res.end(JSON.stringify(req.headers));
 				});
 
-				const proxy = `http://localhost:${proxyPort}`;
-				const agent = new HttpsProxyAgent(proxy);
+				const agent = new HttpsProxyAgent(proxyUrl);
 
-				const res = await req(`https://localhost:${sslServerPort}`, {
+				const res = await req(sslServerUrl, {
 					rejectUnauthorized: false,
 					agent,
 				});
 				const body = await json(res);
-				assert.equal(`localhost:${sslServerPort}`, body.host);
+				assert.equal(sslServerUrl.host, body.host);
 			}
 		);
 
@@ -276,17 +231,16 @@ describe('HttpsProxyAgent', () => {
 					res.end(JSON.stringify(req.headers));
 				});
 
-				const proxy = `https://localhost:${sslProxyPort}`;
-				const agent = new HttpsProxyAgent(proxy, {
+				const agent = new HttpsProxyAgent(sslProxyUrl, {
 					rejectUnauthorized: false,
 				});
 
-				const res = await req(`https://localhost:${sslServerPort}`, {
+				const res = await req(sslServerUrl, {
 					agent,
 					rejectUnauthorized: false,
 				});
 				const body = await json(res);
-				assert.equal(`localhost:${sslServerPort}`, body.host);
+				assert.equal(sslServerUrl.host, body.host);
 			}
 		);
 
@@ -299,12 +253,12 @@ describe('HttpsProxyAgent', () => {
 				});
 
 				const agent = new HttpsProxyAgent(
-					`https://localhost:${sslProxyPort}`,
+					sslProxyUrl,
 					{ rejectUnauthorized: false }
 				);
-				agent.defaultPort = sslServerPort;
+				agent.defaultPort = parseInt(sslServerUrl.port, 10);
 
-				const res = await req(`https://localhost:${sslServerPort}`, {
+				const res = await req(sslServerUrl, {
 					agent,
 					rejectUnauthorized: false,
 				});
