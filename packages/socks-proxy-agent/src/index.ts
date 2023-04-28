@@ -88,17 +88,17 @@ export class SocksProxyAgent extends Agent {
 	private readonly tlsConnectionOptions: tls.ConnectionOptions;
 	public timeout: number | null;
 
-	constructor(input: string | URL, options?: SocksProxyAgentOptionsExtra) {
+	constructor(uri: string | URL, opts?: SocksProxyAgentOptionsExtra) {
 		super();
 
-		const url = typeof input === 'string' ? new URL(input) : input;
+		const url = typeof uri === 'string' ? new URL(uri) : uri;
 		const { proxy, lookup } = parseSocksURL(url);
 
 		this.shouldLookup = lookup;
 		this.proxy = proxy;
 		//this.tlsConnectionOptions = proxyOptions.tls != null ? proxyOptions.tls : {}
 		this.tlsConnectionOptions = {};
-		this.timeout = options?.timeout ?? null;
+		this.timeout = opts?.timeout ?? null;
 	}
 
 	/**
@@ -114,7 +114,7 @@ export class SocksProxyAgent extends Agent {
 		let { host } = opts;
 		const { port, lookup: lookupFn = dns.lookup } = opts;
 
-		if (host == null) {
+		if (!host) {
 			throw new Error('No `host` defined!');
 		}
 

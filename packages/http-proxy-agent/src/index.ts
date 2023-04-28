@@ -7,6 +7,20 @@ import { Agent, AgentConnectOpts } from 'agent-base';
 
 const debug = createDebug('http-proxy-agent');
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+type Protocol<T> = T extends `${infer Protocol}:${infer _}` ? Protocol : never;
+
+type ConnectOptsMap = {
+	http: Omit<net.TcpNetConnectOpts, 'host' | 'port'>;
+	https: Omit<tls.ConnectionOptions, 'host' | 'port'>;
+}
+
+export type HttpProxyAgentOptions<T> = {
+	[P in keyof ConnectOptsMap]: Protocol<T> extends P
+		? ConnectOptsMap[P]
+		: never;
+}[keyof ConnectOptsMap];
+
 interface HttpProxyAgentClientRequest extends http.ClientRequest {
 	outputData?: {
 		data: string;
@@ -23,7 +37,7 @@ function isHTTPS(protocol?: string | null): boolean {
  * The `HttpProxyAgent` implements an HTTP Agent subclass that connects
  * to the specified "HTTP proxy server" in order to proxy HTTP requests.
  */
-export class HttpProxyAgent extends Agent {
+export class HttpProxyAgent<Uri extends string> extends Agent {
 	readonly proxy: URL;
 	connectOpts: net.TcpNetConnectOpts & tls.ConnectionOptions;
 
@@ -31,10 +45,7 @@ export class HttpProxyAgent extends Agent {
 		return isHTTPS(this.proxy.protocol);
 	}
 
-	constructor(
-		proxy: string | URL,
-		opts?: net.TcpNetConnectOpts & tls.ConnectionOptions
-	) {
+	constructor(proxy: Uri | URL, opts?: HttpProxyAgentOptions<Uri>) {
 		super();
 		this.proxy = typeof proxy === 'string' ? new URL(proxy) : proxy;
 		debug('Creating new HttpProxyAgent instance: %o', this.proxy);
