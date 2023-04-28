@@ -33,14 +33,12 @@ export const ftp: GetUriProtocol<FTPOptions> = async (url, opts = {}) => {
 	try {
 		const host = url.hostname || url.host || 'localhost';
 		const port = parseInt(url.port || '0', 10) || 21;
-		const user =
-			typeof url.username === "string"
-				? decodeURIComponent(url.username)
-				: undefined;
-		const password =
-			typeof url.password === "string"
-				? decodeURIComponent(url.password)
-				: undefined;
+		const user = url.username
+			? decodeURIComponent(url.username)
+			: undefined;
+		const password = url.password
+			? decodeURIComponent(url.password)
+			: undefined;
 
 		await client.access({
 			host,
