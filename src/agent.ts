@@ -61,7 +61,7 @@ export default class HttpsProxyAgent extends Agent {
 		// ALPN is supported by Node.js >= v5.
 		// attempt to negotiate http/1.1 for proxy servers that support http/2
 		if (this.secureProxy && !('ALPNProtocols' in proxy)) {
-			proxy.ALPNProtocols = ['http 1.1'];
+			proxy.ALPNProtocols = ['http/1.1'];
 		}
 
 		if (proxy.host && proxy.path) {
