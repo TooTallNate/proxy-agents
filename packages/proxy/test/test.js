@@ -145,6 +145,7 @@ describe('proxy', () => {
 			socket.once('connect', () => {
 				socket.write(
 					'GET / HTTP/1.1\r\n' +
+						'Host: foo.com\r\n' +
 						'Proxy-Authorization: ' +
 						auth +
 						'\r\n' +
@@ -163,7 +164,7 @@ describe('proxy', () => {
 				done();
 			});
 			socket.once('connect', () => {
-				socket.write('GET / HTTP/1.1\r\n\r\n');
+				socket.write('GET / HTTP/1.1\r\nHost: foo.com\r\n\r\n');
 			});
 			socket.setEncoding('utf8');
 			socket.once('data', function (data) {
