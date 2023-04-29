@@ -26,6 +26,7 @@ describe('ProxyAgent', () => {
 	let httpProxyServerUrl: URL;
 	let httpsProxyServer: ProxyServer;
 	let httpsProxyServerUrl: URL;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let socksServer: any;
 	let socksPort: number;
 
@@ -72,10 +73,27 @@ describe('ProxyAgent', () => {
 		httpsProxyServer.close();
 	});
 
+	beforeEach(() => {
+		delete process.env.HTTP_PROXY;
+		delete process.env.HTTPS_PROXY;
+		delete process.env.NO_PROXY;
+	});
+
 	describe('"http" module', () => {
-		beforeAll(() => {
-			delete process.env.HTTP_PROXY;
-			delete process.env.NO_PROXY;
+		it('should work with no proxy from env', async () => {
+			httpServer.once('request', function (req, res) {
+				res.end(JSON.stringify(req.headers));
+			});
+
+			// `NO_PROXY` should take precedence
+			process.env.NO_PROXY = '*';
+			process.env.HTTP_PROXY = httpProxyServerUrl.href;
+			const agent = new ProxyAgent();
+
+			const res = await req(new URL('/test', httpServerUrl), { agent });
+			const body = await json(res);
+			assert.equal(httpServerUrl.host, body.host);
+			assert(!('via' in body));
 		});
 
 		it('should work over "http" proxy', async () => {
@@ -90,20 +108,6 @@ describe('ProxyAgent', () => {
 			const body = await json(res);
 			assert.equal(httpServerUrl.host, body.host);
 			assert('via' in body);
-		});
-
-		it('should work with no proxy from env', async () => {
-			httpServer.once('request', function (req, res) {
-				res.end(JSON.stringify(req.headers));
-			});
-
-			process.env.NO_PROXY = '*';
-			const agent = new ProxyAgent();
-
-			const res = await req(new URL('/test', httpServerUrl), { agent });
-			const body = await json(res);
-			assert.equal(httpServerUrl.host, body.host);
-			assert(!('via' in body));
 		});
 
 		it('should work over "https" proxy', async () => {
@@ -133,90 +137,45 @@ describe('ProxyAgent', () => {
 		});
 	});
 
-	//describe('"https" module', () => {
-	//  describe('over "http" proxy', () => {
-	//    it('should work', async () => {
-	//      httpsServer.once('request', function (req, res) {
-	//        res.end(JSON.stringify(req.headers));
-	//      });
+	describe('"https" module', () => {
+		it('should work over "https" proxy', async () => {
+			let gotReq = false;
+			httpsServer.once('request', function (req, res) {
+				res.end(JSON.stringify(req.headers));
+				gotReq = true;
+			});
 
-	//      const uri = 'http://localhost:' + proxyPort;
-	//      const agent = new ProxyAgent(uri);
+			process.env.HTTPS_PROXY = httpsProxyServerUrl.href;
+			const agent = new ProxyAgent({ rejectUnauthorized: false });
 
-	//      const opts = url.parse('https://localhost:' + httpsPort + '/test');
-	//      opts.agent = agent;
-	//      opts.rejectUnauthorized = false;
+			const res = await req(new URL('/test', httpsServerUrl), {
+				agent,
+				rejectUnauthorized: false,
+			});
+			const body = await json(res);
+			assert(gotReq);
+			assert.equal(httpsServerUrl.host, body.host);
+		});
 
-	//      const req = https.get(opts, function (res) {
-	//        toBuffer(res, function (err, buf) {
-	//          if (err) return done(err);
-	//          const data = JSON.parse(buf.toString('utf8'));
-	//          assert.equal('localhost:' + httpsPort, data.host);
-	//          done();
-	//        });
-	//      });
-	//      req.once('error', done);
-	//    });
-	//  });
+		describe('over "socks" proxy', () => {
+			it('should work', async () => {
+				let gotReq = false;
+				httpsServer.once('request', function (req, res) {
+					gotReq = true;
+					res.end(JSON.stringify(req.headers));
+				});
 
-	//  describe('over "https" proxy', () => {
-	//    it('should work', async () => {
-	//      let gotReq = false;
-	//      httpsServer.once('request', function (req, res) {
-	//        gotReq = true;
-	//        res.end(JSON.stringify(req.headers));
-	//      });
+				process.env.HTTP_PROXY = `socks://localhost:${socksPort}`;
+				const agent = new ProxyAgent();
 
-	//      const agent = new ProxyAgent({
-	//        protocol: 'https:',
-	//        host: 'localhost',
-	//        port: proxyHttpsPort,
-	//        rejectUnauthorized: false
-	//      });
-
-	//      const opts = url.parse('https://localhost:' + httpsPort + '/test');
-	//      opts.agent = agent;
-	//      opts.rejectUnauthorized = false;
-
-	//      const req = https.get(opts, function (res) {
-	//        toBuffer(res, function (err, buf) {
-	//          if (err) return done(err);
-	//          const data = JSON.parse(buf.toString('utf8'));
-	//          assert.equal('localhost:' + httpsPort, data.host);
-	//          assert(gotReq);
-	//          done();
-	//        });
-	//      });
-	//      req.once('error', done);
-	//    });
-	//  });
-
-	//  describe('over "socks" proxy', () => {
-	//    it('should work', async () => {
-	//      let gotReq = false;
-	//      httpsServer.once('request', function (req, res) {
-	//        gotReq = true;
-	//        res.end(JSON.stringify(req.headers));
-	//      });
-
-	//      const uri = 'socks://localhost:' + socksPort;
-	//      const agent = new ProxyAgent(uri);
-
-	//      const opts = url.parse('https://localhost:' + httpsPort + '/test');
-	//      opts.agent = agent;
-	//      opts.rejectUnauthorized = false;
-
-	//      const req = https.get(opts, function (res) {
-	//        toBuffer(res, function (err, buf) {
-	//          if (err) return done(err);
-	//          const data = JSON.parse(buf.toString('utf8'));
-	//          assert.equal('localhost:' + httpsPort, data.host);
-	//          assert(gotReq);
-	//          done();
-	//        });
-	//      });
-	//      req.once('error', done);
-	//    });
-	//  });
-	//});
+				const res = await req(new URL('/test', httpsServerUrl), {
+					agent,
+					rejectUnauthorized: false,
+				});
+				const body = await json(res);
+				assert(gotReq);
+				assert.equal(httpsServerUrl.host, body.host);
+			});
+		});
+	});
 });
