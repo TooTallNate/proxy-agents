@@ -263,7 +263,7 @@ describe('HttpsProxyAgent', () => {
 					rejectUnauthorized: false,
 				});
 				const body = await json(res);
-				assert.equal('localhost', body.host);
+				assert.equal(sslServerUrl.hostname, body.host);
 			}
 		);
 	});
