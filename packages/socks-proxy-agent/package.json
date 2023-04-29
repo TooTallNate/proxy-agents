@@ -1,0 +1,136 @@
+{
+  "name": "socks-proxy-agent",
+  "version": "7.0.0",
+  "description": "A SOCKS proxy `http.Agent` implementation for HTTP and HTTPS",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "author": {
+    "email": "nathan@tootallnate.net",
+    "name": "Nathan Rajlich",
+    "url": "http://n8.io/"
+  },
+  "contributors": [
+    {
+      "name": "Kiko Beats",
+      "email": "josefrancisco.verdu@gmail.com"
+    },
+    {
+      "name": "Josh Glazebrook",
+      "email": "josh@joshglazebrook.com"
+    },
+    {
+      "name": "talmobi",
+      "email": "talmobi@users.noreply.github.com"
+    },
+    {
+      "name": "Indospace.io",
+      "email": "justin@indospace.io"
+    },
+    {
+      "name": "Kilian von Pflugk",
+      "email": "github@jumoog.io"
+    },
+    {
+      "name": "Kyle",
+      "email": "admin@hk1229.cn"
+    },
+    {
+      "name": "Matheus Fernandes",
+      "email": "matheus.frndes@gmail.com"
+    },
+    {
+      "name": "Ricky Miller",
+      "email": "richardkazuomiller@gmail.com"
+    },
+    {
+      "name": "Shantanu Sharma",
+      "email": "shantanu34@outlook.com"
+    },
+    {
+      "name": "Tim Perry",
+      "email": "pimterry@gmail.com"
+    },
+    {
+      "name": "Vadim Baryshev",
+      "email": "vadimbaryshev@gmail.com"
+    },
+    {
+      "name": "jigu",
+      "email": "luo1257857309@gmail.com"
+    },
+    {
+      "name": "Alba Mendez",
+      "email": "me@jmendeth.com"
+    },
+    {
+      "name": "Дмитрий Гуденков",
+      "email": "Dimangud@rambler.ru"
+    },
+    {
+      "name": "Andrei Bitca",
+      "email": "63638922+andrei-bitca-dc@users.noreply.github.com"
+    },
+    {
+      "name": "Andrew Casey",
+      "email": "amcasey@users.noreply.github.com"
+    },
+    {
+      "name": "Brandon Ros",
+      "email": "brandonros1@gmail.com"
+    },
+    {
+      "name": "Dang Duy Thanh",
+      "email": "thanhdd.it@gmail.com"
+    },
+    {
+      "name": "Dimitar Nestorov",
+      "email": "8790386+dimitarnestorov@users.noreply.github.com"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/TooTallNate/node-socks-proxy-agent.git"
+  },
+  "bugs": {
+    "url": "https://github.com/TooTallNate/node-socks-proxy-agent/issues"
+  },
+  "keywords": [
+    "agent",
+    "http",
+    "https",
+    "proxy",
+    "socks",
+    "socks4",
+    "socks4a",
+    "socks5",
+    "socks5h"
+  ],
+  "dependencies": {
+    "agent-base": "^6.0.2",
+    "debug": "^4.3.4",
+    "socks": "^2.7.1"
+  },
+  "devDependencies": {
+    "@types/debug": "^4.1.7",
+    "@types/node": "^14.18.43",
+    "cacheable-lookup": "^6.1.0",
+    "dns2": "^2.1.0",
+    "mocha": "^9.2.2",
+    "socksv5": "github:TooTallNate/socksv5#fix/dstSock-close-event",
+    "tsconfig": "workspace:*",
+    "typescript": "^5.0.4"
+  },
+  "engines": {
+    "node": ">= 14"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "mocha --reporter spec",
+    "lint": "eslint . --ext .ts",
+    "prepublishOnly": "npm run build"
+  },
+  "license": "MIT"
+}

@@ -1,12 +1,6 @@
 name: Node CI
 
-on:
-  push:
-    branches:
-    - master
-    tags:
-    - '!*'
-  pull_request:
+on: [push]
 
 jobs:
   build:
@@ -15,32 +9,39 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        node-version: [6.x, 8.x, 10.x, 12.x, 14.x]
+        node-version: [14.x, 16.x, 18.x, 20.x]
+      fail-fast: false
 
     runs-on: ${{ matrix.os }}
 
     steps:
-    - uses: actions/checkout@v1
-
+    - uses: actions/checkout@v3
+    - uses: pnpm/action-setup@v2
+      with:
+        version: 7.32.2
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
+        cache: 'pnpm'
+    - run: pnpm install --frozen-lockfile
+    - run: pnpm build
+    - run: pnpm test
 
-    - name: Print Node.js Version
-      run: node --version
+  lint:
+    name: Lint
 
-    - name: Install Dependencies
-      run: npm install
-      env:
-        CI: true
+    runs-on: ubuntu-latest
 
-    - name: Run "build" step
-      run: npm run build --if-present
-      env:
-        CI: true
-
-    - name: Run tests
-      run: npm test
-      env:
-        CI: true
+    steps:
+    - uses: actions/checkout@v3
+    - uses: pnpm/action-setup@v2
+      with:
+        version: 7.32.2
+    - name: Use Node.js 20.x
+      uses: actions/setup-node@v3
+      with:
+        node-version: 20.x
+        cache: 'pnpm'
+    - run: pnpm install --frozen-lockfile
+    - run: pnpm lint

@@ -1,0 +1,57 @@
+{
+  "name": "pac-proxy-agent",
+  "version": "5.0.0",
+  "description": "A PAC file proxy `http.Agent` implementation for HTTP",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "mocha --reporter spec",
+    "prepublishOnly": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/TooTallNate/node-pac-proxy-agent.git"
+  },
+  "keywords": [
+    "pac",
+    "proxy",
+    "agent",
+    "http",
+    "https",
+    "socks",
+    "request",
+    "access"
+  ],
+  "author": "Nathan Rajlich <nathan@tootallnate.net> (http://n8.io/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/TooTallNate/node-pac-proxy-agent/issues"
+  },
+  "homepage": "https://github.com/TooTallNate/node-pac-proxy-agent",
+  "dependencies": {
+    "@tootallnate/once": "^2.0.0",
+    "agent-base": "^6.0.2",
+    "debug": "^4.3.4",
+    "get-uri": "^5.0.0",
+    "http-proxy-agent": "^5.0.0",
+    "https-proxy-agent": "^5.0.1",
+    "pac-resolver": "^5.0.1",
+    "socks-proxy-agent": "^7.0.0"
+  },
+  "devDependencies": {
+    "@types/debug": "^4.1.7",
+    "@types/node": "^14.18.43",
+    "mocha": "^6.2.3",
+    "proxy": "workspace:*",
+    "socksv5": "0.0.6",
+    "tsconfig": "workspace:*",
+    "typescript": "^5.0.4"
+  },
+  "engines": {
+    "node": ">= 14"
+  }
+}

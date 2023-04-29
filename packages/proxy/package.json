@@ -1,0 +1,53 @@
+{
+  "name": "proxy",
+  "version": "1.0.2",
+  "description": "An HTTP proxy written with Node.js (think Squid)",
+  "main": "./dist/proxy.js",
+  "types": "./dist/proxy.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "mocha --reporter spec",
+    "lint": "eslint . --ext .ts",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "http",
+    "https",
+    "proxy",
+    "connect",
+    "tunnel",
+    "squid",
+    "privoxy",
+    "apache",
+    "mod_proxy",
+    "via",
+    "x-forwarded-for"
+  ],
+  "author": "Nathan Rajlich <nathan@tootallnate.net> (http://n8.io/)",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/TooTallNate/proxy.git"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@tootallnate/once": "^2.0.0",
+    "args": "^5.0.3",
+    "basic-auth-parser": "0.0.2-1",
+    "debug": "^4.3.4"
+  },
+  "devDependencies": {
+    "@types/args": "^5.0.0",
+    "@types/debug": "^4.1.7",
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^14.18.43",
+    "mocha": "6",
+    "tsconfig": "workspace:*",
+    "typescript": "^5.0.4"
+  },
+  "engines": {
+    "node": ">= 14"
+  }
+}

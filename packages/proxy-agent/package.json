@@ -1,0 +1,61 @@
+{
+  "name": "proxy-agent",
+  "version": "5.0.0",
+  "description": "Maps proxy protocols to `http.Agent` implementations",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "jest --env node --verbose --bail",
+    "lint": "eslint . --ext .ts",
+    "prepublishOnly": "npm run build"
+  },
+  "engines": {
+    "node": ">= 14"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/TooTallNate/node-proxy-agent.git"
+  },
+  "keywords": [
+    "http",
+    "https",
+    "socks",
+    "agent",
+    "mapping",
+    "proxy"
+  ],
+  "author": "Nathan Rajlich <nathan@tootallnate.net> (http://n8.io/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/TooTallNate/node-proxy-agent/issues"
+  },
+  "homepage": "https://github.com/TooTallNate/node-proxy-agent",
+  "dependencies": {
+    "agent-base": "^6.0.2",
+    "debug": "^4.3.4",
+    "http-proxy-agent": "^5.0.0",
+    "https-proxy-agent": "^5.0.1",
+    "lru-cache": "^9.1.1",
+    "pac-proxy-agent": "^5.0.0",
+    "proxy-from-env": "^1.1.0",
+    "socks-proxy-agent": "^7.0.0"
+  },
+  "devDependencies": {
+    "@types/agent-base": "^4.2.0",
+    "@types/debug": "^4.1.7",
+    "@types/jest": "^29.5.1",
+    "@types/node": "^14.18.43",
+    "@types/proxy-from-env": "^1.0.1",
+    "async-listen": "^2.1.0",
+    "jest": "^29.5.0",
+    "proxy": "workspace:*",
+    "socksv5": "github:TooTallNate/socksv5#fix/dstSock-close-event",
+    "ts-jest": "^29.1.0",
+    "tsconfig": "workspace:*",
+    "typescript": "^5.0.4"
+  }
+}

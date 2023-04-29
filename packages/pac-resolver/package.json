@@ -1,0 +1,48 @@
+{
+  "name": "pac-resolver",
+  "version": "5.0.1",
+  "description": "Generates an asynchronous resolver function from a PAC file",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "degenerator": "^3.0.2",
+    "ip": "^1.1.5",
+    "netmask": "^2.0.2"
+  },
+  "devDependencies": {
+    "@types/ip": "^1.1.0",
+    "@types/netmask": "^1.0.30",
+    "@types/node": "^14.18.43",
+    "mocha": "^9.2.1",
+    "tsconfig": "workspace:*",
+    "typescript": "^5.0.4"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "mocha --reporter spec",
+    "lint": "eslint . --ext .ts",
+    "prepublishOnly": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/TooTallNate/node-pac-resolver.git"
+  },
+  "engines": {
+    "node": ">= 14"
+  },
+  "keywords": [
+    "pac",
+    "file",
+    "proxy",
+    "resolve",
+    "dns"
+  ],
+  "author": "Nathan Rajlich <nathan@tootallnate.net> (http://n8.io/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/TooTallNate/node-pac-resolver/issues"
+  }
+}
