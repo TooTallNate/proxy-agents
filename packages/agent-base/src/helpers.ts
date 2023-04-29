@@ -12,14 +12,15 @@ export async function toBuffer(stream: Readable): Promise<Buffer> {
     return Buffer.concat(chunks, length);
 }
 
-export async function json(stream: Readable): Promise<Record<string, string>> {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function json(stream: Readable): Promise<any> {
     const buf = await toBuffer(stream);
     return JSON.parse(buf.toString('utf8'));
 }
 
 export function req(
 	url: string | URL,
-	opts: https.RequestOptions
+	opts: https.RequestOptions = {}
 ): Promise<http.IncomingMessage> {
 	return new Promise((resolve, reject) => {
         const href = typeof url === 'string' ? url : url.href;

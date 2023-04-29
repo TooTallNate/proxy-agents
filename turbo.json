@@ -1,12 +1,21 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "globalEnv": ["HTTP_PROXY", "HTTPS_PROXY", "NO_PROXY"],
+  "globalEnv": [
+    "HTTP_PROXY",
+    "HTTPS_PROXY",
+    "NO_PROXY",
+    "NORDVPN_USERNAME",
+    "NORDVPN_PASSWORD"
+  ],
   "pipeline": {
     "build": {
       "dependsOn": ["^build"],
       "outputs": ["dist/**"]
     },
     "test": {
+      "dependsOn": ["build"]
+    },
+    "test-e2e": {
       "dependsOn": ["build"]
     },
     "lint": {}

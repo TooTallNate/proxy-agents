@@ -9,7 +9,8 @@
   ],
   "scripts": {
     "build": "tsc",
-    "test": "jest --env node --verbose --bail",
+    "test": "jest --env node --verbose --bail test/test.ts",
+    "test-e2e": "jest --env node --verbose --bail test/e2e.test.ts",
     "lint": "eslint src --ext .js,.ts",
     "prepublishOnly": "npm run build"
   },
