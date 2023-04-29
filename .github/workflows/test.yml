@@ -63,3 +63,6 @@ jobs:
         cache: 'pnpm'
     - run: pnpm install --frozen-lockfile
     - run: pnpm test-e2e
+      env:
+        NORDVPN_USERNAME: ${{ secrets.NORDVPN_USERNAME }}
+        NORDVPN_PASSWORD: ${{ secrets.NORDVPN_PASSWORD }}
