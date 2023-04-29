@@ -4,10 +4,10 @@ import { LRUCache } from 'lru-cache';
 import { Agent, AgentConnectOpts } from 'agent-base';
 import createDebug from 'debug';
 import { getProxyForUrl } from 'proxy-from-env';
-import { PacProxyAgent } from 'pac-proxy-agent';
-import { HttpProxyAgent } from 'http-proxy-agent';
-import { HttpsProxyAgent } from 'https-proxy-agent';
-import { SocksProxyAgent } from 'socks-proxy-agent';
+import { PacProxyAgent, PacProxyAgentOptions } from 'pac-proxy-agent';
+import { HttpProxyAgent, HttpProxyAgentOptions } from 'http-proxy-agent';
+import { HttpsProxyAgent, HttpsProxyAgentOptions } from 'https-proxy-agent';
+import { SocksProxyAgent, SocksProxyAgentOptions } from 'socks-proxy-agent';
 
 const debug = createDebug('proxy-agent');
 
@@ -43,6 +43,11 @@ function isValidProtocol(v: string): v is ValidProtocol {
 	return (PROTOCOLS as readonly string[]).includes(v);
 }
 
+export type ProxyAgentOptions = HttpProxyAgentOptions<""> &
+	HttpsProxyAgentOptions<""> &
+	SocksProxyAgentOptions &
+	PacProxyAgentOptions<"">;
+
 /**
  * Uses the appropriate `Agent` subclass based off of the "proxy"
  * environment variables that are currently set.
@@ -56,9 +61,12 @@ export class ProxyAgent extends Agent {
 	 */
 	cache = new LRUCache<string, Agent>({ max: 20 });
 
-	constructor() {
+	connectOpts?: ProxyAgentOptions;
+
+	constructor(opts?: ProxyAgentOptions) {
 		super();
 		debug('Creating new ProxyAgent instance');
+		this.connectOpts = opts;
 	}
 
 	async connect(
@@ -89,7 +97,7 @@ export class ProxyAgent extends Agent {
 			}
 			const ctor = proxies[proxyProto];
 			// @ts-expect-error meh…
-			agent = new ctor(proxy);
+			agent = new ctor(proxy, this.connectOpts);
 			this.cache.set(proxy, agent);
 		} else {
 			debug('Cache hit for proxy URL: %o', proxy);
