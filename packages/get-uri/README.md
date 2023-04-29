@@ -43,8 +43,8 @@ Missing Endpoints
 -----------------
 
 When you pass in a URI in which the resource referenced does not exist on the
-destination server, then a `NotFoundError` will be returned. The `code` of the
-error instance is set to `"ENOTFOUND"`, so you can special-case that in your code
+destination server, then a `NotFoundError` will be thrown. The `code` of the
+error instance is set to `"ENOTFOUND"`, so you can check for that value
 to detect when a bad filename is requested:
 
 ```ts
@@ -68,10 +68,10 @@ When calling `getUri()` with the same URI multiple times, the `get-uri` module
 supports sending an indicator that the remote resource has not been modified
 since the last time it has been retreived from that node process.
 
-To do this, pass in a `cache` option to the "options object" argument
+To do this, define a `cache` property on the "options object" argument
 with the value set to the `stream.Readable` instance that was previously
 returned. If the remote resource has not been changed since the last call for
-that same URI, then a `NotModifiedError` instance will be returned with it's
+that same URI, then a `NotModifiedError` instance will be thrown with its
 `code` property set to `"ENOTMODIFIED"`.
 
 When the `"ENOTMODIFIED"` error occurs, then you can safely re-use the
