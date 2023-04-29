@@ -1,6 +1,6 @@
 import retry from 'async-retry';
 import { req, json } from 'agent-base';
-import { HttpsProxyAgent } from '../src';
+import { SocksProxyAgent } from '../src';
 
 interface NordVPNServer {
 	name: string;
@@ -21,11 +21,11 @@ const findNordVpnServer = () =>
 			}
 			const body = await json(res);
 			const servers = (body as NordVPNServer[]).filter(
-				(s) => s.features.proxy_ssl
+				(s) => s.features.socks
 			);
 			if (servers.length === 0) {
 				throw new Error(
-					'Could not find `https` proxy server from NordVPN'
+					'Could not find `socks` proxy server from NordVPN'
 				);
 			}
 			const server = servers[Math.floor(Math.random() * servers.length)];
@@ -47,7 +47,7 @@ async function getRealIP(): Promise<string> {
 	return body.request.headers['x-real-ip'];
 }
 
-describe('HttpsProxyAgent', () => {
+describe('SocksProxyAgent', () => {
 	it('should work over NordVPN proxy', async () => {
 		const { NORDVPN_USERNAME, NORDVPN_PASSWORD } = process.env;
 		if (!NORDVPN_USERNAME) {
@@ -62,16 +62,14 @@ describe('HttpsProxyAgent', () => {
 			findNordVpnServer(),
 		]);
 		console.log(
-			`Using NordVPN HTTPS proxy server: ${server.name} (${server.domain})`
+			`Using NordVPN SOCKS proxy server: ${server.name} (${server.domain})`
 		);
 
 		const username = encodeURIComponent(NORDVPN_USERNAME);
 		const password = encodeURIComponent(NORDVPN_PASSWORD);
 
-		// NordVPN runs their HTTPS proxy servers on port 89
-		// https://www.reddit.com/r/nordvpn/comments/hvz48h/nordvpn_https_proxy/
-		const agent = new HttpsProxyAgent(
-			`https://${username}:${password}@${server.domain}:89`
+		const agent = new SocksProxyAgent(
+			`socks://${username}:${password}@${server.domain}`
 		);
 
 		const res = await req('https://dump.n8.io', { agent });
