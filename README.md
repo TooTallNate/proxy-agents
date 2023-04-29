@@ -1,6 +1,5 @@
 Node.js HTTP Proxy Agents Monorepo
 ==================================
-### Turn a function into an [`http.Agent`][http.Agent] instance
 [![Build Status](https://github.com/TooTallNate/proxy-agents/workflows/Node%20CI/badge.svg)](https://github.com/TooTallNate/proxy-agents/actions?workflow=Node+CI)
 
 This monorepo contains various Node.js HTTP Agent implementations that operate over proxies using various protocols.
