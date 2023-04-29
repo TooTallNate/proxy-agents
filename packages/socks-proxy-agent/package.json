@@ -1,10 +1,12 @@
 {
   "name": "socks-proxy-agent",
-  "description": "A SOCKS proxy `http.Agent` implementation for HTTP and HTTPS",
-  "homepage": "https://github.com/TooTallNate/node-socks-proxy-agent#readme",
   "version": "7.0.0",
+  "description": "A SOCKS proxy `http.Agent` implementation for HTTP and HTTPS",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "author": {
     "email": "nathan@tootallnate.net",
     "name": "Nathan Rajlich",
@@ -124,9 +126,6 @@
   "engines": {
     "node": ">= 14"
   },
-  "files": [
-    "dist"
-  ],
   "scripts": {
     "build": "tsc",
     "test": "mocha --reporter spec",

@@ -3,7 +3,7 @@
   "version": "3.0.4",
   "description": "Compiles sync functions into async generator functions",
   "main": "./dist/index.js",
-  "typings": "./dist/index.d.ts",
+  "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],

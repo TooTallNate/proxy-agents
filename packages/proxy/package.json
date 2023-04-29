@@ -4,6 +4,9 @@
   "description": "An HTTP proxy written with Node.js (think Squid)",
   "main": "./dist/proxy.js",
   "types": "./dist/proxy.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc",
     "test": "mocha --reporter spec",

@@ -4,6 +4,9 @@
   "description": "Maps proxy protocols to `http.Agent` implementations",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc",
     "test": "jest --env node --verbose --bail",

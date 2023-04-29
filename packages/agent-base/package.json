@@ -2,11 +2,10 @@
   "name": "agent-base",
   "version": "6.0.2",
   "description": "Turn a function into an `http.Agent` instance",
-  "main": "dist/index.js",
-  "typings": "dist/index.d.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "files": [
-    "dist",
-    "src"
+    "dist"
   ],
   "scripts": {
     "build": "tsc",
