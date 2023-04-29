@@ -3,8 +3,8 @@ import * as net from 'net';
 import * as url from 'url';
 import * as http from 'http';
 import * as os from 'os';
-import { join } from 'path';
-import { readFileSync } from 'fs';
+import pkg from './pkg';
+
 import createDebug from 'debug';
 
 // log levels
@@ -17,11 +17,6 @@ const debug = {
 
 // hostname
 const hostname = os.hostname();
-
-// proxy server version
-const { version } = JSON.parse(
-	readFileSync(join(__dirname, '../package.json'), 'utf8')
-);
 
 export interface ProxyServer extends http.Server {
 	authenticate?: (req: http.IncomingMessage) => boolean | Promise<boolean>;
@@ -108,7 +103,7 @@ async function onrequest(
 	const headers: http.OutgoingHttpHeaders = {};
 	let hasXForwardedFor = false;
 	let hasVia = false;
-	const via = '1.1 ' + hostname + ' (proxy/' + version + ')';
+	const via = '1.1 ' + hostname + ' (proxy/' + pkg.version + ')';
 
 	for (const header of eachHeader(req)) {
 		debug.request('Request Header: %o', header);

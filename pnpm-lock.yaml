@@ -332,6 +332,9 @@ importers:
 
   packages/proxy:
     dependencies:
+      '@tootallnate/once':
+        specifier: ^2.0.0
+        version: 2.0.0
       args:
         specifier: ^5.0.3
         version: 5.0.3
@@ -342,6 +345,9 @@ importers:
         specifier: ^4.3.4
         version: 4.3.4
     devDependencies:
+      '@types/args':
+        specifier: ^5.0.0
+        version: 5.0.0
       '@types/debug':
         specifier: ^4.1.7
         version: 4.1.7
@@ -1177,6 +1183,10 @@ packages:
     dependencies:
       '@types/events': 3.0.0
       '@types/node': 14.18.43
+    dev: true
+
+  /@types/args@5.0.0:
+    resolution: {integrity: sha512-3fNb8ja/wQWFrHf5SQC5S3n0iBXdnT3PTPEJni2tBQRuv0BnAsz5u12U5gPRBSR7xdY6fI6QjWoTK/8ysuTt0w==}
     dev: true
 
   /@types/babel__core@7.20.0:
