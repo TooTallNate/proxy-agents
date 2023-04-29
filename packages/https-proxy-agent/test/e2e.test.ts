@@ -1,3 +1,4 @@
+import retry from 'async-retry';
 import { req, json } from 'agent-base';
 import { HttpsProxyAgent } from '../src';
 
@@ -10,15 +11,34 @@ interface NordVPNServer {
 
 jest.setTimeout(30000);
 
-async function findNordVpnServer(): Promise<NordVPNServer> {
-	const res = await req('https://nordvpn.com/api/server');
-	const body = await json(res);
-	const server = (body as NordVPNServer[]).find((s) => s.features.proxy_ssl);
-	if (!server) {
-		throw new Error('Could not find `https` proxy server from NordVPN');
-	}
-	return server;
-}
+const findNordVpnServer = () =>
+	retry(
+		async (): Promise<NordVPNServer> => {
+			const res = await req('https://nordvpn.com/api/server');
+			if (res.statusCode !== 200) {
+				res.socket.destroy();
+				throw new Error(`Status code: ${res.statusCode}`);
+			}
+			const body = await json(res);
+			const server = (body as NordVPNServer[]).find(
+				(s) => s.features.proxy_ssl
+			);
+			if (!server) {
+				throw new Error(
+					'Could not find `https` proxy server from NordVPN'
+				);
+			}
+			return server;
+		},
+		{
+			retries: 5,
+			onRetry(err, attempt) {
+				console.log(
+					`Failed to get NordVPN servers. Retrying… (attempt #${attempt}, ${err.message})`
+				);
+			},
+		}
+	);
 
 async function getRealIP(): Promise<string> {
 	const res = await req('https://dump.n8.io');
