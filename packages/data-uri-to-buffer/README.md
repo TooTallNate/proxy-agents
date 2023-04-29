@@ -1,7 +1,6 @@
 data-uri-to-buffer
 ==================
 ### Generate a Buffer instance from a [Data URI][rfc] string
-[![Build Status](https://travis-ci.org/TooTallNate/node-data-uri-to-buffer.svg?branch=master)](https://travis-ci.org/TooTallNate/node-data-uri-to-buffer)
 
 This module accepts a ["data" URI][rfc] String of data, and returns a
 node.js `Buffer` instance with the decoded data.

@@ -1,7 +1,6 @@
 socks-proxy-agent
 ================
 ### A SOCKS proxy `http.Agent` implementation for HTTP and HTTPS
-[![Build Status](https://github.com/TooTallNate/node-socks-proxy-agent/workflows/Node%20CI/badge.svg)](https://github.com/TooTallNate/node-socks-proxy-agent/actions?workflow=Node+CI)
 
 This module provides an `http.Agent` implementation that connects to a
 specified SOCKS proxy server, and can be used with the built-in `http`

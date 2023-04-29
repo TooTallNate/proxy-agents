@@ -1,7 +1,6 @@
 pac-resolver
 ============
 ### Generates an asynchronous resolver function from a [PAC file][pac-wikipedia]
-[![Build Status](https://github.com/TooTallNate/node-pac-resolver/workflows/Node%20CI/badge.svg)](https://github.com/TooTallNate/node-pac-resolver/actions?workflow=Node+CI)
 
 
 This module accepts a JavaScript String of code, which is meant to be a

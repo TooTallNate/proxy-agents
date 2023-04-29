@@ -1,7 +1,6 @@
 get-uri
 =======
 ### Returns a `stream.Readable` from a URI string
-[![Build Status](https://github.com/TooTallNate/node-get-uri/workflows/Node%20CI/badge.svg)](https://github.com/TooTallNate/node-get-uri/actions?workflow=Node+CI)
 
 This high-level module accepts a URI string and returns a `Readable` stream
 instance. There is built-in support for a variety of "protocols", and it's

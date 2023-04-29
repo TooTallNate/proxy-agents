@@ -1,7 +1,6 @@
 degenerator
 ===========
 ### Compiles sync functions into async functions
-[![Build Status](https://github.com/TooTallNate/node-degenerator/workflows/Node%20CI/badge.svg)](https://github.com/TooTallNate/node-degenerator/actions?workflow=Node+CI)
 
 Sometimes you need to write sync looking code that's really async under the hood.
 This module takes a String to one or more synchronous JavaScript functions, and
