@@ -5,7 +5,6 @@
     "build": "turbo run build",
     "lint": "turbo run lint",
     "test": "turbo run test",
-    "vercel-build": "turbo run pack",
     "test-e2e": "turbo run test-e2e",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
