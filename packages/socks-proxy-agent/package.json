@@ -137,6 +137,7 @@
     "test": "mocha --reporter spec test/test.js",
     "test-e2e": "jest --env node --verbose --bail test/e2e.test.ts",
     "lint": "eslint . --ext .ts",
+    "pack": "node ../../scripts/pack.mjs",
     "prepublishOnly": "npm run build"
   },
   "license": "MIT"

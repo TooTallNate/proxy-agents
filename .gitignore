@@ -24,3 +24,7 @@ yarn-error.log*
 
 # vercel
 .vercel
+
+# `pack` script
+*.tgz
+/public

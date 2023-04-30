@@ -10,6 +10,8 @@
   "scripts": {
     "build": "tsc",
     "test": "mocha --reporter spec",
+    "lint": "eslint --ext .ts",
+    "pack": "node ../../scripts/pack.mjs",
     "prepublishOnly": "npm run build"
   },
   "repository": {
