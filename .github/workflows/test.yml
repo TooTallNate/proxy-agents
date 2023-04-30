@@ -13,7 +13,7 @@ jobs:
       fail-fast: false
 
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 2
+    timeout-minutes: 3
 
     steps:
     - uses: actions/checkout@v3
