@@ -18,6 +18,10 @@
     "test-e2e": {
       "dependsOn": ["build"]
     },
+    "pack": {
+      "env": ["VERCEL_URL"],
+      "dependsOn": ["build"]
+    },
     "lint": {}
   }
 }

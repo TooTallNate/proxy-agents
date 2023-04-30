@@ -11,7 +11,8 @@
     "build": "tsc",
     "test": "jest --env node --verbose --bail test/test.ts",
     "test-e2e": "jest --env node --verbose --bail test/e2e.test.ts",
-    "lint": "eslint src --ext .js,.ts",
+    "lint": "eslint --ext .ts",
+    "pack": "node ../../scripts/pack.mjs",
     "prepublishOnly": "npm run build"
   },
   "repository": {

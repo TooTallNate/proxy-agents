@@ -11,6 +11,7 @@
     "build": "tsc",
     "test": "jest --env node --verbose --bail",
     "lint": "eslint . --ext .ts",
+    "pack": "node ../../scripts/pack.mjs",
     "prepublishOnly": "npm run build"
   },
   "engines": {
