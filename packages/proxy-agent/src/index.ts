@@ -1,6 +1,6 @@
 import * as http from 'http';
 import * as https from 'https';
-import { LRUCache } from 'lru-cache';
+import LRUCache from 'lru-cache';
 import { Agent, AgentConnectOpts } from 'agent-base';
 import createDebug from 'debug';
 import { getProxyForUrl } from 'proxy-from-env';
