@@ -388,8 +388,8 @@ importers:
         specifier: ^5.0.1
         version: link:../https-proxy-agent
       lru-cache:
-        specifier: ^8.0.5
-        version: 8.0.5
+        specifier: ^7.14.1
+        version: 7.14.1
       pac-proxy-agent:
         specifier: ^5.0.0
         version: link:../pac-proxy-agent
@@ -3731,9 +3731,9 @@ packages:
       yallist: 4.0.0
     dev: true
 
-  /lru-cache@8.0.5:
-    resolution: {integrity: sha512-MhWWlVnuab1RG5/zMRRcVGXZLCXrZTgfwMikgzCegsPnG62yDQo5JnqKkrK4jO5iKqDAZGItAqN5CtKBCBWRUA==}
-    engines: {node: '>=16.14'}
+  /lru-cache@7.14.1:
+    resolution: {integrity: sha512-ysxwsnTKdAx96aTRdhDOCQfDgbHnt8SK0KY8SEjO0wHinhWOFTESbjVCMPbU1uGXg/ch4lifqx0wfjOawU2+WA==}
+    engines: {node: '>=12'}
     dev: false
 
   /lru-cache@9.1.1:
