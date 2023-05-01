@@ -32,25 +32,25 @@ describe('HttpsProxyAgent', () => {
 	beforeAll(async () => {
 		// setup target HTTP server
 		server = http.createServer();
-		serverUrl = await listen(server) as URL;
+		serverUrl = (await listen(server)) as URL;
 	});
 
 	beforeAll(async () => {
 		// setup HTTP proxy server
 		proxy = createProxy();
-		proxyUrl = await listen(proxy) as URL;
+		proxyUrl = (await listen(proxy)) as URL;
 	});
 
 	beforeAll(async () => {
 		// setup target HTTPS server
 		sslServer = https.createServer(sslOptions);
-		sslServerUrl = await listen(sslServer) as URL;
+		sslServerUrl = (await listen(sslServer)) as URL;
 	});
 
 	beforeAll(async () => {
 		// setup SSL HTTP proxy server
 		sslProxy = createProxy(https.createServer(sslOptions));
-		sslProxyUrl = await listen(sslProxy) as URL;
+		sslProxyUrl = (await listen(sslProxy)) as URL;
 	});
 
 	// shut down the test HTTP servers
@@ -79,15 +79,11 @@ describe('HttpsProxyAgent', () => {
 		});
 		describe('secureProxy', () => {
 			it('should be `false` when "http:" protocol is used', () => {
-				const agent = new HttpsProxyAgent(
-					proxyUrl
-				);
+				const agent = new HttpsProxyAgent(proxyUrl);
 				assert.equal(false, agent.secureProxy);
 			});
 			it('should be `true` when "https:" protocol is used', () => {
-				const agent = new HttpsProxyAgent(
-					sslProxyUrl
-				);
+				const agent = new HttpsProxyAgent(sslProxyUrl);
 				assert.equal(true, agent.secureProxy);
 			});
 		});
@@ -178,14 +174,11 @@ describe('HttpsProxyAgent', () => {
 		});
 
 		it('should allow custom proxy "headers"', async () => {
-			const agent = new HttpsProxyAgent(
-				serverUrl,
-				{
-					headers: {
-						Foo: 'bar',
-					},
-				}
-			);
+			const agent = new HttpsProxyAgent(serverUrl, {
+				headers: {
+					Foo: 'bar',
+				},
+			});
 
 			const connectPromise = once(server, 'connect');
 
@@ -252,10 +245,9 @@ describe('HttpsProxyAgent', () => {
 					res.end(JSON.stringify(req.headers));
 				});
 
-				const agent = new HttpsProxyAgent(
-					sslProxyUrl,
-					{ rejectUnauthorized: false }
-				);
+				const agent = new HttpsProxyAgent(sslProxyUrl, {
+					rejectUnauthorized: false,
+				});
 				agent.defaultPort = parseInt(sslServerUrl.port, 10);
 
 				const res = await req(sslServerUrl, {

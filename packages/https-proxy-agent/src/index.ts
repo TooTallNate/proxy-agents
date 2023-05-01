@@ -15,7 +15,7 @@ type Protocol<T> = T extends `${infer Protocol}:${infer _}` ? Protocol : never;
 type ConnectOptsMap = {
 	http: Omit<net.TcpNetConnectOpts, 'host' | 'port'>;
 	https: Omit<tls.ConnectionOptions, 'host' | 'port'>;
-}
+};
 
 type ConnectOpts<T> = {
 	[P in keyof ConnectOptsMap]: Protocol<T> extends P
@@ -40,7 +40,7 @@ export type HttpsProxyAgentOptions<T> = ConnectOpts<T> & {
  * the connection to the proxy server has been established.
  */
 export class HttpsProxyAgent<Uri extends string> extends Agent {
-	static protocols = ["http", "https"] as const;
+	static protocols = ['http', 'https'] as const;
 
 	readonly proxy: URL;
 	proxyHeaders: OutgoingHttpHeaders;
@@ -52,12 +52,15 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 
 	constructor(proxy: Uri | URL, opts?: HttpsProxyAgentOptions<Uri>) {
 		super();
-		this.proxy = typeof proxy === "string" ? new URL(proxy) : proxy;
+		this.proxy = typeof proxy === 'string' ? new URL(proxy) : proxy;
 		this.proxyHeaders = opts?.headers ?? {};
-		debug("Creating new HttpsProxyAgent instance: %o", this.proxy.href);
+		debug('Creating new HttpsProxyAgent instance: %o', this.proxy.href);
 
 		// Trim off the brackets from IPv6 addresses
-		const host = (this.proxy.hostname || this.proxy.host).replace(/^\[|\]$/g, '');
+		const host = (this.proxy.hostname || this.proxy.host).replace(
+			/^\[|\]$/g,
+			''
+		);
 		const port = this.proxy.port
 			? parseInt(this.proxy.port, 10)
 			: this.secureProxy
@@ -89,10 +92,10 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 		// Create a socket connection to the proxy server.
 		let socket: net.Socket;
 		if (secureProxy) {
-			debug("Creating `tls.Socket`: %o", this.connectOpts);
+			debug('Creating `tls.Socket`: %o', this.connectOpts);
 			socket = tls.connect(this.connectOpts);
 		} else {
-			debug("Creating `net.Socket`: %o", this.connectOpts);
+			debug('Creating `net.Socket`: %o', this.connectOpts);
 			socket = net.connect(this.connectOpts);
 		}
 
@@ -105,9 +108,9 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 			const auth = `${decodeURIComponent(
 				proxy.username
 			)}:${decodeURIComponent(proxy.password)}`;
-			headers["Proxy-Authorization"] = `Basic ${Buffer.from(
+			headers['Proxy-Authorization'] = `Basic ${Buffer.from(
 				auth
-			).toString("base64")}`;
+			).toString('base64')}`;
 		}
 
 		// The `Host` header should only include the port
@@ -118,7 +121,7 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 		}
 		headers.Host = host;
 
-		headers.Connection = "close";
+		headers.Connection = 'close';
 		for (const name of Object.keys(headers)) {
 			payload += `${name}: ${headers[name]}\r\n`;
 		}
@@ -130,15 +133,15 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 		const { statusCode, buffered } = await proxyResponsePromise;
 
 		if (statusCode === 200) {
-			req.once("socket", resume);
+			req.once('socket', resume);
 
 			if (opts.secureEndpoint) {
 				// The proxy is connecting to a TLS server, so upgrade
 				// this socket connection to a TLS connection.
-				debug("Upgrading socket connection to TLS");
+				debug('Upgrading socket connection to TLS');
 				const servername = opts.servername || opts.host;
 				const s = tls.connect({
-					...omit(opts, "host", "path", "port"),
+					...omit(opts, 'host', 'path', 'port'),
 					socket,
 					servername,
 				});
@@ -169,9 +172,9 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 		fakeSocket.readable = true;
 
 		// Need to wait for the "socket" event to re-play the "data" events.
-		req.once("socket", (s: net.Socket) => {
-			debug("Replaying proxy buffer for failed request");
-			assert(s.listenerCount("data") > 0);
+		req.once('socket', (s: net.Socket) => {
+			debug('Replaying proxy buffer for failed request');
+			assert(s.listenerCount('data') > 0);
 
 			// Replay the "buffered" Buffer onto the fake `socket`, since at
 			// this point the HTTP module machinery has been hooked up for
