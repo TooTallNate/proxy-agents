@@ -14,7 +14,7 @@ import {
 	getUri,
 	protocols as gProtocols,
 	ProtocolOpts as GetUriOptions,
-} from "get-uri";
+} from 'get-uri';
 import {
 	createPacResolver,
 	FindProxyForURL,
@@ -28,8 +28,8 @@ type Protocols = keyof typeof gProtocols;
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 type Protocol<T> = T extends `pac+${infer P}:${infer _}`
 	? P
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	: T extends `${infer P}:${infer _}`
+	: // eslint-disable-next-line @typescript-eslint/no-unused-vars
+	T extends `${infer P}:${infer _}`
 	? P
 	: never;
 
@@ -55,11 +55,11 @@ export type PacProxyAgentOptions<T> = PacResolverOptions &
  */
 export class PacProxyAgent<Uri extends string> extends Agent {
 	static readonly protocols: `pac-${Protocols}`[] = [
-		"pac-data",
-		"pac-file",
-		"pac-ftp",
-		"pac-http",
-		"pac-https",
+		'pac-data',
+		'pac-file',
+		'pac-ftp',
+		'pac-http',
+		'pac-https',
 	];
 
 	uri: URL;
@@ -73,16 +73,16 @@ export class PacProxyAgent<Uri extends string> extends Agent {
 		super();
 
 		// Strip the "pac+" prefix
-		const uriStr = typeof uri === "string" ? uri : uri.href;
-		this.uri = new URL(uriStr.replace(/^pac\+/i, ""));
+		const uriStr = typeof uri === 'string' ? uri : uri.href;
+		this.uri = new URL(uriStr.replace(/^pac\+/i, ''));
 
-		debug("Creating PacProxyAgent with URI %o", this.uri.href);
+		debug('Creating PacProxyAgent with URI %o', this.uri.href);
 
 		// @ts-expect-error Not sure why TS is complaining here…
 		this.opts = { ...opts };
 		this.cache = undefined;
 		this.resolver = undefined;
-		this.resolverHash = "";
+		this.resolverHash = '';
 		this.resolverPromise = undefined;
 
 		// For `PacResolver`
@@ -118,17 +118,17 @@ export class PacProxyAgent<Uri extends string> extends Agent {
 			const code = await this.loadPacFile();
 
 			// Create a sha1 hash of the JS code
-			const hash = crypto.createHash("sha1").update(code).digest("hex");
+			const hash = crypto.createHash('sha1').update(code).digest('hex');
 
 			if (this.resolver && this.resolverHash === hash) {
 				debug(
-					"Same sha1 hash for code - contents have not changed, reusing previous proxy resolver"
+					'Same sha1 hash for code - contents have not changed, reusing previous proxy resolver'
 				);
 				return this.resolver;
 			}
 
 			// Cache the resolver
-			debug("Creating new proxy resolver instance");
+			debug('Creating new proxy resolver instance');
 			this.resolver = createPacResolver(code, this.opts);
 
 			// Store that sha1 hash for future comparison purposes
@@ -138,10 +138,10 @@ export class PacProxyAgent<Uri extends string> extends Agent {
 		} catch (err: unknown) {
 			if (
 				this.resolver &&
-				(err as NodeJS.ErrnoException).code === "ENOTMODIFIED"
+				(err as NodeJS.ErrnoException).code === 'ENOTMODIFIED'
 			) {
 				debug(
-					"Got ENOTMODIFIED response, reusing previous proxy resolver"
+					'Got ENOTMODIFIED response, reusing previous proxy resolver'
 				);
 				return this.resolver;
 			}
@@ -155,16 +155,16 @@ export class PacProxyAgent<Uri extends string> extends Agent {
 	 * @api private
 	 */
 	private async loadPacFile(): Promise<string> {
-		debug("Loading PAC file: %o", this.uri);
+		debug('Loading PAC file: %o', this.uri);
 
 		const rs = await getUri(this.uri, { ...this.opts, cache: this.cache });
-		debug("Got `Readable` instance for URI");
+		debug('Got `Readable` instance for URI');
 		this.cache = rs;
 
 		const buf = await toBuffer(rs);
-		debug("Read %o byte PAC file from URI", buf.length);
+		debug('Read %o byte PAC file from URI', buf.length);
 
-		return buf.toString("utf8");
+		return buf.toString('utf8');
 	}
 
 	/**
@@ -184,7 +184,7 @@ export class PacProxyAgent<Uri extends string> extends Agent {
 		const defaultPort = secureEndpoint ? 443 : 80;
 		let path = req.path;
 		let search: string | null = null;
-		const firstQuestion = path.indexOf("?");
+		const firstQuestion = path.indexOf('?');
 		if (firstQuestion !== -1) {
 			search = path.substring(firstQuestion);
 			path = path.substring(0, firstQuestion);
@@ -192,7 +192,7 @@ export class PacProxyAgent<Uri extends string> extends Agent {
 
 		const urlOpts = {
 			...opts,
-			protocol: secureEndpoint ? "https:" : "http:",
+			protocol: secureEndpoint ? 'https:' : 'http:',
 			pathname: path,
 			search,
 
@@ -206,12 +206,12 @@ export class PacProxyAgent<Uri extends string> extends Agent {
 		};
 		const url = format(urlOpts);
 
-		debug("url: %o", url);
+		debug('url: %o', url);
 		let result = await resolver(url);
 
 		// Default to "DIRECT" if a falsey value was returned (or nothing)
 		if (!result) {
-			result = "DIRECT";
+			result = 'DIRECT';
 		}
 
 		const proxies = String(result)
@@ -219,34 +219,34 @@ export class PacProxyAgent<Uri extends string> extends Agent {
 			.split(/\s*;\s*/g)
 			.filter(Boolean);
 
-		if (this.opts.fallbackToDirect && !proxies.includes("DIRECT")) {
-			proxies.push("DIRECT");
+		if (this.opts.fallbackToDirect && !proxies.includes('DIRECT')) {
+			proxies.push('DIRECT');
 		}
 
 		for (const proxy of proxies) {
 			let agent: Agent | null = null;
 			let socket: net.Socket | null = null;
 			const [type, target] = proxy.split(/\s+/);
-			debug("Attempting to use proxy: %o", proxy);
+			debug('Attempting to use proxy: %o', proxy);
 
-			if (type === "DIRECT") {
+			if (type === 'DIRECT') {
 				// Direct connection to the destination endpoint
 				socket = secureEndpoint ? tls.connect(opts) : net.connect(opts);
-			} else if (type === "SOCKS" || type === "SOCKS5") {
+			} else if (type === 'SOCKS' || type === 'SOCKS5') {
 				// Use a SOCKSv5h proxy
 				agent = new SocksProxyAgent(`socks://${target}`, this.opts);
-			} else if (type === "SOCKS4") {
+			} else if (type === 'SOCKS4') {
 				// Use a SOCKSv4a proxy
 				agent = new SocksProxyAgent(`socks4a://${target}`, this.opts);
 			} else if (
-				type === "PROXY" ||
-				type === "HTTP" ||
-				type === "HTTPS"
+				type === 'PROXY' ||
+				type === 'HTTP' ||
+				type === 'HTTPS'
 			) {
 				// Use an HTTP or HTTPS proxy
 				// http://dev.chromium.org/developers/design-documents/secure-web-proxy
 				const proxyURL = `${
-					type === "HTTPS" ? "https" : "http"
+					type === 'HTTPS' ? 'https' : 'http'
 				}://${target}`;
 				if (secureEndpoint) {
 					agent = new HttpsProxyAgent(proxyURL, this.opts);
@@ -258,24 +258,24 @@ export class PacProxyAgent<Uri extends string> extends Agent {
 			try {
 				if (socket) {
 					// "DIRECT" connection, wait for connection confirmation
-					await once(socket, "connect");
-					req.emit("proxy", { proxy, socket });
+					await once(socket, 'connect');
+					req.emit('proxy', { proxy, socket });
 					return socket;
 				}
 				if (agent) {
 					const s = await agent.connect(req, opts);
 					if (!(s instanceof net.Socket)) {
 						throw new Error(
-							"Expected a `net.Socket` to be returned from agent"
+							'Expected a `net.Socket` to be returned from agent'
 						);
 					}
-					req.emit("proxy", { proxy, socket: s });
+					req.emit('proxy', { proxy, socket: s });
 					return s;
 				}
 				throw new Error(`Could not determine proxy type for: ${proxy}`);
 			} catch (err) {
-				debug("Got error for proxy %o: %o", proxy, err);
-				req.emit("proxy", { proxy, error: err });
+				debug('Got error for proxy %o: %o', proxy, err);
+				req.emit('proxy', { proxy, error: err });
 			}
 		}
 

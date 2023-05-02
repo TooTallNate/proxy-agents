@@ -84,11 +84,11 @@ export interface SocksProxyAgentOptions
 
 export class SocksProxyAgent extends Agent {
 	static protocols = [
-		"socks",
-		"socks4",
-		"socks4a",
-		"socks5",
-		"socks5h",
+		'socks',
+		'socks4',
+		'socks4a',
+		'socks5',
+		'socks5h',
 	] as const;
 
 	private readonly shouldLookup: boolean;
@@ -99,7 +99,7 @@ export class SocksProxyAgent extends Agent {
 	constructor(uri: string | URL, opts?: SocksProxyAgentOptionsExtra) {
 		super();
 
-		const url = typeof uri === "string" ? new URL(uri) : uri;
+		const url = typeof uri === 'string' ? new URL(uri) : uri;
 		const { proxy, lookup } = parseSocksURL(url);
 
 		this.shouldLookup = lookup;
@@ -123,7 +123,7 @@ export class SocksProxyAgent extends Agent {
 		const { port, lookup: lookupFn = dns.lookup } = opts;
 
 		if (!host) {
-			throw new Error("No `host` defined!");
+			throw new Error('No `host` defined!');
 		}
 
 		if (shouldLookup) {
@@ -145,9 +145,9 @@ export class SocksProxyAgent extends Agent {
 			proxy,
 			destination: {
 				host,
-				port: typeof port === "number" ? port : parseInt(port, 10),
+				port: typeof port === 'number' ? port : parseInt(port, 10),
 			},
-			command: "connect",
+			command: 'connect',
 			timeout: timeout ?? undefined,
 		};
 
@@ -157,30 +157,30 @@ export class SocksProxyAgent extends Agent {
 			if (tlsSocket) tlsSocket.destroy();
 		};
 
-		debug("Creating socks proxy connection: %o", socksOpts);
+		debug('Creating socks proxy connection: %o', socksOpts);
 		const { socket } = await SocksClient.createConnection(socksOpts);
-		debug("Successfully created socks proxy connection");
+		debug('Successfully created socks proxy connection');
 
 		if (timeout !== null) {
 			socket.setTimeout(timeout);
-			socket.on("timeout", () => cleanup());
+			socket.on('timeout', () => cleanup());
 		}
 
 		if (opts.secureEndpoint) {
 			// The proxy is connecting to a TLS server, so upgrade
 			// this socket connection to a TLS connection.
-			debug("Upgrading socket connection to TLS");
+			debug('Upgrading socket connection to TLS');
 			const servername = opts.servername ?? opts.host;
 
 			const tlsSocket = tls.connect({
-				...omit(opts, "host", "path", "port"),
+				...omit(opts, 'host', 'path', 'port'),
 				socket,
 				servername,
 				...this.tlsConnectionOptions,
 			});
 
-			tlsSocket.once("error", (error) => {
-				debug("Socket TLS error", error.message);
+			tlsSocket.once('error', (error) => {
+				debug('Socket TLS error', error.message);
 				cleanup(tlsSocket);
 			});
 

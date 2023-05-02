@@ -162,7 +162,7 @@ describe('SocksProxyAgent', () => {
 				headers: { foo: 'bar' },
 			});
 			assert.equal(404, res.statusCode);
-			
+
 			const body = await json(res);
 			assert.equal('bar', body.foo);
 		});

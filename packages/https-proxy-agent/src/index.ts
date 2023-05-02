@@ -69,7 +69,7 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 		this.connectOpts = {
 			// Attempt to negotiate http/1.1 for proxy servers that support http/2
 			ALPNProtocols: ['http/1.1'],
-			...(opts ? omit(opts, "headers") : null),
+			...(opts ? omit(opts, 'headers') : null),
 			host,
 			port,
 		};

@@ -415,7 +415,7 @@ async function onconnect(
 	const lastColon = req.url.lastIndexOf(':');
 	const host = req.url.substring(0, lastColon);
 	const port = parseInt(req.url.substring(lastColon + 1), 10);
-	const opts = { host: host.replace(/^\[|\]$/g, ""), port };
+	const opts = { host: host.replace(/^\[|\]$/g, ''), port };
 
 	debug.proxyRequest('connecting to proxy target %o', opts);
 	const target = net.connect(opts);

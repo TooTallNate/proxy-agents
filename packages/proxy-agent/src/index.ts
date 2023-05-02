@@ -43,10 +43,10 @@ function isValidProtocol(v: string): v is ValidProtocol {
 	return (PROTOCOLS as readonly string[]).includes(v);
 }
 
-export type ProxyAgentOptions = HttpProxyAgentOptions<""> &
-	HttpsProxyAgentOptions<""> &
+export type ProxyAgentOptions = HttpProxyAgentOptions<''> &
+	HttpsProxyAgentOptions<''> &
 	SocksProxyAgentOptions &
-	PacProxyAgentOptions<"">;
+	PacProxyAgentOptions<''>;
 
 /**
  * Uses the appropriate `Agent` subclass based off of the "proxy"

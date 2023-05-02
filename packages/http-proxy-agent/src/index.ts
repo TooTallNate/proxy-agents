@@ -13,7 +13,7 @@ type Protocol<T> = T extends `${infer Protocol}:${infer _}` ? Protocol : never;
 type ConnectOptsMap = {
 	http: Omit<net.TcpNetConnectOpts, 'host' | 'port'>;
 	https: Omit<tls.ConnectionOptions, 'host' | 'port'>;
-}
+};
 
 export type HttpProxyAgentOptions<T> = {
 	[P in keyof ConnectOptsMap]: Protocol<T> extends P
@@ -53,7 +53,10 @@ export class HttpProxyAgent<Uri extends string> extends Agent {
 		debug('Creating new HttpProxyAgent instance: %o', this.proxy.href);
 
 		// Trim off the brackets from IPv6 addresses
-		const host = (this.proxy.hostname || this.proxy.host).replace(/^\[|\]$/g, '');
+		const host = (this.proxy.hostname || this.proxy.host).replace(
+			/^\[|\]$/g,
+			''
+		);
 		const port = this.proxy.port
 			? parseInt(this.proxy.port, 10)
 			: this.secureProxy
