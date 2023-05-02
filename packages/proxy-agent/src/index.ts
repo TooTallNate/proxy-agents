@@ -43,10 +43,10 @@ function isValidProtocol(v: string): v is ValidProtocol {
 	return (PROTOCOLS as readonly string[]).includes(v);
 }
 
-export type ProxyAgentOptions = HttpProxyAgentOptions<""> &
-	HttpsProxyAgentOptions<""> &
+export type ProxyAgentOptions = HttpProxyAgentOptions<''> &
+	HttpsProxyAgentOptions<''> &
 	SocksProxyAgentOptions &
-	PacProxyAgentOptions<"">;
+	PacProxyAgentOptions<''>;
 
 /**
  * Uses the appropriate `Agent` subclass based off of the "proxy"
@@ -64,7 +64,7 @@ export class ProxyAgent extends Agent {
 	connectOpts?: ProxyAgentOptions;
 
 	constructor(opts?: ProxyAgentOptions) {
-		super();
+		super(opts);
 		debug('Creating new ProxyAgent instance');
 		this.connectOpts = opts;
 	}
@@ -76,8 +76,6 @@ export class ProxyAgent extends Agent {
 		const protocol = opts.secureEndpoint ? 'https:' : 'http:';
 		const host = req.getHeader('host');
 		const url = new URL(req.path, `${protocol}//${host}`).href;
-		debug('Request URL: %o', url);
-
 		const proxy = getProxyForUrl(url);
 
 		if (!proxy) {
@@ -85,6 +83,7 @@ export class ProxyAgent extends Agent {
 			return opts.secureEndpoint ? https.globalAgent : http.globalAgent;
 		}
 
+		debug('Request URL: %o', url);
 		debug('Proxy URL: %o', proxy);
 
 		// attempt to get a cached `http.Agent` instance first
