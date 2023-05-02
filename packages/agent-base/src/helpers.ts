@@ -1,21 +1,21 @@
-import * as http from "http";
-import * as https from "https";
-import type { Readable } from "stream";
+import * as http from 'http';
+import * as https from 'https';
+import type { Readable } from 'stream';
 
 export async function toBuffer(stream: Readable): Promise<Buffer> {
-    let length = 0;
-    const chunks: Buffer[] = [];
-    for await (const chunk of stream) {
-        length += chunk.length;
-        chunks.push(chunk);
-    }
-    return Buffer.concat(chunks, length);
+	let length = 0;
+	const chunks: Buffer[] = [];
+	for await (const chunk of stream) {
+		length += chunk.length;
+		chunks.push(chunk);
+	}
+	return Buffer.concat(chunks, length);
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function json(stream: Readable): Promise<any> {
-    const buf = await toBuffer(stream);
-    return JSON.parse(buf.toString('utf8'));
+	const buf = await toBuffer(stream);
+	return JSON.parse(buf.toString('utf8'));
 }
 
 export function req(
@@ -23,10 +23,10 @@ export function req(
 	opts: https.RequestOptions = {}
 ): Promise<http.IncomingMessage> {
 	return new Promise((resolve, reject) => {
-        const href = typeof url === 'string' ? url : url.href;
-		(href.startsWith("https:") ? https : http)
+		const href = typeof url === 'string' ? url : url.href;
+		(href.startsWith('https:') ? https : http)
 			.request(url, opts, resolve)
-			.once("error", reject)
+			.once('error', reject)
 			.end();
 	});
 }

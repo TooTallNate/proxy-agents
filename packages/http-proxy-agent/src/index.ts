@@ -13,13 +13,15 @@ type Protocol<T> = T extends `${infer Protocol}:${infer _}` ? Protocol : never;
 type ConnectOptsMap = {
 	http: Omit<net.TcpNetConnectOpts, 'host' | 'port'>;
 	https: Omit<tls.ConnectionOptions, 'host' | 'port'>;
-}
+};
 
-export type HttpProxyAgentOptions<T> = {
+type ConnectOpts<T> = {
 	[P in keyof ConnectOptsMap]: Protocol<T> extends P
 		? ConnectOptsMap[P]
 		: never;
 }[keyof ConnectOptsMap];
+
+export type HttpProxyAgentOptions<T> = ConnectOpts<T> & http.AgentOptions;
 
 interface HttpProxyAgentClientRequest extends http.ClientRequest {
 	outputData?: {
@@ -48,12 +50,15 @@ export class HttpProxyAgent<Uri extends string> extends Agent {
 	}
 
 	constructor(proxy: Uri | URL, opts?: HttpProxyAgentOptions<Uri>) {
-		super();
+		super(opts);
 		this.proxy = typeof proxy === 'string' ? new URL(proxy) : proxy;
 		debug('Creating new HttpProxyAgent instance: %o', this.proxy.href);
 
 		// Trim off the brackets from IPv6 addresses
-		const host = (this.proxy.hostname || this.proxy.host).replace(/^\[|\]$/g, '');
+		const host = (this.proxy.hostname || this.proxy.host).replace(
+			/^\[|\]$/g,
+			''
+		);
 		const port = this.proxy.port
 			? parseInt(this.proxy.port, 10)
 			: this.secureProxy
@@ -93,6 +98,13 @@ export class HttpProxyAgent<Uri extends string> extends Agent {
 			req.setHeader(
 				'Proxy-Authorization',
 				`Basic ${Buffer.from(auth).toString('base64')}`
+			);
+		}
+
+		if (!req.hasHeader('proxy-connection')) {
+			req.setHeader(
+				'Proxy-Connection',
+				this.keepAlive ? 'Keep-Alive' : 'close'
 			);
 		}
 

@@ -105,7 +105,9 @@ describe('HttpProxyAgent', () => {
 				assert.equal(false, agent.secureProxy);
 			});
 			it('should be `true` when "https:" protocol is used', () => {
-				let agent = new HttpProxyAgent(`https://127.0.0.1:${proxyPort}`);
+				let agent = new HttpProxyAgent(
+					`https://127.0.0.1:${proxyPort}`
+				);
 				assert.equal(true, agent.secureProxy);
 			});
 		});
@@ -200,7 +202,7 @@ describe('HttpProxyAgent', () => {
 		});
 		it('should receive the 407 authorization code on the `http.ClientResponse`', (done) => {
 			// reject all requests
-			proxy.authenticate = () => false
+			proxy.authenticate = () => false;
 
 			let proxyUri = `http://127.0.0.1:${proxyPort}`;
 			let agent = new HttpProxyAgent(proxyUri);
@@ -222,7 +224,9 @@ describe('HttpProxyAgent', () => {
 			// set a proxy authentication function for this test
 			proxy.authenticate = (req) => {
 				// username:password is "foo:bar"
-				return req.headers['proxy-authorization'] === 'Basic Zm9vOmJhcg=='
+				return (
+					req.headers['proxy-authorization'] === 'Basic Zm9vOmJhcg=='
+				);
 			};
 
 			// set HTTP "request" event handler for this test
