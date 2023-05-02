@@ -117,7 +117,9 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 		headers.Host = `${host}:${opts.port}`;
 
 		if (!headers['Proxy-Connection']) {
-			headers['Proxy-Connection'] = this.keepAlive ? 'Keep-Alive' : 'close';
+			headers['Proxy-Connection'] = this.keepAlive
+				? 'Keep-Alive'
+				: 'close';
 		}
 		for (const name of Object.keys(headers)) {
 			payload += `${name}: ${headers[name]}\r\n`;

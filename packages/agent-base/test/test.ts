@@ -235,7 +235,7 @@ describe('Agent (TypeScript)', () => {
 
 			const server1 = http.createServer((req, res) => {
 				expect(req.headers.connection).toEqual('keep-alive');
-				reqCount1++
+				reqCount1++;
 				res.end();
 			});
 			const addr1 = (await listen(server1)) as URL;
