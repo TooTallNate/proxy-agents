@@ -10,6 +10,7 @@
   "pipeline": {
     "build": {
       "dependsOn": ["^build"],
+      "inputs": ["src/**"],
       "outputs": ["dist/**"]
     },
     "test": {

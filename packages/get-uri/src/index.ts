@@ -26,8 +26,8 @@ export const protocols = {
 export type Protocols = typeof protocols;
 
 export type ProtocolsOptions = {
-	[P in keyof Protocols]: NonNullable<Parameters<Protocols[P]>[1]>
-}
+	[P in keyof Protocols]: NonNullable<Parameters<Protocols[P]>[1]>;
+};
 
 export type ProtocolOpts<T> = {
 	[P in keyof ProtocolsOptions]: Protocol<T> extends P

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import args from 'args';
-import createDebug from 'debug'
+import createDebug from 'debug';
 import { spawn } from 'child_process';
 import once from '@tootallnate/once';
 // @ts-expect-error no types for "basic-auth-parser"
@@ -17,19 +17,18 @@ args.option(
 	'Port number to the proxy server should bind to',
 	3128,
 	parseInt
-)
-	.option(
-		'authenticate',
-		'"authenticate" command to run when the "Proxy-Authorization" header is sent',
-		'',
-		String
-	)
-	//.option(
-	//	'local-address',
-	//	'IP address of the network interface to send the outgoing requests through',
-	//	'',
-	//	String
-	//);
+).option(
+	'authenticate',
+	'"authenticate" command to run when the "Proxy-Authorization" header is sent',
+	'',
+	String
+);
+//.option(
+//	'local-address',
+//	'IP address of the network interface to send the outgoing requests through',
+//	'',
+//	String
+//);
 
 //const flags = args.parse(process.argv, { name: pkg.name });
 const flags = args.parse(process.argv);
@@ -74,27 +73,23 @@ if (authenticate) {
 		// spawn a child process with the user-specified "authenticate" command
 		const env = { ...process.env };
 		// add "auth" related ENV variables
-		for (const [ key, value ] of Object.entries(parsed)) {
+		for (const [key, value] of Object.entries(parsed)) {
 			env['PROXY_AUTH_' + key.toUpperCase()] = value as string;
 		}
 
 		// TODO: add Windows support (use `cross-spawn`?)
 		const child = spawn('/bin/sh', ['-c', authenticate], {
 			env,
-			stdio: ['ignore', 'inherit', 'inherit']
+			stdio: ['ignore', 'inherit', 'inherit'],
 		});
 
 		const [code, signal] = await once(child, 'exit');
-		debug(
-			'authentication child process "exit" event: %s %s',
-			code,
-			signal
-		);
+		debug('authentication child process "exit" event: %s %s', code, signal);
 		return code === 0;
 	};
 }
 
-proxy.listen(port, function() {
+proxy.listen(port, function () {
 	console.log(
 		'HTTP(s) proxy server listening on port %d',
 		// @ts-expect-error "port" is a number
