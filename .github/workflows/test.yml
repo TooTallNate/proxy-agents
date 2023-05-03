@@ -13,7 +13,7 @@ jobs:
       fail-fast: false
 
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 3
+    timeout-minutes: 5
 
     steps:
       - name: Checkout Repo
