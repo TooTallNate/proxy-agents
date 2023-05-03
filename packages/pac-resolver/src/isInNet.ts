@@ -1,7 +1,3 @@
-/**
- * Module dependencies.
- */
-
 import { Netmask } from 'netmask';
 import { dnsLookup } from './util';
 

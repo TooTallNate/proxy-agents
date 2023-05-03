@@ -1,7 +1,3 @@
-/**
- * Module dependencies.
- */
-
 import { getUri } from '../src';
 import { toBuffer } from './util';
 

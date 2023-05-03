@@ -1,7 +1,3 @@
-/**
- * Module dependencies.
- */
-
 import { getUri } from '../src';
 
 describe('get-uri', () => {
