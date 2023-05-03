@@ -64,8 +64,8 @@ export class ProxyAgent extends Agent {
 	connectOpts?: ProxyAgentOptions;
 
 	constructor(opts?: ProxyAgentOptions) {
-		super();
-		debug('Creating new ProxyAgent instance');
+		super(opts);
+		debug('Creating new ProxyAgent instance: %o', opts);
 		this.connectOpts = opts;
 	}
 
@@ -76,8 +76,6 @@ export class ProxyAgent extends Agent {
 		const protocol = opts.secureEndpoint ? 'https:' : 'http:';
 		const host = req.getHeader('host');
 		const url = new URL(req.path, `${protocol}//${host}`).href;
-		debug('Request URL: %o', url);
-
 		const proxy = getProxyForUrl(url);
 
 		if (!proxy) {
@@ -85,6 +83,7 @@ export class ProxyAgent extends Agent {
 			return opts.secureEndpoint ? https.globalAgent : http.globalAgent;
 		}
 
+		debug('Request URL: %o', url);
 		debug('Proxy URL: %o', proxy);
 
 		// attempt to get a cached `http.Agent` instance first
@@ -104,5 +103,12 @@ export class ProxyAgent extends Agent {
 		}
 
 		return agent;
+	}
+
+	destroy(): void {
+		for (const agent of this.cache.values()) {
+			agent.destroy();
+		}
+		super.destroy();
 	}
 }

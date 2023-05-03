@@ -1,38 +1,19 @@
+import assert from 'assert';
 import * as fs from 'fs';
 import * as net from 'net';
 import * as tls from 'tls';
-import * as url from 'url';
 import * as http from 'http';
 import * as https from 'https';
-import assert from 'assert';
-import listen from 'async-listen';
-import { Agent, AgentConnectOpts } from '../src';
+import { once } from 'events';
+import { listen } from 'async-listen';
+import { Agent, AgentConnectOpts, req, json } from '../src';
 
 const sleep = (n: number) => new Promise((r) => setTimeout(r, n));
-
-const req = (opts: https.RequestOptions): Promise<http.IncomingMessage> =>
-	new Promise((resolve, reject) => {
-		(opts.protocol === 'https:' ? https : http)
-			.request(opts, resolve)
-			.once('error', reject)
-			.end();
-	});
 
 const sslOptions = {
 	key: fs.readFileSync(`${__dirname}/ssl-cert-snakeoil.key`),
 	cert: fs.readFileSync(`${__dirname}/ssl-cert-snakeoil.pem`),
 };
-
-function json(res: http.IncomingMessage): Promise<Record<string, string>> {
-	return new Promise((resolve) => {
-		let data = '';
-		res.setEncoding('utf8');
-		res.on('data', (b) => {
-			data += b;
-		});
-		res.on('end', () => resolve(JSON.parse(data)));
-	});
-}
 
 describe('Agent (TypeScript)', () => {
 	describe('subclass', () => {
@@ -91,8 +72,9 @@ describe('Agent (TypeScript)', () => {
 			const { port } = addr;
 
 			try {
-				const info = url.parse(`http://127.0.0.1:${port}/foo`);
-				const res = await req({ agent, ...info });
+				const res = await req(`http://127.0.0.1:${port}/foo`, {
+					agent,
+				});
 				assert.equal('bar', res.headers['x-foo']);
 				assert.equal('/foo', res.headers['x-url']);
 				assert(gotReq);
@@ -130,8 +112,9 @@ describe('Agent (TypeScript)', () => {
 			agent.defaultPort = port;
 
 			try {
-				const info = url.parse(`http://127.0.0.1:${port}/foo`);
-				const res = await req({ agent, ...info });
+				const res = await req(`http://127.0.0.1:${port}/foo`, {
+					agent,
+				});
 				const body = await json(res);
 				assert.equal(body.host, '127.0.0.1');
 			} finally {
@@ -172,8 +155,9 @@ describe('Agent (TypeScript)', () => {
 			const { port } = addr;
 
 			try {
-				const info = url.parse(`http://127.0.0.1:${port}/foo`);
-				const res = await req({ agent, ...info });
+				const res = await req(`http://127.0.0.1:${port}/foo`, {
+					agent,
+				});
 				assert.equal('bar', res.headers['x-foo']);
 				assert.equal('/foo', res.headers['x-url']);
 				assert(gotReq);
@@ -197,8 +181,7 @@ describe('Agent (TypeScript)', () => {
 			const agent = new MyAgent();
 
 			try {
-				const info = url.parse('http://127.0.0.1/throws');
-				await req({ agent, ...info });
+				await req('http://127.0.0.1/throws', { agent });
 			} catch (err: unknown) {
 				gotError = true;
 				assert.equal((err as Error).message, 'bad');
@@ -223,8 +206,7 @@ describe('Agent (TypeScript)', () => {
 			const agent = new MyAgent();
 
 			try {
-				const info = url.parse('http://127.0.0.1/throws');
-				await req({ agent, ...info });
+				await req('http://127.0.0.1/throws', { agent });
 			} catch (err: unknown) {
 				gotError = true;
 				assert.equal((err as Error).message, 'bad');
@@ -232,6 +214,72 @@ describe('Agent (TypeScript)', () => {
 
 			assert(gotError);
 			assert(gotCallback);
+		});
+
+		it('should support `keepAlive: true`', async () => {
+			let reqCount1 = 0;
+			let reqCount2 = 0;
+			let connectCount = 0;
+
+			class MyAgent extends Agent {
+				async connect(
+					_req: http.ClientRequest,
+					opts: AgentConnectOpts
+				) {
+					connectCount++;
+					assert(opts.secureEndpoint === false);
+					return net.connect(opts);
+				}
+			}
+			const agent = new MyAgent({ keepAlive: true });
+
+			const server1 = http.createServer((req, res) => {
+				expect(req.headers.connection).toEqual('keep-alive');
+				reqCount1++;
+				res.end();
+			});
+			const addr1 = (await listen(server1)) as URL;
+
+			const server2 = http.createServer((req, res) => {
+				expect(req.headers.connection).toEqual('keep-alive');
+				reqCount2++;
+				res.end();
+			});
+			const addr2 = (await listen(server2)) as URL;
+
+			try {
+				const res = await req(new URL('/foo', addr1), { agent });
+				expect(reqCount1).toEqual(1);
+				expect(connectCount).toEqual(1);
+				expect(res.headers.connection).toEqual('keep-alive');
+				res.resume();
+				const s1 = res.socket;
+
+				await once(s1, 'free');
+
+				const res2 = await req(new URL('/another', addr1), { agent });
+				expect(reqCount1).toEqual(2);
+				expect(connectCount).toEqual(1);
+				expect(res2.headers.connection).toEqual('keep-alive');
+				assert(res2.socket === s1);
+
+				res2.resume();
+				await once(res2.socket, 'free');
+
+				// This is a different host, so a new socket should be used
+				const res3 = await req(new URL('/another', addr2), { agent });
+				expect(reqCount2).toEqual(1);
+				expect(connectCount).toEqual(2);
+				expect(res3.headers.connection).toEqual('keep-alive');
+				assert(res3.socket !== s1);
+
+				res3.resume();
+				await once(res3.socket, 'free');
+			} finally {
+				agent.destroy();
+				server1.close();
+				server2.close();
+			}
 		});
 	});
 
@@ -268,11 +316,9 @@ describe('Agent (TypeScript)', () => {
 			const { port } = addr;
 
 			try {
-				const info = url.parse(`https://127.0.0.1:${port}/foo`);
-				const res = await req({
+				const res = await req(`https://127.0.0.1:${port}/foo`, {
 					agent,
 					rejectUnauthorized: false,
-					...info,
 				});
 				assert.equal('bar', res.headers['x-foo']);
 				assert.equal('/foo', res.headers['x-url']);
@@ -328,11 +374,9 @@ describe('Agent (TypeScript)', () => {
 			const { port } = addr;
 
 			try {
-				const info = url.parse(`https://127.0.0.1:${port}/foo`);
-				const res = await req({
+				const res = await req(`https://127.0.0.1:${port}/foo`, {
 					agent: agent1,
 					rejectUnauthorized: false,
-					...info,
 				});
 				assert.equal('bar', res.headers['x-foo']);
 				assert.equal('/foo', res.headers['x-url']);
@@ -376,16 +420,65 @@ describe('Agent (TypeScript)', () => {
 			agent.defaultPort = port;
 
 			try {
-				const info = url.parse(`https://127.0.0.1:${port}/foo`);
-				const res = await req({
+				const res = await req(`https://127.0.0.1:${port}/foo`, {
 					agent,
 					rejectUnauthorized: false,
-					...info,
 				});
 				const body = await json(res);
 				assert.equal(body.host, '127.0.0.1');
 				assert.equal(reqCount, 1);
 			} finally {
+				server.close();
+			}
+		});
+
+		it('should support `keepAlive: true`', async () => {
+			let gotReq = false;
+			let connectCount = 0;
+
+			class MyAgent extends Agent {
+				async connect(
+					_req: http.ClientRequest,
+					opts: AgentConnectOpts
+				) {
+					connectCount++;
+					assert(opts.secureEndpoint === true);
+					return tls.connect(opts);
+				}
+			}
+			const agent = new MyAgent({ keepAlive: true });
+
+			const server = https.createServer(sslOptions, (req, res) => {
+				gotReq = true;
+				res.end();
+			});
+			const addr = (await listen(server)) as URL;
+
+			try {
+				const res = await req(new URL('/foo', addr), {
+					agent,
+					rejectUnauthorized: false,
+				});
+				assert(gotReq);
+				expect(connectCount).toEqual(1);
+				expect(res.headers.connection).toEqual('keep-alive');
+				res.resume();
+				const s1 = res.socket;
+
+				await once(s1, 'free');
+
+				const res2 = await req(new URL('/another', addr), {
+					agent,
+					rejectUnauthorized: false,
+				});
+				expect(connectCount).toEqual(1);
+				expect(res2.headers.connection).toEqual('keep-alive');
+				assert(res2.socket === s1);
+
+				res2.resume();
+				await once(res2.socket, 'free');
+			} finally {
+				agent.destroy();
 				server.close();
 			}
 		});

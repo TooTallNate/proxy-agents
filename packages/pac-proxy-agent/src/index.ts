@@ -33,7 +33,8 @@ type Protocol<T> = T extends `pac+${infer P}:${infer _}`
 	? P
 	: never;
 
-export type PacProxyAgentOptions<T> = PacResolverOptions &
+export type PacProxyAgentOptions<T> = http.AgentOptions &
+	PacResolverOptions &
 	GetUriOptions<`${Protocol<T>}:`> &
 	HttpProxyAgentOptions<''> &
 	HttpsProxyAgentOptions<''> &
@@ -70,7 +71,7 @@ export class PacProxyAgent<Uri extends string> extends Agent {
 	resolverPromise?: Promise<FindProxyForURL>;
 
 	constructor(uri: Uri | URL, opts?: PacProxyAgentOptions<Uri>) {
-		super();
+		super(opts);
 
 		// Strip the "pac+" prefix
 		const uriStr = typeof uri === 'string' ? uri : uri.href;

@@ -53,6 +53,11 @@ describe('HttpsProxyAgent', () => {
 		sslProxyUrl = (await listen(sslProxy)) as URL;
 	});
 
+	beforeEach(() => {
+		server.removeAllListeners('request');
+		sslServer.removeAllListeners('request');
+	});
+
 	// shut down the test HTTP servers
 	afterAll(() => {
 		server.close();
@@ -189,6 +194,31 @@ describe('HttpsProxyAgent', () => {
 			assert.equal('bar', req.headers.foo);
 			socket.destroy();
 		});
+
+		it('should work with `keepAlive: true`', async () => {
+			server.on('request', (req, res) => {
+				res.end(JSON.stringify(req.headers));
+			});
+
+			const agent = new HttpsProxyAgent(proxyUrl, { keepAlive: true });
+
+			try {
+				const res = await req(serverUrl, { agent });
+				expect(res.headers.connection).toEqual('keep-alive');
+				res.resume();
+				const s1 = res.socket;
+				await once(s1, 'free');
+
+				const res2 = await req(serverUrl, { agent });
+				expect(res2.headers.connection).toEqual('keep-alive');
+				res2.resume();
+				const s2 = res2.socket;
+				assert(s1 === s2);
+				await once(s2, 'free');
+			} finally {
+				agent.destroy();
+			}
+		});
 	});
 
 	describe('"https" module', () => {
@@ -275,5 +305,33 @@ describe('HttpsProxyAgent', () => {
 				assert.equal(sslServerUrl.hostname, body.host);
 			}
 		);
+
+		it('should work with `keepAlive: true`', async () => {
+			sslServer.on('request', (req, res) => {
+				res.end(JSON.stringify(req.headers));
+			});
+
+			const agent = new HttpsProxyAgent(sslProxyUrl, {
+				keepAlive: true,
+				rejectUnauthorized: false,
+			});
+
+			try {
+				const res = await req(sslServerUrl, { agent, rejectUnauthorized: false });
+				expect(res.headers.connection).toEqual('keep-alive');
+				res.resume();
+				const s1 = res.socket;
+				await once(s1, 'free');
+
+				const res2 = await req(sslServerUrl, { agent, rejectUnauthorized: false });
+				expect(res2.headers.connection).toEqual('keep-alive');
+				res2.resume();
+				const s2 = res2.socket;
+				assert(s1 === s2);
+				await once(s2, 'free');
+			} finally {
+				agent.destroy();
+			}
+		});
 	});
 });

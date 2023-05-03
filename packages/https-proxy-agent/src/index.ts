@@ -23,9 +23,10 @@ type ConnectOpts<T> = {
 		: never;
 }[keyof ConnectOptsMap];
 
-export type HttpsProxyAgentOptions<T> = ConnectOpts<T> & {
-	headers?: OutgoingHttpHeaders;
-};
+export type HttpsProxyAgentOptions<T> = ConnectOpts<T> &
+	http.AgentOptions & {
+		headers?: OutgoingHttpHeaders;
+	};
 
 /**
  * The `HttpsProxyAgent` implements an HTTP Agent subclass that connects to
@@ -51,7 +52,8 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 	}
 
 	constructor(proxy: Uri | URL, opts?: HttpsProxyAgentOptions<Uri>) {
-		super();
+		super(opts);
+		this.options = { path: undefined };
 		this.proxy = typeof proxy === 'string' ? new URL(proxy) : proxy;
 		this.proxyHeaders = opts?.headers ?? {};
 		debug('Creating new HttpsProxyAgent instance: %o', this.proxy.href);
@@ -100,7 +102,7 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 		}
 
 		const headers: OutgoingHttpHeaders = { ...this.proxyHeaders };
-		let host = net.isIPv6(opts.host) ? `[${opts.host}]` : opts.host;
+		const host = net.isIPv6(opts.host) ? `[${opts.host}]` : opts.host;
 		let payload = `CONNECT ${host}:${opts.port} HTTP/1.1\r\n`;
 
 		// Inject the `Proxy-Authorization` header if necessary.
@@ -113,15 +115,13 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 			).toString('base64')}`;
 		}
 
-		// The `Host` header should only include the port
-		// number when it is not the default port.
-		const { port, secureEndpoint } = opts;
-		if (!isDefaultPort(port, secureEndpoint)) {
-			host += `:${port}`;
-		}
-		headers.Host = host;
+		headers.Host = `${host}:${opts.port}`;
 
-		headers.Connection = 'close';
+		if (!headers['Proxy-Connection']) {
+			headers['Proxy-Connection'] = this.keepAlive
+				? 'Keep-Alive'
+				: 'close';
+		}
 		for (const name of Object.keys(headers)) {
 			payload += `${name}: ${headers[name]}\r\n`;
 		}
@@ -140,16 +140,11 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 				// this socket connection to a TLS connection.
 				debug('Upgrading socket connection to TLS');
 				const servername = opts.servername || opts.host;
-				const s = tls.connect({
+				return tls.connect({
 					...omit(opts, 'host', 'path', 'port'),
 					socket,
-					servername,
+					servername: net.isIP(servername) ? undefined : servername,
 				});
-				//console.log(s);
-
-				//s.write('GET /foo HTTP/1.1\r\n\r\n');
-				//await new Promise(r => setTimeout(r, 5000));
-				return s;
 			}
 
 			return socket;
@@ -189,10 +184,6 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 
 function resume(socket: net.Socket | tls.TLSSocket): void {
 	socket.resume();
-}
-
-function isDefaultPort(port: number, secure: boolean): boolean {
-	return Boolean((!secure && port === 80) || (secure && port === 443));
 }
 
 function isHTTPS(protocol?: string | null): boolean {

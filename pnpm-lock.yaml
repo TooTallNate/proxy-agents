@@ -360,15 +360,21 @@ importers:
       '@types/debug':
         specifier: ^4.1.7
         version: 4.1.7
-      '@types/mocha':
-        specifier: ^5.2.7
-        version: 5.2.7
+      '@types/jest':
+        specifier: ^29.5.1
+        version: 29.5.1
       '@types/node':
         specifier: ^14.18.43
         version: 14.18.43
-      mocha:
-        specifier: '6'
-        version: 6.2.3
+      async-listen:
+        specifier: ^2.1.0
+        version: 2.1.0
+      jest:
+        specifier: ^29.5.0
+        version: 29.5.0(@types/node@14.18.43)
+      ts-jest:
+        specifier: ^29.1.0
+        version: 29.1.0(@babel/core@7.21.4)(jest@29.5.0)(typescript@5.0.4)
       tsconfig:
         specifier: workspace:*
         version: link:../tsconfig
@@ -1556,10 +1562,6 @@ packages:
 
   /@types/minimist@1.2.2:
     resolution: {integrity: sha512-jhuKLIRrhvCPLqwPcx6INqmKeiA5EWrsCOPhrlFSrbrmU4ZMPjj5Ul/oLCMDO98XRUIwVm78xICz4EPCektzeQ==}
-    dev: true
-
-  /@types/mocha@5.2.7:
-    resolution: {integrity: sha512-NYrtPht0wGzhwe9+/idPaBB+TqkY9AhTvOLMkThm0IoEfLaiVQZwBwyJ5puCkO3AUCWrmcoePjp2mbFocKy4SQ==}
     dev: true
 
   /@types/ms@0.7.31:

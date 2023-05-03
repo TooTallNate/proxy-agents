@@ -6,14 +6,6 @@ import * as net from 'net';
 import * as tls from 'tls';
 import * as http from 'http';
 
-interface BaseSocksProxyAgentOptions {
-	tls?: tls.ConnectionOptions | null;
-}
-
-interface SocksProxyAgentOptionsExtra {
-	timeout?: number;
-}
-
 const debug = createDebug('socks-proxy-agent');
 
 function parseSocksURL(url: URL): { lookup: boolean; proxy: SocksProxy } {
@@ -78,9 +70,12 @@ function parseSocksURL(url: URL): { lookup: boolean; proxy: SocksProxy } {
 	return { lookup, proxy };
 }
 
-export interface SocksProxyAgentOptions
-	extends BaseSocksProxyAgentOptions,
-		Partial<Omit<SocksProxy, keyof BaseSocksProxyAgentOptions>> {}
+export type SocksProxyAgentOptions = Omit<
+	SocksProxy,
+	// These come from the parsed URL
+	'ipaddress' | 'host' | 'port' | 'type' | 'userId' | 'password'
+> &
+	http.AgentOptions;
 
 export class SocksProxyAgent extends Agent {
 	static protocols = [
@@ -93,19 +88,16 @@ export class SocksProxyAgent extends Agent {
 
 	private readonly shouldLookup: boolean;
 	private readonly proxy: SocksProxy;
-	private readonly tlsConnectionOptions: tls.ConnectionOptions;
 	public timeout: number | null;
 
-	constructor(uri: string | URL, opts?: SocksProxyAgentOptionsExtra) {
-		super();
+	constructor(uri: string | URL, opts?: SocksProxyAgentOptions) {
+		super(opts);
 
 		const url = typeof uri === 'string' ? new URL(uri) : uri;
 		const { proxy, lookup } = parseSocksURL(url);
 
 		this.shouldLookup = lookup;
 		this.proxy = proxy;
-		//this.tlsConnectionOptions = proxyOptions.tls != null ? proxyOptions.tls : {}
-		this.tlsConnectionOptions = {};
 		this.timeout = opts?.timeout ?? null;
 	}
 
@@ -119,12 +111,12 @@ export class SocksProxyAgent extends Agent {
 	): Promise<net.Socket> {
 		const { shouldLookup, proxy, timeout } = this;
 
-		let { host } = opts;
-		const { port, lookup: lookupFn = dns.lookup } = opts;
-
-		if (!host) {
+		if (!opts.host) {
 			throw new Error('No `host` defined!');
 		}
+
+		let { host } = opts;
+		const { port, lookup: lookupFn = dns.lookup } = opts;
 
 		if (shouldLookup) {
 			// Client-side DNS resolution for "4" and "5" socks proxy versions.
@@ -170,13 +162,11 @@ export class SocksProxyAgent extends Agent {
 			// The proxy is connecting to a TLS server, so upgrade
 			// this socket connection to a TLS connection.
 			debug('Upgrading socket connection to TLS');
-			const servername = opts.servername ?? opts.host;
-
+			const servername = opts.servername || opts.host;
 			const tlsSocket = tls.connect({
 				...omit(opts, 'host', 'path', 'port'),
 				socket,
-				servername,
-				...this.tlsConnectionOptions,
+				servername: net.isIP(servername) ? undefined : servername,
 			});
 
 			tlsSocket.once('error', (error) => {

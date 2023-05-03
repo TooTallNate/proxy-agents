@@ -33,8 +33,12 @@ export abstract class Agent extends http.Agent {
 	_protocol?: string;
 	_currentSocket?: Duplex;
 
-	constructor() {
-		super();
+	// Set by `http.Agent` - missing from `@types/node`
+	options!: Partial<net.TcpNetConnectOpts & tls.ConnectionOptions>;
+	keepAlive!: boolean;
+
+	constructor(opts?: http.AgentOptions) {
+		super(opts);
 		this._defaultPort = undefined;
 		this._protocol = undefined;
 	}
@@ -57,8 +61,8 @@ export abstract class Agent extends http.Agent {
 			.then(() => this.connect(req, o))
 			.then((socket) => {
 				if (socket instanceof http.Agent) {
-					// @ts-expect-error `createSocket()` isn't defined in `@types/node`
-					return socket.createSocket(req, o, cb);
+					// @ts-expect-error `addRequest()` isn't defined in `@types/node`
+					return socket.addRequest(req, o);
 				}
 				this._currentSocket = socket;
 				// @ts-expect-error `createSocket()` isn't defined in `@types/node`
@@ -77,7 +81,7 @@ export abstract class Agent extends http.Agent {
 		if (typeof this._defaultPort === 'number') {
 			return this._defaultPort;
 		}
-		const port = isSecureEndpoint() ? 443 : 80;
+		const port = this.protocol === 'https:' ? 443 : 80;
 		return port;
 	}
 
