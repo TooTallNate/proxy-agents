@@ -83,7 +83,7 @@ describe('proxy', () => {
 		socket.destroy();
 	});
 
-	it.only('should establish connection for CONNECT requests (keep-alive)', async () => {
+	it('should establish connection for CONNECT requests (keep-alive)', async () => {
 		let requestCount = 0;
 
 		server.on('request', (req, res) => {
@@ -111,8 +111,8 @@ describe('proxy', () => {
 
 		socket.setEncoding('utf8');
 		const [data] = await once(socket, 'data');
-		console.log({ data });
 		assert(0 == data.indexOf('HTTP/1.1 200 Connection established\r\n'));
+		expect(requestCount).toEqual(0);
 
 		socket.write(
 			'GET / HTTP/1.1\r\n' +
@@ -125,7 +125,8 @@ describe('proxy', () => {
 		);
 
 		const [data2] = await once(socket, 'data');
-		console.log({ data2 });
+		expect(data2.includes('Connection: keep-alive')).toEqual(true);
+		expect(requestCount).toEqual(1);
 
 		socket.write(
 			'GET / HTTP/1.1\r\n' +
@@ -138,7 +139,8 @@ describe('proxy', () => {
 		);
 
 		const [data3] = await once(socket, 'data');
-		console.log({ data3 });
+		expect(data3.includes('Connection: keep-alive')).toEqual(true);
+		expect(requestCount).toEqual(2);
 
 		socket.destroy();
 	});
@@ -198,7 +200,6 @@ describe('proxy', () => {
 			socket.write('CONNECT 127.0.0.1:80 HTTP/1.1\r\n\r\n');
 			socket.setEncoding('utf8');
 			const [data] = await once(socket, 'data');
-			console.log(data);
 			assert(0 == data.indexOf('HTTP/1.1 407'));
 		});
 	});
