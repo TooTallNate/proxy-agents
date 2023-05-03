@@ -212,7 +212,7 @@ describe('HttpsProxyAgent', () => {
 				err = _err as Error;
 			}
 			assert(err);
-			expect(err.message).toEqual('self signed certificate');
+			expect(err.message).toMatch(/self( |-)signed certificate/);
 		});
 
 		testIf(
