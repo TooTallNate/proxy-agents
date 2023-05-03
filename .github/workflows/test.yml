@@ -3,7 +3,7 @@ name: Node CI
 on: [push]
 
 jobs:
-  test:
+  build:
     name: Test Node.js ${{ matrix.node-version }} on ${{ matrix.os }}
 
     strategy:
@@ -57,10 +57,10 @@ jobs:
           cache: 'pnpm'
 
       - name: Install Dependencies
-      - run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Run Lint
-      - run: pnpm lint
+        run: pnpm lint
 
   e2e:
     name: E2E
