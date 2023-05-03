@@ -197,6 +197,23 @@ describe('HttpsProxyAgent', () => {
 		// The module does seem to work fine on an actual proxy though.
 		const nodeVersion = parseFloat(process.versions.node);
 
+		it('should throw an "error" when `rejectUnauthorized: false` is missing', async () => {
+			const agent = new HttpsProxyAgent(sslProxyUrl, {
+				rejectUnauthorized: false,
+			});
+
+			let err: Error | undefined;
+			try {
+				await req(sslServerUrl, {
+					agent,
+				});
+			} catch (_err) {
+				err = _err as Error;
+			}
+			assert(err);
+			expect(err.message).toMatch(/self( |-)signed certificate/);
+		});
+
 		testIf(
 			nodeVersion >= 18,
 			'should work over an HTTP proxy',
