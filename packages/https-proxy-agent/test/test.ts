@@ -201,7 +201,6 @@ describe('HttpsProxyAgent', () => {
 			const agent = new HttpsProxyAgent(sslProxyUrl, {
 				rejectUnauthorized: false,
 			});
-			console.log(agent.options);
 
 			let err: Error | undefined;
 			try {
