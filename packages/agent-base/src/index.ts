@@ -61,8 +61,8 @@ export abstract class Agent extends http.Agent {
 			.then(() => this.connect(req, o))
 			.then((socket) => {
 				if (socket instanceof http.Agent) {
-					// @ts-expect-error `createSocket()` isn't defined in `@types/node`
-					return socket.createSocket(req, o, cb);
+					// @ts-expect-error `addRequest()` isn't defined in `@types/node`
+					return socket.addRequest(req, o);
 				}
 				this._currentSocket = socket;
 				// @ts-expect-error `createSocket()` isn't defined in `@types/node`

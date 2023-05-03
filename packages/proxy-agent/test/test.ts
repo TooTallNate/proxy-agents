@@ -8,6 +8,7 @@ import { ProxyServer, createProxy } from 'proxy';
 import socks from 'socksv5';
 import { listen } from 'async-listen';
 import { ProxyAgent } from '../src';
+import { once } from 'events';
 
 const sslOptions = {
 	key: fs.readFileSync(__dirname + '/ssl-cert-snakeoil.key'),
@@ -77,6 +78,8 @@ describe('ProxyAgent', () => {
 		delete process.env.HTTP_PROXY;
 		delete process.env.HTTPS_PROXY;
 		delete process.env.NO_PROXY;
+		httpServer.removeAllListeners('request');
+		httpsServer.removeAllListeners('request');
 	});
 
 	describe('"http" module', () => {
@@ -134,6 +137,40 @@ describe('ProxyAgent', () => {
 			const res = await req(new URL('/test', httpServerUrl), { agent });
 			const body = await json(res);
 			assert.equal(httpServerUrl.host, body.host);
+		});
+
+		it('should work with `keepAlive: true`', async () => {
+			httpServer.on('request', function (req, res) {
+				res.end(JSON.stringify(req.headers));
+			});
+
+			process.env.HTTP_PROXY = httpsProxyServerUrl.href;
+			const agent = new ProxyAgent({
+				keepAlive: true,
+				rejectUnauthorized: false,
+			});
+
+			try {
+				const res = await req(new URL('/test', httpServerUrl), {
+					agent,
+				});
+				res.resume();
+				expect(res.headers.connection).toEqual('keep-alive');
+				const s1 = res.socket;
+				await once(s1, 'free');
+
+				const res2 = await req(new URL('/test', httpServerUrl), {
+					agent,
+				});
+				res2.resume();
+				expect(res2.headers.connection).toEqual('keep-alive');
+				const s2 = res2.socket;
+				assert(s1 === s2);
+
+				await once(s2, 'free');
+			} finally {
+				agent.destroy();
+			}
 		});
 	});
 

@@ -65,7 +65,7 @@ export class ProxyAgent extends Agent {
 
 	constructor(opts?: ProxyAgentOptions) {
 		super(opts);
-		debug('Creating new ProxyAgent instance');
+		debug('Creating new ProxyAgent instance: %o', opts);
 		this.connectOpts = opts;
 	}
 
@@ -103,5 +103,12 @@ export class ProxyAgent extends Agent {
 		}
 
 		return agent;
+	}
+
+	destroy(): void {
+		for (const agent of this.cache.values()) {
+			agent.destroy();
+		}
+		super.destroy();
 	}
 }

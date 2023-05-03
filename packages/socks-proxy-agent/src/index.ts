@@ -111,12 +111,12 @@ export class SocksProxyAgent extends Agent {
 	): Promise<net.Socket> {
 		const { shouldLookup, proxy, timeout } = this;
 
-		let { host } = opts;
-		const { port, lookup: lookupFn = dns.lookup } = opts;
-
-		if (!host) {
+		if (!opts.host) {
 			throw new Error('No `host` defined!');
 		}
+
+		let { host } = opts;
+		const { port, lookup: lookupFn = dns.lookup } = opts;
 
 		if (shouldLookup) {
 			// Client-side DNS resolution for "4" and "5" socks proxy versions.
@@ -162,12 +162,11 @@ export class SocksProxyAgent extends Agent {
 			// The proxy is connecting to a TLS server, so upgrade
 			// this socket connection to a TLS connection.
 			debug('Upgrading socket connection to TLS');
-			const servername = opts.servername ?? opts.host;
-
+			const servername = opts.servername || opts.host;
 			const tlsSocket = tls.connect({
 				...omit(opts, 'host', 'path', 'port'),
 				socket,
-				servername,
+				servername: net.isIP(servername) ? undefined : servername,
 			});
 
 			tlsSocket.once('error', (error) => {

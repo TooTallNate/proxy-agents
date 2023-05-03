@@ -143,7 +143,7 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 				return tls.connect({
 					...omit(opts, 'host', 'path', 'port'),
 					socket,
-					servername,
+					servername: net.isIP(servername) ? undefined : servername,
 				});
 			}
 
