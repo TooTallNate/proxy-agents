@@ -147,9 +147,7 @@ describe('HttpProxyAgent', () => {
 			});
 
 			let proxy =
-				process.env.HTTPS_PROXY ||
-				process.env.https_proxy ||
-				`https://127.0.0.1:${sslProxyPort}`;
+				process.env.HTTPS_PROXY || `https://127.0.0.1:${sslProxyPort}`;
 			let agent = new HttpProxyAgent(proxy, {
 				rejectUnauthorized: false,
 			});

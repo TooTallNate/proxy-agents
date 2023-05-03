@@ -184,7 +184,9 @@ async function onrequest(
 	if (parsed.protocol !== 'http:') {
 		// only "http://" is supported, "https://" should use CONNECT method
 		res.writeHead(400);
-		res.end('Only "http:" protocol prefix is supported\n');
+		res.end(
+			`Only "http:" protocol prefix is supported (got: "${parsed.protocol}")\n`
+		);
 		return;
 	}
 
