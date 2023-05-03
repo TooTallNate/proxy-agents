@@ -34,6 +34,7 @@ export abstract class Agent extends http.Agent {
 	_currentSocket?: Duplex;
 
 	// Set by `http.Agent` - missing from `@types/node`
+	options!: Partial<net.TcpNetConnectOpts & tls.ConnectionOptions>;
 	keepAlive!: boolean;
 
 	constructor(opts?: http.AgentOptions) {
