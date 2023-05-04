@@ -3,6 +3,7 @@
   "globalEnv": [
     "HTTP_PROXY",
     "HTTPS_PROXY",
+    "ALL_PROXY",
     "NO_PROXY",
     "NORDVPN_USERNAME",
     "NORDVPN_PASSWORD"

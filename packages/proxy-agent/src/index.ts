@@ -19,24 +19,26 @@ const PROTOCOLS = [
 
 type ValidProtocol = (typeof PROTOCOLS)[number];
 
+type AgentConstructor = new (...args: never[]) => Agent;
+
 /**
  * Supported proxy types.
  */
 export const proxies: {
-	[P in ValidProtocol]: new (...args: never[]) => Agent;
+	[P in ValidProtocol]: [AgentConstructor, AgentConstructor];
 } = {
-	http: HttpProxyAgent,
-	https: HttpsProxyAgent,
-	socks: SocksProxyAgent,
-	socks4: SocksProxyAgent,
-	socks4a: SocksProxyAgent,
-	socks5: SocksProxyAgent,
-	socks5h: SocksProxyAgent,
-	'pac-data': PacProxyAgent,
-	'pac-file': PacProxyAgent,
-	'pac-ftp': PacProxyAgent,
-	'pac-http': PacProxyAgent,
-	'pac-https': PacProxyAgent,
+	http: [HttpProxyAgent, HttpsProxyAgent],
+	https: [HttpProxyAgent, HttpsProxyAgent],
+	socks: [SocksProxyAgent, SocksProxyAgent],
+	socks4: [SocksProxyAgent, SocksProxyAgent],
+	socks4a: [SocksProxyAgent, SocksProxyAgent],
+	socks5: [SocksProxyAgent, SocksProxyAgent],
+	socks5h: [SocksProxyAgent, SocksProxyAgent],
+	'pac-data': [PacProxyAgent, PacProxyAgent],
+	'pac-file': [PacProxyAgent, PacProxyAgent],
+	'pac-ftp': [PacProxyAgent, PacProxyAgent],
+	'pac-http': [PacProxyAgent, PacProxyAgent],
+	'pac-https': [PacProxyAgent, PacProxyAgent],
 };
 
 function isValidProtocol(v: string): v is ValidProtocol {
@@ -91,31 +93,33 @@ export class ProxyAgent extends Agent {
 		req: http.ClientRequest,
 		opts: AgentConnectOpts
 	): Promise<http.Agent> {
-		const protocol = opts.secureEndpoint ? 'https:' : 'http:';
+		const { secureEndpoint } = opts;
+		const protocol = secureEndpoint ? 'https:' : 'http:';
 		const host = req.getHeader('host');
 		const url = new URL(req.path, `${protocol}//${host}`).href;
 		const proxy = getProxyForUrl(url);
 
 		if (!proxy) {
 			debug('Proxy not enabled for URL: %o', url);
-			return opts.secureEndpoint ? this.httpsAgent : this.httpAgent;
+			return secureEndpoint ? this.httpsAgent : this.httpAgent;
 		}
 
 		debug('Request URL: %o', url);
 		debug('Proxy URL: %o', proxy);
 
 		// attempt to get a cached `http.Agent` instance first
-		let agent = this.cache.get(proxy);
+		const cacheKey = `${protocol}+${proxy}`;
+		let agent = this.cache.get(cacheKey);
 		if (!agent) {
 			const proxyUrl = new URL(proxy);
 			const proxyProto = proxyUrl.protocol.replace(':', '');
 			if (!isValidProtocol(proxyProto)) {
 				throw new Error(`Unsupported protocol for proxy URL: ${proxy}`);
 			}
-			const ctor = proxies[proxyProto];
+			const ctor = proxies[proxyProto][secureEndpoint ? 1 : 0];
 			// @ts-expect-error meh…
 			agent = new ctor(proxy, this.connectOpts);
-			this.cache.set(proxy, agent);
+			this.cache.set(cacheKey, agent);
 		} else {
 			debug('Cache hit for proxy URL: %o', proxy);
 		}

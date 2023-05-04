@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as http from 'http';
 import * as https from 'https';
+import { once } from 'events';
 import assert from 'assert';
 import { json, req } from 'agent-base';
 import { ProxyServer, createProxy } from 'proxy';
@@ -8,7 +9,8 @@ import { ProxyServer, createProxy } from 'proxy';
 import socks from 'socksv5';
 import { listen } from 'async-listen';
 import { ProxyAgent } from '../src';
-import { once } from 'events';
+import { HttpProxyAgent } from 'http-proxy-agent';
+import { HttpsProxyAgent } from 'https-proxy-agent';
 
 const sslOptions = {
 	key: fs.readFileSync(__dirname + '/ssl-cert-snakeoil.key'),
@@ -194,25 +196,60 @@ describe('ProxyAgent', () => {
 			assert.equal(httpsServerUrl.host, body.host);
 		});
 
-		describe('over "socks" proxy', () => {
-			it('should work', async () => {
-				let gotReq = false;
-				httpsServer.once('request', function (req, res) {
-					gotReq = true;
-					res.end(JSON.stringify(req.headers));
-				});
-
-				process.env.HTTP_PROXY = `socks://localhost:${socksPort}`;
-				const agent = new ProxyAgent();
-
-				const res = await req(new URL('/test', httpsServerUrl), {
-					agent,
-					rejectUnauthorized: false,
-				});
-				const body = await json(res);
-				assert(gotReq);
-				assert.equal(httpsServerUrl.host, body.host);
+		it('should work over "socks" proxy', async () => {
+			let gotReq = false;
+			httpsServer.once('request', function (req, res) {
+				gotReq = true;
+				res.end(JSON.stringify(req.headers));
 			});
+
+			process.env.HTTP_PROXY = `socks://localhost:${socksPort}`;
+			const agent = new ProxyAgent();
+
+			const res = await req(new URL('/test', httpsServerUrl), {
+				agent,
+				rejectUnauthorized: false,
+			});
+			const body = await json(res);
+			assert(gotReq);
+			assert.equal(httpsServerUrl.host, body.host);
+		});
+
+		it('should use `HttpProxyAgent` for "http" and `HttpsProxyAgent` for "https"', async () => {
+			let gotHttpReq = false;
+			httpServer.once('request', function (req, res) {
+				res.end(JSON.stringify(req.headers));
+				gotHttpReq = true;
+			});
+
+			let gotHttpsReq = false;
+			httpsServer.once('request', function (req, res) {
+				res.end(JSON.stringify(req.headers));
+				gotHttpsReq = true;
+			});
+
+			process.env.ALL_PROXY = httpsProxyServerUrl.href;
+			const agent = new ProxyAgent({ rejectUnauthorized: false });
+
+			const res = await req(httpServerUrl, {
+				agent,
+			});
+			const body = await json(res);
+			assert(gotHttpReq);
+			assert.equal(httpServerUrl.host, body.host);
+			expect(agent.cache.size).toEqual(1);
+			expect([...agent.cache.values()][0]).toBeInstanceOf(HttpProxyAgent);
+
+			const res2 = await req(httpsServerUrl, {
+				agent,
+			});
+			const body2 = await json(res2);
+			assert(gotHttpsReq);
+			assert.equal(httpsServerUrl.host, body2.host);
+			expect(agent.cache.size).toEqual(2);
+			expect([...agent.cache.values()][0]).toBeInstanceOf(
+				HttpsProxyAgent
+			);
 		});
 	});
 });
