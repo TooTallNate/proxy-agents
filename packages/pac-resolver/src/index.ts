@@ -52,7 +52,10 @@ export function createPacResolver(
 		opts
 	);
 
-	function FindProxyForURL(url: string | URL, _host?: string): Promise<string> {
+	function FindProxyForURL(
+		url: string | URL,
+		_host?: string
+	): Promise<string> {
 		const urlObj = typeof url === 'string' ? new URL(url) : url;
 		const host = _host || urlObj.hostname;
 

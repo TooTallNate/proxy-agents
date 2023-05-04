@@ -2,7 +2,7 @@ import * as net from 'net';
 import * as tls from 'tls';
 import * as http from 'http';
 import createDebug from 'debug';
-import once from '@tootallnate/once';
+import { once } from 'events';
 import { Agent, AgentConnectOpts } from 'agent-base';
 
 const debug = createDebug('http-proxy-agent');

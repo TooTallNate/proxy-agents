@@ -86,9 +86,9 @@ export class SocksProxyAgent extends Agent {
 		'socks5h',
 	] as const;
 
-	private readonly shouldLookup: boolean;
-	private readonly proxy: SocksProxy;
-	public timeout: number | null;
+	readonly shouldLookup: boolean;
+	readonly proxy: SocksProxy;
+	timeout: number | null;
 
 	constructor(uri: string | URL, opts?: SocksProxyAgentOptions) {
 		super(opts);

@@ -317,13 +317,19 @@ describe('HttpsProxyAgent', () => {
 			});
 
 			try {
-				const res = await req(sslServerUrl, { agent, rejectUnauthorized: false });
+				const res = await req(sslServerUrl, {
+					agent,
+					rejectUnauthorized: false,
+				});
 				expect(res.headers.connection).toEqual('keep-alive');
 				res.resume();
 				const s1 = res.socket;
 				await once(s1, 'free');
 
-				const res2 = await req(sslServerUrl, { agent, rejectUnauthorized: false });
+				const res2 = await req(sslServerUrl, {
+					agent,
+					rejectUnauthorized: false,
+				});
 				expect(res2.headers.connection).toEqual('keep-alive');
 				res2.resume();
 				const s2 = res2.socket;

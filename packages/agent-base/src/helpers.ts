@@ -2,6 +2,10 @@ import * as http from 'http';
 import * as https from 'https';
 import type { Readable } from 'stream';
 
+export type ThenableRequest = http.ClientRequest & {
+	then: Promise<http.IncomingMessage>['then'];
+};
+
 export async function toBuffer(stream: Readable): Promise<Buffer> {
 	let length = 0;
 	const chunks: Buffer[] = [];
@@ -28,12 +32,15 @@ export async function json(stream: Readable): Promise<any> {
 export function req(
 	url: string | URL,
 	opts: https.RequestOptions = {}
-): Promise<http.IncomingMessage> {
-	return new Promise((resolve, reject) => {
+): ThenableRequest {
+	let req!: ThenableRequest;
+	const promise = new Promise<http.IncomingMessage>((resolve, reject) => {
 		const href = typeof url === 'string' ? url : url.href;
-		(href.startsWith('https:') ? https : http)
+		req = (href.startsWith('https:') ? https : http)
 			.request(url, opts, resolve)
 			.once('error', reject)
-			.end();
+			.end() as ThenableRequest;
 	});
+	req.then = promise.then.bind(promise);
+	return req;
 }

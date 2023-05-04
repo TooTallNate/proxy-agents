@@ -13,7 +13,7 @@ describe('isInNet(host, pattern, mask)', () => {
 		const expected = test.pop();
 		it(
 			'should return `' + expected + '` for "' + test.join('", "') + '"',
-			async ()  => {
+			async () => {
 				// @ts-expect-error bad types
 				const res = await isInNet(test[0], test[1], test[2]);
 				expect(res).toEqual(expected);

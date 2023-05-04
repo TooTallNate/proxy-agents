@@ -2,7 +2,7 @@ import * as net from 'net';
 import * as tls from 'tls';
 import * as http from 'http';
 import * as crypto from 'crypto';
-import once from '@tootallnate/once';
+import { once } from 'events';
 import createDebug from 'debug';
 import { Readable } from 'stream';
 import { format } from 'url';

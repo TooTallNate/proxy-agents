@@ -20,13 +20,13 @@ describe('HttpProxyAgent', () => {
 	beforeAll(async () => {
 		// setup HTTP proxy server
 		proxy = createProxy();
-		proxyUrl = await listen(proxy) as URL;
+		proxyUrl = (await listen(proxy)) as URL;
 	});
 
 	beforeAll(async () => {
 		// setup target HTTP server
 		httpServer = http.createServer();
-		httpServerUrl = await listen(httpServer) as URL;
+		httpServerUrl = (await listen(httpServer)) as URL;
 	});
 
 	beforeAll(async () => {
@@ -36,7 +36,7 @@ describe('HttpProxyAgent', () => {
 			cert: fs.readFileSync(`${__dirname}/ssl-cert-snakeoil.pem`),
 		};
 		sslProxy = createProxy(https.createServer(options));
-		sslProxyUrl = await listen(sslProxy) as URL;
+		sslProxyUrl = (await listen(sslProxy)) as URL;
 	});
 
 	beforeEach(() => {
@@ -68,7 +68,9 @@ describe('HttpProxyAgent', () => {
 		});
 		describe('secureProxy', () => {
 			it('should be `false` when "http:" protocol is used', () => {
-				const agent = new HttpProxyAgent(`http://127.0.0.1:${proxyUrl.port}`);
+				const agent = new HttpProxyAgent(
+					`http://127.0.0.1:${proxyUrl.port}`
+				);
 				assert.equal(false, agent.secureProxy);
 			});
 			it('should be `true` when "https:" protocol is used', () => {
@@ -120,7 +122,7 @@ describe('HttpProxyAgent', () => {
 
 			const agent = new HttpProxyAgent(proxyUrl);
 
-			const path = '/test?foo=bar&1=2'
+			const path = '/test?foo=bar&1=2';
 			const res = await req(new URL(path, httpServerUrl), { agent });
 			const body = await json(res);
 			expect(body.url).toEqual(path);
@@ -130,9 +132,9 @@ describe('HttpProxyAgent', () => {
 			proxy.authenticate = () => false;
 
 			const agent = new HttpProxyAgent(proxyUrl);
-			const res = await req('http://example.com', { agent});
-				assert.equal(407, res.statusCode);
-				assert('proxy-authenticate' in res.headers);
+			const res = await req('http://example.com', { agent });
+			assert.equal(407, res.statusCode);
+			assert('proxy-authenticate' in res.headers);
 		});
 		it('should send the "Proxy-Authorization" request header', async () => {
 			// set a proxy authentication function for this test

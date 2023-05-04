@@ -1,4 +1,4 @@
-import { isIP } from 'net'
+import { isIP } from 'net';
 import myIpAddress from '../src/myIpAddress';
 
 describe('myIpAddress()', function () {

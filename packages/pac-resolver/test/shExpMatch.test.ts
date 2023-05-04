@@ -1,4 +1,4 @@
-import shExpMatch from '../src/shExpMatch'
+import shExpMatch from '../src/shExpMatch';
 
 describe('shExpMatch(str, shexp)', () => {
 	test.each([

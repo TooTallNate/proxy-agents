@@ -74,15 +74,15 @@ describe('FindProxyForURL', () => {
 		it('should return "DIRECT" for "localhost"', async () => {
 			const res = await FindProxyForURL(
 				'http://localhost/hello',
-				'localhost',
+				'localhost'
 			);
 			expect(res).toEqual('DIRECT');
 		});
 
 		it('should return "DIRECT" for "foo.netscape.com"', async () => {
-			const res= await FindProxyForURL(
+			const res = await FindProxyForURL(
 				'http://foo.netscape.com/',
-				'foo.netscape.com',
+				'foo.netscape.com'
 			);
 			expect(res).toEqual('DIRECT');
 		});
@@ -113,34 +113,33 @@ describe('FindProxyForURL', () => {
 		it('should return "DIRECT" for "localhost"', async () => {
 			const res = await FindProxyForURL(
 				'http://localhost/hello',
-				'localhost',
-			)
-			expect(res).toEqual('DIRECT')
+				'localhost'
+			);
+			expect(res).toEqual('DIRECT');
 		});
 
 		it('should return "DIRECT" for "foo.netscape.com"', async () => {
 			const res = await FindProxyForURL(
 				'http://foo.netscape.com/',
-				'foo.netscape.com',
+				'foo.netscape.com'
 			);
-			expect(res).toEqual('DIRECT')
+			expect(res).toEqual('DIRECT');
 		});
 
 		it('should return "PROXY …" for "www.netscape.com"', async () => {
 			const res = await FindProxyForURL(
 				'http://www.netscape.com/',
-				'www.netscape.com',
+				'www.netscape.com'
 			);
-			expect(res).toEqual(
-						'PROXY w3proxy.netscape.com:8080; DIRECT');
+			expect(res).toEqual('PROXY w3proxy.netscape.com:8080; DIRECT');
 		});
 
 		it('should return "PROXY …" for "merchant.netscape.com"', async () => {
 			const res = await FindProxyForURL(
 				'http://merchant.netscape.com/',
-				'merchant.netscape.com',
+				'merchant.netscape.com'
 			);
-						expect(res).toEqual('PROXY w3proxy.netscape.com:8080; DIRECT');
+			expect(res).toEqual('PROXY w3proxy.netscape.com:8080; DIRECT');
 		});
 	});
 
@@ -170,33 +169,33 @@ describe('FindProxyForURL', () => {
 		it('should return "DIRECT" for "foo://netscape.com"', async () => {
 			const res = await FindProxyForURL(
 				'foo://netscape.com/hello',
-				'netscape.com',
+				'netscape.com'
 			);
-			expect(res).toEqual('DIRECT')
+			expect(res).toEqual('DIRECT');
 		});
 
 		it('should return "PROXY http…" for "http://netscape.com"', async () => {
 			const res = await FindProxyForURL(
 				'http://netscape.com/hello',
-				'netscape.com',
+				'netscape.com'
 			);
-					expect(res).toEqual('PROXY http-proxy.mydomain.com:8080');
+			expect(res).toEqual('PROXY http-proxy.mydomain.com:8080');
 		});
 
 		it('should return "PROXY ftp…" for "ftp://netscape.com"', async () => {
 			const res = await FindProxyForURL(
 				'ftp://netscape.com/hello',
-				'netscape.com',
+				'netscape.com'
 			);
-					expect(res).toEqual('PROXY ftp-proxy.mydomain.com:8080');
+			expect(res).toEqual('PROXY ftp-proxy.mydomain.com:8080');
 		});
 
 		it('should return "PROXY gopher…" for "gopher://netscape.com"', async () => {
 			const res = await FindProxyForURL(
 				'gopher://netscape.com/hello',
-				'netscape.com',
+				'netscape.com'
 			);
-					expect(res).toEqual('PROXY gopher-proxy.mydomain.com:8080');
+			expect(res).toEqual('PROXY gopher-proxy.mydomain.com:8080');
 		});
 
 		it('should return "PROXY security…" for "https://netscape.com"', async () => {
@@ -210,9 +209,9 @@ describe('FindProxyForURL', () => {
 		it('should return "PROXY security…" for "snews://netscape.com"', async () => {
 			const res = await FindProxyForURL(
 				'snews://netscape.com/hello',
-				'netscape.com',
+				'netscape.com'
 			);
-					expect(res).toEqual('PROXY security-proxy.mydomain.com:8080');
+			expect(res).toEqual('PROXY security-proxy.mydomain.com:8080');
 		});
 	});
 
@@ -245,17 +244,17 @@ describe('FindProxyForURL', () => {
 		it('should return "HTTPS proxy.example.com" for "http://10.1.2.3/bar.html"', async () => {
 			const res = await FindProxyForURL(
 				'http://10.1.2.3/bar.html',
-				'10.1.2.3',
+				'10.1.2.3'
 			);
-					expect(res).toEqual('HTTPS proxy.example.com');
+			expect(res).toEqual('HTTPS proxy.example.com');
 		});
 
 		it('should return "DIRECT" for "http://foo.com/bar.html"', async () => {
 			const res = await FindProxyForURL(
 				'http://foo.com/bar.html',
-				'foo.com',
+				'foo.com'
 			);
-					expect(res).toEqual('DIRECT');
+			expect(res).toEqual('DIRECT');
 		});
 	});
 
@@ -267,13 +266,13 @@ describe('FindProxyForURL', () => {
 		);
 
 		it('should return "DIRECT" for "https://example.cn"', async () => {
-			const res = await FindProxyForURL('https://example.cn/')
-				expect(res).toEqual('DIRECT;');
+			const res = await FindProxyForURL('https://example.cn/');
+			expect(res).toEqual('DIRECT;');
 		});
 
 		it('should return "SOCKS5 127.0.0.1:1080;" for "https://example.com"', async () => {
-			const res= await FindProxyForURL('https://example.com/')
-				expect(res).toEqual('SOCKS5 127.0.0.1:1080;');
+			const res = await FindProxyForURL('https://example.com/');
+			expect(res).toEqual('SOCKS5 127.0.0.1:1080;');
 		});
 	});
 
