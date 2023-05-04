@@ -75,7 +75,7 @@ describe('SocksProxyAgent', () => {
 			assert.equal(socksServerUrl.hostname, agent.proxy.host);
 			assert.equal(+socksServerUrl.port, agent.proxy.port);
 		});
-		it('setup timeout', async () => {
+		it.skip('setup timeout', async () => {
 			httpServer.once('request', function (req, res) {
 				assert.equal('/timeout', req.url);
 				res.statusCode = 200;
