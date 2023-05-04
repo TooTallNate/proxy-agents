@@ -1,5 +1,11 @@
 # proxy-agent
 
+## 6.1.0
+
+### Minor Changes
+
+- 9a90063: Add support for `httpAgent` and `httpsAgent` options
+
 ## 6.0.0
 
 ### Major Changes
