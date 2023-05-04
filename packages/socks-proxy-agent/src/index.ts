@@ -86,9 +86,9 @@ export class SocksProxyAgent extends Agent {
 		'socks5h',
 	] as const;
 
-	private readonly shouldLookup: boolean;
-	private readonly proxy: SocksProxy;
-	public timeout: number | null;
+	readonly shouldLookup: boolean;
+	readonly proxy: SocksProxy;
+	timeout: number | null;
 
 	constructor(uri: string | URL, opts?: SocksProxyAgentOptions) {
 		super(opts);
@@ -122,8 +122,7 @@ export class SocksProxyAgent extends Agent {
 			// Client-side DNS resolution for "4" and "5" socks proxy versions.
 			host = await new Promise<string>((resolve, reject) => {
 				// Use the request's custom lookup, if one was configured:
-				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-				lookupFn(host!, {}, (err, res) => {
+				lookupFn(host, {}, (err, res) => {
 					if (err) {
 						reject(err);
 					} else {

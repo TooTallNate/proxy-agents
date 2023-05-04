@@ -11,8 +11,7 @@
     "build": "tsc",
     "test": "jest --env node --verbose --bail",
     "lint": "eslint . --ext .ts",
-    "pack": "node ../../scripts/pack.mjs",
-    "prepublishOnly": "npm run build"
+    "pack": "node ../../scripts/pack.mjs"
   },
   "repository": {
     "type": "git",
@@ -52,7 +51,6 @@
     "typescript": "^5.0.4"
   },
   "dependencies": {
-    "@tootallnate/once": "^2.0.0",
     "basic-ftp": "^5.0.2",
     "data-uri-to-buffer": "^4.0.1",
     "debug": "^4.3.4",

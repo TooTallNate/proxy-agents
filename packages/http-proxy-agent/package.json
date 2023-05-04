@@ -9,10 +9,9 @@
   ],
   "scripts": {
     "build": "tsc",
-    "test": "mocha",
+    "test": "jest --env node --verbose --bail",
     "lint": "eslint . --ext .ts",
-    "pack": "node ../../scripts/pack.mjs",
-    "prepublishOnly": "npm run build"
+    "pack": "node ../../scripts/pack.mjs"
   },
   "repository": {
     "type": "git",
@@ -30,15 +29,17 @@
     "url": "https://github.com/TooTallNate/node-http-proxy-agent/issues"
   },
   "dependencies": {
-    "@tootallnate/once": "^2.0.0",
     "agent-base": "^6.0.2",
     "debug": "^4.3.4"
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",
+    "@types/jest": "^29.5.1",
     "@types/node": "^14.18.43",
-    "mocha": "^6.2.3",
+    "async-listen": "^2.1.0",
+    "jest": "^29.5.0",
     "proxy": "workspace:*",
+    "ts-jest": "^29.1.0",
     "tsconfig": "workspace:*",
     "typescript": "^5.0.4"
   },

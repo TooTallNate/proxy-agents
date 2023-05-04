@@ -11,8 +11,7 @@
     "build": "tsc",
     "test": "jest --env node --verbose --bail",
     "lint": "eslint . --ext .ts",
-    "pack": "node ../../scripts/pack.mjs",
-    "prepublishOnly": "npm run build"
+    "pack": "node ../../scripts/pack.mjs"
   },
   "keywords": [
     "http",
@@ -34,7 +33,6 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@tootallnate/once": "^2.0.0",
     "args": "^5.0.3",
     "basic-auth-parser": "0.0.2-1",
     "debug": "^4.3.4"

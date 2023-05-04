@@ -1,8 +1,8 @@
 import http_ from 'http';
 import https from 'https';
-import once from '@tootallnate/once';
-import createDebug from 'debug';
+import { once } from 'events';
 import { Readable } from 'stream';
+import createDebug from 'debug';
 import { GetUriProtocol } from '.';
 import HTTPError from './http-error';
 import NotFoundError from './notfound';
@@ -90,7 +90,7 @@ export const http: GetUriProtocol<HttpOptions> = async (url, opts = {}) => {
 	}
 
 	const req = mod.get(url, options);
-	const [res]: [HttpIncomingMessage] = await once(req, 'response');
+	const [res]: HttpIncomingMessage[] = await once(req, 'response');
 	const code = res.statusCode || 0;
 
 	// assign a Date to this response for the "Cache-Control" delta calculation

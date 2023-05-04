@@ -11,8 +11,7 @@
     "build": "tsc",
     "test": "jest --env node --verbose --bail",
     "lint": "eslint . --ext .ts",
-    "pack": "node ../../scripts/pack.mjs",
-    "prepublishOnly": "npm run build"
+    "pack": "node ../../scripts/pack.mjs"
   },
   "author": "Nathan Rajlich <nathan@tootallnate.net> (http://n8.io/)",
   "repository": {

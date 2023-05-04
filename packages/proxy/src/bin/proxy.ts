@@ -2,7 +2,7 @@
 import args from 'args';
 import createDebug from 'debug';
 import { spawn } from 'child_process';
-import once from '@tootallnate/once';
+import { once } from 'events';
 // @ts-expect-error no types for "basic-auth-parser"
 import basicAuthParser = require('basic-auth-parser');
 import { createProxy } from '../proxy';
@@ -83,7 +83,7 @@ if (authenticate) {
 			stdio: ['ignore', 'inherit', 'inherit'],
 		});
 
-		const [code, signal] = await once(child, 'exit');
+		const [code, signal]: number[] = await once(child, 'exit');
 		debug('authentication child process "exit" event: %s %s', code, signal);
 		return code === 0;
 	};

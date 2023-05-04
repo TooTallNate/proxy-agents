@@ -1,4 +1,3 @@
-import { parse } from 'url';
 import { Context } from 'vm';
 import { CompileOptions, compile } from 'degenerator';
 
@@ -53,50 +52,18 @@ export function createPacResolver(
 		opts
 	);
 
-	/* eslint-disable @typescript-eslint/naming-convention, no-redeclare */
-	function FindProxyForURL(url: string, host?: string): Promise<string>;
 	function FindProxyForURL(
-		url: string,
-		callback: FindProxyForURLCallback
-	): void;
-	function FindProxyForURL(
-		url: string,
-		host: string,
-		callback: FindProxyForURLCallback
-	): void;
-	function FindProxyForURL(
-		url: string,
-		_host?: string | FindProxyForURLCallback,
-		_callback?: FindProxyForURLCallback
-	): Promise<string> | void {
-		let host: string | null = null;
-		let callback: FindProxyForURLCallback | null = null;
-
-		if (typeof _callback === 'function') {
-			callback = _callback;
-		}
-
-		if (typeof _host === 'string') {
-			host = _host;
-		} else if (typeof _host === 'function') {
-			callback = _host;
-		}
-
-		if (!host) {
-			host = parse(url).hostname;
-		}
+		url: string | URL,
+		_host?: string
+	): Promise<string> {
+		const urlObj = typeof url === 'string' ? new URL(url) : url;
+		const host = _host || urlObj.hostname;
 
 		if (!host) {
 			throw new TypeError('Could not determine `host`');
 		}
 
-		const promise = resolver(url, host);
-
-		if (typeof callback === 'function') {
-			toCallback(promise, callback);
-		} else {
-			return promise;
-		}
+		return resolver(urlObj.href, host);
 	}
 
 	Object.defineProperty(FindProxyForURL, 'toString', {
