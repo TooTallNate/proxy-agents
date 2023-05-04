@@ -46,7 +46,20 @@ function isValidProtocol(v: string): v is ValidProtocol {
 export type ProxyAgentOptions = HttpProxyAgentOptions<''> &
 	HttpsProxyAgentOptions<''> &
 	SocksProxyAgentOptions &
-	PacProxyAgentOptions<''>;
+	PacProxyAgentOptions<''> & {
+		/**
+		 * Default `http.Agent` instance to use when no proxy is
+		 * configured for a request. Defaults to a new `http.Agent()`
+		 * instance with the proxy agent options passed in.
+		 */
+		httpAgent?: http.Agent;
+		/**
+		 * Default `http.Agent` instance to use when no proxy is
+		 * configured for a request. Defaults to a new `https.Agent()`
+		 * instance with the proxy agent options passed in.
+		 */
+		httpsAgent?: http.Agent;
+	};
 
 /**
  * Uses the appropriate `Agent` subclass based off of the "proxy"
@@ -62,11 +75,16 @@ export class ProxyAgent extends Agent {
 	cache = new LRUCache<string, Agent>({ max: 20 });
 
 	connectOpts?: ProxyAgentOptions;
+	httpAgent: http.Agent;
+	httpsAgent: http.Agent;
 
 	constructor(opts?: ProxyAgentOptions) {
 		super(opts);
 		debug('Creating new ProxyAgent instance: %o', opts);
 		this.connectOpts = opts;
+		this.httpAgent = opts?.httpAgent || new http.Agent(opts);
+		this.httpsAgent =
+			opts?.httpsAgent || new https.Agent(opts as https.AgentOptions);
 	}
 
 	async connect(
@@ -80,7 +98,7 @@ export class ProxyAgent extends Agent {
 
 		if (!proxy) {
 			debug('Proxy not enabled for URL: %o', url);
-			return opts.secureEndpoint ? https.globalAgent : http.globalAgent;
+			return opts.secureEndpoint ? this.httpsAgent : this.httpAgent;
 		}
 
 		debug('Request URL: %o', url);
