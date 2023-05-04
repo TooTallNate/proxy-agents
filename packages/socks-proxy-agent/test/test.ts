@@ -75,23 +75,17 @@ describe('SocksProxyAgent', () => {
 			assert.equal(socksServerUrl.hostname, agent.proxy.host);
 			assert.equal(+socksServerUrl.port, agent.proxy.port);
 		});
-		it.skip('setup timeout', async () => {
-			httpServer.once('request', function (req, res) {
-				assert.equal('/timeout', req.url);
-				res.statusCode = 200;
-				setTimeout(() => res.end('Written after 500'), 500);
-			});
-
-			const agent = new SocksProxyAgent(socksServerUrl, { timeout: 50 });
+		it('should respect `timeout` option during connection to socks server', async () => {
+			const agent = new SocksProxyAgent(socksServerUrl, { timeout: 1 });
 
 			let err: Error | undefined;
 			try {
-				await req(new URL('/timeout', httpServerUrl), { agent });
+				await req('http://example.com', { agent });
 			} catch (_err) {
 				err = _err as Error;
 			}
 			assert(err);
-			assert.equal(err.message, 'socket hang up');
+			assert.equal(err.message, 'Proxy connection timed out');
 		});
 	});
 
