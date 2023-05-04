@@ -193,9 +193,6 @@ describe('PacProxyAgent', () => {
 		});
 
 		it('should fall back to the next proxy after one fails', async () => {
-			// This test is slow on Windows :/
-			//this.timeout(10000);
-
 			let gotReq = false;
 			httpServer.once('request', function (req, res) {
 				res.end(JSON.stringify(req.headers));
@@ -226,12 +223,9 @@ describe('PacProxyAgent', () => {
 			assert.equal(httpServerUrl.host, data.host);
 			assert.equal(proxyCount, 4);
 			assert(gotReq);
-		});
+		}, 10000); // This test is slow on Windows :/
 
 		it('should support `fallbackToDirect` option', async () => {
-			// This test is slow on Windows :/
-			//this.timeout(10000);
-
 			let gotReq = false;
 			httpServer.once('request', function (req, res) {
 				res.end(JSON.stringify(req.headers));
@@ -249,7 +243,7 @@ describe('PacProxyAgent', () => {
 			const data = await json(res);
 			assert.equal(httpServerUrl.host, data.host);
 			assert(gotReq);
-		});
+		}, 10000); // This test is slow on Windows :/
 	});
 
 	describe('"https" module', () => {
@@ -331,9 +325,6 @@ describe('PacProxyAgent', () => {
 		});
 
 		it('should fall back to the next proxy after one fails', async () => {
-			// This test is slow on Windows :/
-			//this.timeout(10000);
-
 			let gotReq = false;
 			httpsServer.once('request', function (req, res) {
 				gotReq = true;
@@ -366,6 +357,6 @@ describe('PacProxyAgent', () => {
 			assert.equal(httpsServerUrl.host, data.host);
 			assert.equal(proxyCount, 4);
 			assert(gotReq);
-		});
+		}, 10000); // This test is slow on Windows :/
 	});
 });
