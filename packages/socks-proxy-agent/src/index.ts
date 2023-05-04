@@ -122,8 +122,7 @@ export class SocksProxyAgent extends Agent {
 			// Client-side DNS resolution for "4" and "5" socks proxy versions.
 			host = await new Promise<string>((resolve, reject) => {
 				// Use the request's custom lookup, if one was configured:
-				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-				lookupFn(host!, {}, (err, res) => {
+				lookupFn(host, {}, (err, res) => {
 					if (err) {
 						reject(err);
 					} else {
