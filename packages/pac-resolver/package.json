@@ -30,7 +30,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/TooTallNate/node-pac-resolver.git"
+    "url": "https://github.com/TooTallNate/proxy-agents.git",
+    "directory": "packages/pac-resolver"
   },
   "engines": {
     "node": ">= 14"
@@ -43,8 +44,5 @@
     "dns"
   ],
   "author": "Nathan Rajlich <nathan@tootallnate.net> (http://n8.io/)",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/TooTallNate/node-pac-resolver/issues"
-  }
+  "license": "MIT"
 }

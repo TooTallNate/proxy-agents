@@ -18,7 +18,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/TooTallNate/node-proxy-agent.git"
+    "url": "https://github.com/TooTallNate/proxy-agents.git",
+    "directory": "packages/proxy-agent"
   },
   "keywords": [
     "http",
@@ -30,10 +31,6 @@
   ],
   "author": "Nathan Rajlich <nathan@tootallnate.net> (http://n8.io/)",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/TooTallNate/node-proxy-agent/issues"
-  },
-  "homepage": "https://github.com/TooTallNate/node-proxy-agent",
   "dependencies": {
     "agent-base": "^6.0.2",
     "debug": "^4.3.4",

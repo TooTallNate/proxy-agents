@@ -92,10 +92,8 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/TooTallNate/node-socks-proxy-agent.git"
-  },
-  "bugs": {
-    "url": "https://github.com/TooTallNate/node-socks-proxy-agent/issues"
+    "url": "https://github.com/TooTallNate/proxy-agents.git",
+    "directory": "packages/socks-proxy-agent"
   },
   "keywords": [
     "agent",

@@ -15,7 +15,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/TooTallNate/node-get-uri.git"
+    "url": "https://github.com/TooTallNate/proxy-agents.git",
+    "directory": "packages/get-uri"
   },
   "keywords": [
     "uri",
@@ -33,9 +34,6 @@
   ],
   "author": "Nathan Rajlich <nathan@tootallnate.net> (http://n8.io/)",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/TooTallNate/node-get-uri/issues"
-  },
   "devDependencies": {
     "@types/debug": "^4.1.7",
     "@types/fs-extra": "^8.1.2",

@@ -15,7 +15,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/TooTallNate/node-data-uri-to-buffer.git"
+    "url": "https://github.com/TooTallNate/proxy-agents.git",
+    "directory": "packages/data-uri-to-buffer"
   },
   "engines": {
     "node": ">= 14"
@@ -32,10 +33,6 @@
   ],
   "author": "Nathan Rajlich <nathan@tootallnate.net> (http://n8.io/)",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/TooTallNate/node-data-uri-to-buffer/issues"
-  },
-  "homepage": "https://github.com/TooTallNate/node-data-uri-to-buffer",
   "devDependencies": {
     "@types/jest": "^27.0.2",
     "@types/node": "^14.18.43",
