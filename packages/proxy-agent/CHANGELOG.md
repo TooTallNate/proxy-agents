@@ -1,5 +1,11 @@
 # proxy-agent
 
+## 6.1.1
+
+### Patch Changes
+
+- f30ed32: Use `HttpProxyAgent` for "http" and `HttpsProxyAgent` for "https"
+
 ## 6.1.0
 
 ### Minor Changes
