@@ -5,22 +5,11 @@ data-uri-to-buffer
 This module accepts a ["data" URI][rfc] String of data, and returns a
 node.js `Buffer` instance with the decoded data.
 
-
-Installation
-------------
-
-Install with `npm`:
-
-``` bash
-$ npm install data-uri-to-buffer
-```
-
-
 Example
 -------
 
 ``` js
-import dataUriToBuffer from 'data-uri-to-buffer';
+import { dataUriToBuffer } from 'data-uri-to-buffer';
 
 // plain-text data is supported
 let uri = 'data:,Hello%2C%20World!';

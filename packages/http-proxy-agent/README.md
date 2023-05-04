@@ -6,45 +6,23 @@ This module provides an `http.Agent` implementation that connects to a specified
 HTTP or HTTPS proxy server, and can be used with the built-in `http` module.
 
 __Note:__ For HTTP proxy usage with the `https` module, check out
-[`node-https-proxy-agent`](https://github.com/TooTallNate/node-https-proxy-agent).
-
-Installation
-------------
-
-Install with `npm`:
-
-``` bash
-$ npm install http-proxy-agent
-```
+[`https-proxy-agent`](../https-proxy-agent).
 
 
 Example
 -------
 
-``` js
-var url = require('url');
-var http = require('http');
-var HttpProxyAgent = require('http-proxy-agent');
+```ts
+import * as http from 'http';
+import { HttpProxyAgent } from 'http-proxy-agent';
 
-// HTTP/HTTPS proxy to connect to
-var proxy = process.env.http_proxy || 'http://168.63.76.32:3128';
-console.log('using proxy server %j', proxy);
+const agent = new HttpProxyAgent('http://168.63.76.32:3128');
 
-// HTTP endpoint for the proxy to connect to
-var endpoint = process.argv[2] || 'http://nodejs.org/api/';
-console.log('attempting to GET %j', endpoint);
-var opts = url.parse(endpoint);
-
-// create an instance of the `HttpProxyAgent` class with the proxy server information
-var agent = new HttpProxyAgent(proxy);
-opts.agent = agent;
-
-http.get(opts, function (res) {
+http.get('http://nodejs.org/api/', { agent }, (res) => {
   console.log('"response" event!', res.headers);
   res.pipe(process.stdout);
 });
 ```
-
 
 License
 -------

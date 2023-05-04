@@ -14,17 +14,6 @@ easily extensible with more:
 | `http`    | [HTTP URIs][http]               | `http://www.example.com/path/to/name`
 | `https`   | [HTTPS URIs][https]             | `https://www.example.com/path/to/name`
 
-
-Installation
-------------
-
-Install with `npm`:
-
-``` bash
-$ npm install get-uri
-```
-
-
 Example
 -------
 

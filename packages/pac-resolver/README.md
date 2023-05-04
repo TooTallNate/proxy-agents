@@ -7,17 +7,6 @@ This module accepts a JavaScript String of code, which is meant to be a
 [PAC proxy file][pac-wikipedia], and returns a generated asynchronous
 `FindProxyForURL()` function.
 
-
-Installation
-------------
-
-Install with `npm`:
-
-```bash
-$ npm install pac-resolver
-```
-
-
 Example
 -------
 
@@ -35,23 +24,22 @@ function FindProxyForURL(url, host) {
 
 You can consume this PAC file with `pac-resolver` like so:
 
-```js
-var fs = require('fs');
-var pac = require('pac-resolver');
+```ts
+import { readFileSync } from 'fs';
+import { createPacResolver } from 'pac-resolver';
 
-var FindProxyForURL = pac(fs.readFileSync('proxy.pac'));
+const FindProxyForURL = createPacResolver(readFileSync('proxy.pac'));
 
-FindProxyForURL('http://foo.com/').then((res) => {
-  console.log(res);
-  // "DIRECT"
-});
+const res = await FindProxyForURL('http://foo.com/');
+console.log(res);
+// "DIRECT"
 ```
 
 
 API
 ---
 
-### pac(String pacFileContents[, Object options]) → Function
+### pac(pacFileContents: string | Buffer, options?: PacResolverOptions) → Function
 
 Returns an asynchronous `FindProxyForURL()` function based off of the given JS
 string `pacFileContents` PAC proxy file. An optional `options` object may be

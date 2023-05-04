@@ -9,31 +9,16 @@ and `https` modules.
 It can also be used in conjunction with the `ws` module to establish a WebSocket
 connection over a SOCKS proxy. See the "Examples" section below.
 
-Installation
-------------
-
-Install with `npm`:
-
-``` bash
-npm install socks-proxy-agent
-```
-
-
 Examples
 --------
-
-#### TypeScript example
 
 ```ts
 import https from 'https';
 import { SocksProxyAgent } from 'socks-proxy-agent';
 
-const info = {
-	hostname: 'br41.nordvpn.com',
-	userId: 'your-name@gmail.com',
-	password: 'abcdef12345124'
-};
-const agent = new SocksProxyAgent(info);
+const agent = new SocksProxyAgent(
+	'socks://your-name%40gmail.com:abcdef12345124@br41.nordvpn.com'
+);
 
 https.get('https://ipinfo.io', { agent }, (res) => {
 	console.log(res.headers);
@@ -41,77 +26,17 @@ https.get('https://ipinfo.io', { agent }, (res) => {
 });
 ```
 
-#### `http` module example
-
-```js
-var url = require('url');
-var http = require('http');
-var { SocksProxyAgent } = require('socks-proxy-agent');
-
-// SOCKS proxy to connect to
-var proxy = process.env.socks_proxy || 'socks://127.0.0.1:1080';
-console.log('using proxy server %j', proxy);
-
-// HTTP endpoint for the proxy to connect to
-var endpoint = process.argv[2] || 'http://nodejs.org/api/';
-console.log('attempting to GET %j', endpoint);
-var opts = url.parse(endpoint);
-
-// create an instance of the `SocksProxyAgent` class with the proxy server information
-var agent = new SocksProxyAgent(proxy);
-opts.agent = agent;
-
-http.get(opts, function (res) {
-	console.log('"response" event!', res.headers);
-	res.pipe(process.stdout);
-});
-```
-
-#### `https` module example
-
-```js
-var url = require('url');
-var https = require('https');
-var { SocksProxyAgent } = require('socks-proxy-agent');
-
-// SOCKS proxy to connect to
-var proxy = process.env.socks_proxy || 'socks://127.0.0.1:1080';
-console.log('using proxy server %j', proxy);
-
-// HTTP endpoint for the proxy to connect to
-var endpoint = process.argv[2] || 'https://encrypted.google.com/';
-console.log('attempting to GET %j', endpoint);
-var opts = url.parse(endpoint);
-
-// create an instance of the `SocksProxyAgent` class with the proxy server information
-var agent = new SocksProxyAgent(proxy);
-opts.agent = agent;
-
-https.get(opts, function (res) {
-	console.log('"response" event!', res.headers);
-	res.pipe(process.stdout);
-});
-```
-
 #### `ws` WebSocket connection example
 
-``` js
-var WebSocket = require('ws');
-var { SocksProxyAgent } = require('socks-proxy-agent');
+```ts
+import WebSocket from 'ws';
+import { SocksProxyAgent } from 'socks-proxy-agent';
 
-// SOCKS proxy to connect to
-var proxy = process.env.socks_proxy || 'socks://127.0.0.1:1080';
-console.log('using proxy server %j', proxy);
+const agent = new SocksProxyAgent(
+	'socks://your-name%40gmail.com:abcdef12345124@br41.nordvpn.com'
+);
 
-// WebSocket endpoint for the proxy to connect to
-var endpoint = process.argv[2] || 'ws://echo.websocket.events';
-console.log('attempting to connect to WebSocket %j', endpoint);
-
-// create an instance of the `SocksProxyAgent` class with the proxy server information
-var agent = new SocksProxyAgent(proxy);
-
-// initiate the WebSocket connection
-var socket = new WebSocket(endpoint, { agent: agent });
+var socket = new WebSocket('ws://echo.websocket.events', { agent });
 
 socket.on('open', function () {
 	console.log('"open" event!');

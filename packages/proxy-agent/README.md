@@ -25,17 +25,6 @@ The currently implemented protocol mappings are listed in the table below:
 | `socks4`   | [socks-proxy-agent][]           | [socks-proxy-agent][]            | `socks4://some-socks-proxy.com:9050`
 | `pac-*`    | [pac-proxy-agent][]             | [pac-proxy-agent][]              | `pac+http://www.example.com/proxy.pac`
 
-
-Installation
-------------
-
-Install with `npm`:
-
-``` bash
-$ npm install proxy-agent
-```
-
-
 Example
 -------
 
@@ -58,7 +47,7 @@ https.get('https://jsonip.com', { agent }, (res) => {
 API
 ---
 
-### new ProxyAgent()
+### new ProxyAgent(options?: ProxyAgentOptions)
 
 Creates an `http.Agent` instance which relies on the various proxy-related
 environment variables. An LRU cache is used, so the same `http.Agent` instance

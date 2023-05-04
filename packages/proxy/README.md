@@ -17,24 +17,6 @@ source HTTP proxy software:
  * [Apache][] with [`mod_proxy`][mod_proxy]
  * [More…](http://wikipedia.org/wiki/Proxy_server#Web_proxy_servers)
 
-
-Installation
-------------
-
-Install with `npm`:
-
-``` bash
-$ npm install proxy
-```
-
-If you would like to have the `proxy(1)` CLI program in your `$PATH`, then
-install "globally":
-
-``` bash
-$ npm install -g proxy
-```
-
-
 Examples
 --------
 
@@ -43,12 +25,12 @@ Examples
 A basic HTTP(s) server with all the default options. All requests are allowed.
 CONNECT HTTP method works as well.
 
-``` js
-var http = require('http');
-var setup = require('proxy');
+```ts
+import * as http from 'http';
+import { createProxy } from 'proxy';
 
-var server = setup(http.createServer());
-server.listen(3128, function () {
+const server = createProxy(http.createServer());
+server.listen(3128, () => {
   var port = server.address().port;
   console.log('HTTP(s) proxy server listening on port %d', port);
 });

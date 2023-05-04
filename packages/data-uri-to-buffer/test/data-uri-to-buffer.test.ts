@@ -1,5 +1,5 @@
 import assert from 'assert';
-import dataUriToBuffer from '../src';
+import { dataUriToBuffer } from '../src';
 
 describe('data-uri-to-buffer', function () {
 	it('should decode bare-bones Data URIs', function () {

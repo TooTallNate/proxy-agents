@@ -26,17 +26,6 @@ async function foo() {
 With the compiled output code, you can evaluate the code using the `vm` module
 in Node.js, or save the code to a file and require it, or whatever.
 
-
-Installation
-------------
-
-Install with `npm`:
-
-```bash
-$ npm install degenerator
-```
-
-
 Example
 -------
 
@@ -62,7 +51,7 @@ instance with the `vm` module:
 
 ```typescript
 import vm from 'vm';
-import degenerator from 'degenerator';
+import { degenerator } from 'degenerator';
 
 // The `get()` function is Promise-based (error handling omitted for brevity)
 function get(endpoint: string) {
