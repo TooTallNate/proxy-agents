@@ -9,10 +9,10 @@ importers:
         version: 2.26.1
       '@typescript-eslint/eslint-plugin':
         specifier: ^5.59.1
-        version: 5.59.1(@typescript-eslint/parser@5.59.1)(eslint@7.32.0)(typescript@5.0.4)
+        version: 5.59.1(@typescript-eslint/parser@5.59.1)(eslint@7.32.0)
       '@typescript-eslint/parser':
         specifier: ^5.59.1
-        version: 5.59.1(eslint@7.32.0)(typescript@5.0.4)
+        version: 5.59.1(eslint@7.32.0)
       eslint:
         specifier: ^7.32.0
         version: 7.32.0
@@ -58,7 +58,7 @@ importers:
         version: 29.5.0(@types/node@14.18.43)
       ts-jest:
         specifier: ^29.1.0
-        version: 29.1.0(@babel/core@7.21.4)(jest@29.5.0)(typescript@5.0.4)
+        version: 29.1.0(jest@29.5.0)(typescript@5.0.4)
       tsconfig:
         specifier: workspace:*
         version: link:../tsconfig
@@ -82,7 +82,7 @@ importers:
         version: 29.5.0(@types/node@14.18.43)
       ts-jest:
         specifier: ^29.1.0
-        version: 29.1.0(@babel/core@7.21.4)(jest@29.5.0)(typescript@5.0.4)
+        version: 29.1.0(jest@29.5.0)(typescript@5.0.4)
       tsconfig:
         specifier: workspace:*
         version: link:../tsconfig
@@ -122,7 +122,7 @@ importers:
         version: 29.5.0(@types/node@14.18.43)
       ts-jest:
         specifier: ^29.1.0
-        version: 29.1.0(@babel/core@7.21.4)(jest@29.5.0)(typescript@5.0.4)
+        version: 29.1.0(jest@29.5.0)(typescript@5.0.4)
       tsconfig:
         specifier: workspace:*
         version: link:../tsconfig
@@ -136,7 +136,7 @@ importers:
         specifier: ^5.0.2
         version: 5.0.2
       data-uri-to-buffer:
-        specifier: ^4.0.1
+        specifier: ^5.0.0
         version: link:../data-uri-to-buffer
       debug:
         specifier: ^4.3.4
@@ -174,7 +174,7 @@ importers:
         version: 1.2.2
       ts-jest:
         specifier: ^29.1.0
-        version: 29.1.0(@babel/core@7.21.4)(jest@29.5.0)(typescript@5.0.4)
+        version: 29.1.0(jest@29.5.0)(typescript@5.0.4)
       tsconfig:
         specifier: workspace:*
         version: link:../tsconfig
@@ -185,7 +185,7 @@ importers:
   packages/http-proxy-agent:
     dependencies:
       agent-base:
-        specifier: ^6.0.2
+        specifier: ^7.0.0
         version: link:../agent-base
       debug:
         specifier: ^4.3.4
@@ -211,7 +211,7 @@ importers:
         version: link:../proxy
       ts-jest:
         specifier: ^29.1.0
-        version: 29.1.0(@babel/core@7.21.4)(jest@29.5.0)(typescript@5.0.4)
+        version: 29.1.0(jest@29.5.0)(typescript@5.0.4)
       tsconfig:
         specifier: workspace:*
         version: link:../tsconfig
@@ -222,7 +222,7 @@ importers:
   packages/https-proxy-agent:
     dependencies:
       agent-base:
-        specifier: ^6.0.2
+        specifier: ^7.0.0
         version: link:../agent-base
       debug:
         specifier: '4'
@@ -254,7 +254,7 @@ importers:
         version: link:../proxy
       ts-jest:
         specifier: ^29.1.0
-        version: 29.1.0(@babel/core@7.21.4)(jest@29.5.0)(typescript@5.0.4)
+        version: 29.1.0(jest@29.5.0)(typescript@5.0.4)
       tsconfig:
         specifier: workspace:*
         version: link:../tsconfig
@@ -265,25 +265,25 @@ importers:
   packages/pac-proxy-agent:
     dependencies:
       agent-base:
-        specifier: ^6.0.2
+        specifier: ^7.0.0
         version: link:../agent-base
       debug:
         specifier: ^4.3.4
         version: 4.3.4
       get-uri:
-        specifier: ^5.0.0
+        specifier: ^6.0.0
         version: link:../get-uri
       http-proxy-agent:
-        specifier: ^5.0.0
+        specifier: ^6.0.0
         version: link:../http-proxy-agent
       https-proxy-agent:
-        specifier: ^5.0.1
+        specifier: ^6.0.0
         version: link:../https-proxy-agent
       pac-resolver:
-        specifier: ^5.0.1
+        specifier: ^6.0.0
         version: link:../pac-resolver
       socks-proxy-agent:
-        specifier: ^7.0.0
+        specifier: ^8.0.0
         version: link:../socks-proxy-agent
     devDependencies:
       '@types/debug':
@@ -309,7 +309,7 @@ importers:
         version: 0.0.6
       ts-jest:
         specifier: ^29.1.0
-        version: 29.1.0(@babel/core@7.21.4)(jest@29.5.0)(typescript@5.0.4)
+        version: 29.1.0(jest@29.5.0)(typescript@5.0.4)
       tsconfig:
         specifier: workspace:*
         version: link:../tsconfig
@@ -320,7 +320,7 @@ importers:
   packages/pac-resolver:
     dependencies:
       degenerator:
-        specifier: ^3.0.2
+        specifier: ^4.0.0
         version: link:../degenerator
       ip:
         specifier: ^1.1.5
@@ -346,7 +346,7 @@ importers:
         version: 29.5.0(@types/node@14.18.43)
       ts-jest:
         specifier: ^29.1.0
-        version: 29.1.0(@babel/core@7.21.4)(jest@29.5.0)(typescript@5.0.4)
+        version: 29.1.0(jest@29.5.0)(typescript@5.0.4)
       tsconfig:
         specifier: workspace:*
         version: link:../tsconfig
@@ -386,7 +386,7 @@ importers:
         version: 29.5.0(@types/node@14.18.43)
       ts-jest:
         specifier: ^29.1.0
-        version: 29.1.0(@babel/core@7.21.4)(jest@29.5.0)(typescript@5.0.4)
+        version: 29.1.0(jest@29.5.0)(typescript@5.0.4)
       tsconfig:
         specifier: workspace:*
         version: link:../tsconfig
@@ -397,28 +397,28 @@ importers:
   packages/proxy-agent:
     dependencies:
       agent-base:
-        specifier: ^6.0.2
+        specifier: ^7.0.0
         version: link:../agent-base
       debug:
         specifier: ^4.3.4
         version: 4.3.4
       http-proxy-agent:
-        specifier: ^5.0.0
+        specifier: ^6.0.0
         version: link:../http-proxy-agent
       https-proxy-agent:
-        specifier: ^5.0.1
+        specifier: ^6.0.0
         version: link:../https-proxy-agent
       lru-cache:
         specifier: ^7.14.1
         version: 7.14.1
       pac-proxy-agent:
-        specifier: ^5.0.0
+        specifier: ^6.0.0
         version: link:../pac-proxy-agent
       proxy-from-env:
         specifier: ^1.1.0
         version: 1.1.0
       socks-proxy-agent:
-        specifier: ^7.0.0
+        specifier: ^8.0.0
         version: link:../socks-proxy-agent
     devDependencies:
       '@types/agent-base':
@@ -450,7 +450,7 @@ importers:
         version: github.com/TooTallNate/socksv5/d937368b28e929396166d77a06d387a4a902bd51
       ts-jest:
         specifier: ^29.1.0
-        version: 29.1.0(@babel/core@7.21.4)(jest@29.5.0)(typescript@5.0.4)
+        version: 29.1.0(jest@29.5.0)(typescript@5.0.4)
       tsconfig:
         specifier: workspace:*
         version: link:../tsconfig
@@ -461,7 +461,7 @@ importers:
   packages/socks-proxy-agent:
     dependencies:
       agent-base:
-        specifier: ^6.0.2
+        specifier: ^7.0.0
         version: link:../agent-base
       debug:
         specifier: ^4.3.4
@@ -508,7 +508,7 @@ importers:
         version: github.com/TooTallNate/socksv5/d937368b28e929396166d77a06d387a4a902bd51
       ts-jest:
         specifier: ^29.1.0
-        version: 29.1.0(@babel/core@7.21.4)(jest@29.5.0)(typescript@5.0.4)
+        version: 29.1.0(jest@29.5.0)(typescript@5.0.4)
       tsconfig:
         specifier: workspace:*
         version: link:../tsconfig
@@ -1642,7 +1642,7 @@ packages:
       '@types/yargs-parser': 21.0.0
     dev: true
 
-  /@typescript-eslint/eslint-plugin@5.59.1(@typescript-eslint/parser@5.59.1)(eslint@7.32.0)(typescript@5.0.4):
+  /@typescript-eslint/eslint-plugin@5.59.1(@typescript-eslint/parser@5.59.1)(eslint@7.32.0):
     resolution: {integrity: sha512-AVi0uazY5quFB9hlp2Xv+ogpfpk77xzsgsIEWyVS7uK/c7MZ5tw7ZPbapa0SbfkqE0fsAMkz5UwtgMLVk2BQAg==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     peerDependencies:
@@ -1654,23 +1654,22 @@ packages:
         optional: true
     dependencies:
       '@eslint-community/regexpp': 4.5.0
-      '@typescript-eslint/parser': 5.59.1(eslint@7.32.0)(typescript@5.0.4)
+      '@typescript-eslint/parser': 5.59.1(eslint@7.32.0)
       '@typescript-eslint/scope-manager': 5.59.1
-      '@typescript-eslint/type-utils': 5.59.1(eslint@7.32.0)(typescript@5.0.4)
-      '@typescript-eslint/utils': 5.59.1(eslint@7.32.0)(typescript@5.0.4)
+      '@typescript-eslint/type-utils': 5.59.1(eslint@7.32.0)
+      '@typescript-eslint/utils': 5.59.1(eslint@7.32.0)
       debug: 4.3.4
       eslint: 7.32.0
       grapheme-splitter: 1.0.4
       ignore: 5.2.0
       natural-compare-lite: 1.4.0
       semver: 7.3.8
-      tsutils: 3.21.0(typescript@5.0.4)
-      typescript: 5.0.4
+      tsutils: 3.21.0
     transitivePeerDependencies:
       - supports-color
     dev: true
 
-  /@typescript-eslint/parser@5.59.1(eslint@7.32.0)(typescript@5.0.4):
+  /@typescript-eslint/parser@5.59.1(eslint@7.32.0):
     resolution: {integrity: sha512-nzjFAN8WEu6yPRDizIFyzAfgK7nybPodMNFGNH0M9tei2gYnYszRDqVA0xlnRjkl7Hkx2vYrEdb6fP2a21cG1g==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     peerDependencies:
@@ -1682,10 +1681,9 @@ packages:
     dependencies:
       '@typescript-eslint/scope-manager': 5.59.1
       '@typescript-eslint/types': 5.59.1
-      '@typescript-eslint/typescript-estree': 5.59.1(typescript@5.0.4)
+      '@typescript-eslint/typescript-estree': 5.59.1
       debug: 4.3.4
       eslint: 7.32.0
-      typescript: 5.0.4
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -1698,7 +1696,7 @@ packages:
       '@typescript-eslint/visitor-keys': 5.59.1
     dev: true
 
-  /@typescript-eslint/type-utils@5.59.1(eslint@7.32.0)(typescript@5.0.4):
+  /@typescript-eslint/type-utils@5.59.1(eslint@7.32.0):
     resolution: {integrity: sha512-ZMWQ+Oh82jWqWzvM3xU+9y5U7MEMVv6GLioM3R5NJk6uvP47kZ7YvlgSHJ7ERD6bOY7Q4uxWm25c76HKEwIjZw==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     peerDependencies:
@@ -1708,12 +1706,11 @@ packages:
       typescript:
         optional: true
     dependencies:
-      '@typescript-eslint/typescript-estree': 5.59.1(typescript@5.0.4)
-      '@typescript-eslint/utils': 5.59.1(eslint@7.32.0)(typescript@5.0.4)
+      '@typescript-eslint/typescript-estree': 5.59.1
+      '@typescript-eslint/utils': 5.59.1(eslint@7.32.0)
       debug: 4.3.4
       eslint: 7.32.0
-      tsutils: 3.21.0(typescript@5.0.4)
-      typescript: 5.0.4
+      tsutils: 3.21.0
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -1723,7 +1720,7 @@ packages:
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     dev: true
 
-  /@typescript-eslint/typescript-estree@5.59.1(typescript@5.0.4):
+  /@typescript-eslint/typescript-estree@5.59.1:
     resolution: {integrity: sha512-lYLBBOCsFltFy7XVqzX0Ju+Lh3WPIAWxYpmH/Q7ZoqzbscLiCW00LeYCdsUnnfnj29/s1WovXKh2gwCoinHNGA==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     peerDependencies:
@@ -1738,13 +1735,12 @@ packages:
       globby: 11.1.0
       is-glob: 4.0.3
       semver: 7.3.8
-      tsutils: 3.21.0(typescript@5.0.4)
-      typescript: 5.0.4
+      tsutils: 3.21.0
     transitivePeerDependencies:
       - supports-color
     dev: true
 
-  /@typescript-eslint/utils@5.59.1(eslint@7.32.0)(typescript@5.0.4):
+  /@typescript-eslint/utils@5.59.1(eslint@7.32.0):
     resolution: {integrity: sha512-MkTe7FE+K1/GxZkP5gRj3rCztg45bEhsd8HYjczBuYm+qFHP5vtZmjx3B0yUCDotceQ4sHgTyz60Ycl225njmA==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     peerDependencies:
@@ -1755,7 +1751,7 @@ packages:
       '@types/semver': 7.3.13
       '@typescript-eslint/scope-manager': 5.59.1
       '@typescript-eslint/types': 5.59.1
-      '@typescript-eslint/typescript-estree': 5.59.1(typescript@5.0.4)
+      '@typescript-eslint/typescript-estree': 5.59.1
       eslint: 7.32.0
       eslint-scope: 5.1.1
       semver: 7.3.8
@@ -4932,7 +4928,7 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
-  /ts-jest@29.1.0(@babel/core@7.21.4)(jest@29.5.0)(typescript@5.0.4):
+  /ts-jest@29.1.0(jest@29.5.0)(typescript@5.0.4):
     resolution: {integrity: sha512-ZhNr7Z4PcYa+JjMl62ir+zPiNJfXJN6E8hSLnaUKhOgqcn8vb3e537cpkd0FuAfRK3sR1LSqM1MOhliXNgOFPA==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
     hasBin: true
@@ -4953,7 +4949,6 @@ packages:
       esbuild:
         optional: true
     dependencies:
-      '@babel/core': 7.21.4
       bs-logger: 0.2.6
       fast-json-stable-stringify: 2.1.0
       jest: 29.5.0(@types/node@14.18.43)
@@ -4974,14 +4969,13 @@ packages:
     resolution: {integrity: sha512-tGyy4dAjRIEwI7BzsB0lynWgOpfqjUdq91XXAlIWD2OwKBH7oCl/GZG/HT4BOHrTlPMOASlMQ7veyTqpmRcrNA==}
     dev: false
 
-  /tsutils@3.21.0(typescript@5.0.4):
+  /tsutils@3.21.0:
     resolution: {integrity: sha512-mHKK3iUXL+3UF6xL5k0PEhKRUBKPBCv/+RkEOpjRWxxx27KKRBmmA60A9pgOUvMi8GKhRMPEmjBRPzs2W7O1OA==}
     engines: {node: '>= 6'}
     peerDependencies:
       typescript: '>=2.8.0 || >= 3.2.0-dev || >= 3.3.0-dev || >= 3.4.0-dev || >= 3.5.0-dev || >= 3.6.0-dev || >= 3.6.0-beta || >= 3.7.0-dev || >= 3.7.0-beta'
     dependencies:
       tslib: 1.14.1
-      typescript: 5.0.4
     dev: true
 
   /tty-table@4.2.1:
