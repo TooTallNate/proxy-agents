@@ -1,5 +1,11 @@
 # data-uri-to-buffer
 
+## 5.0.1
+
+### Patch Changes
+
+- 7674748: Update `@types/node` to v14.18.45
+
 ## 5.0.0
 
 ### Major Changes
