@@ -1,5 +1,13 @@
 # pac-resolver
 
+## 6.0.1
+
+### Patch Changes
+
+- 7674748: Update `@types/node` to v14.18.45
+- Updated dependencies [7674748]
+  - degenerator@4.0.1
+
 ## 6.0.0
 
 ### Major Changes

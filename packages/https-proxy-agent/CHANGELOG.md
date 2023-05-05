@@ -1,5 +1,18 @@
 # https-proxy-agent
 
+## 6.1.0
+
+### Minor Changes
+
+- fd6209c: Emit "proxyConnect" event on HTTP `request` object (part of #153)
+- c573dbe: Emit "proxyConnect" event on Agent instance
+
+### Patch Changes
+
+- 7674748: Update `@types/node` to v14.18.45
+- Updated dependencies [7674748]
+  - agent-base@7.0.1
+
 ## 6.0.0
 
 ### Major Changes

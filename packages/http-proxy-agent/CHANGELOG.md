@@ -1,5 +1,13 @@
 # http-proxy-agent
 
+## 6.0.1
+
+### Patch Changes
+
+- 7674748: Update `@types/node` to v14.18.45
+- Updated dependencies [7674748]
+  - agent-base@7.0.1
+
 ## 6.0.0
 
 ### Major Changes

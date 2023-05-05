@@ -1,6 +1,6 @@
 {
   "name": "socks-proxy-agent",
-  "version": "8.0.0",
+  "version": "8.0.1",
   "description": "A SOCKS proxy `http.Agent` implementation for HTTP and HTTPS",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -107,7 +107,7 @@
     "socks5h"
   ],
   "dependencies": {
-    "agent-base": "^7.0.0",
+    "agent-base": "^7.0.1",
     "debug": "^4.3.4",
     "socks": "^2.7.1"
   },
