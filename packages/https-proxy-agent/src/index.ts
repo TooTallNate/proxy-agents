@@ -132,6 +132,7 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 
 		const { connect, buffered } = await proxyResponsePromise;
 		req.emit('proxyConnect', connect);
+		this.emit('proxyConnect', connect, req);
 
 		if (connect.statusCode === 200) {
 			req.once('socket', resume);

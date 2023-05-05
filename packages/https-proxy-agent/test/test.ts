@@ -126,7 +126,11 @@ describe('HttpsProxyAgent', () => {
 				rejectUnauthorized: false,
 			});
 
-			const res = await req(serverUrl, { agent });
+			const r = req(serverUrl, { agent });
+			const [connect] = await once(agent, 'proxyConnect');
+			expect(connect.statusCode).toEqual(200);
+			expect(connect.statusText).toEqual('Connection established');
+			const res = await r;
 			const body = await json(res);
 			assert.equal(serverUrl.host, body.host);
 		});
