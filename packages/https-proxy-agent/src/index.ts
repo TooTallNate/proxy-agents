@@ -5,7 +5,7 @@ import assert from 'assert';
 import createDebug from 'debug';
 import { OutgoingHttpHeaders } from 'http';
 import { Agent, AgentConnectOpts } from 'agent-base';
-import parseProxyResponse from './parse-proxy-response';
+import { parseProxyResponse } from './parse-proxy-response';
 
 const debug = createDebug('https-proxy-agent');
 
@@ -130,9 +130,10 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 
 		socket.write(`${payload}\r\n`);
 
-		const { statusCode, buffered } = await proxyResponsePromise;
+		const { connect, buffered } = await proxyResponsePromise;
+		req.emit('proxyConnect', connect);
 
-		if (statusCode === 200) {
+		if (connect.statusCode === 200) {
 			req.once('socket', resume);
 
 			if (opts.secureEndpoint) {

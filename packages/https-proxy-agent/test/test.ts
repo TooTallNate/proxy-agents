@@ -106,7 +106,13 @@ describe('HttpsProxyAgent', () => {
 
 			const agent = new HttpsProxyAgent(proxyUrl);
 
-			const res = await req(serverUrl, { agent });
+			const r = req(serverUrl, { agent });
+			const [connect] = await once(r, 'proxyConnect');
+			expect(connect.statusCode).toEqual(200);
+			expect(connect.statusText).toEqual('Connection established');
+			expect('date' in connect.headers).toBe(true);
+
+			const res = await r;
 			const body = await json(res);
 			assert.equal(serverUrl.host, body.host);
 		});

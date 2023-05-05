@@ -1,16 +1,18 @@
 import createDebug from 'debug';
+import { IncomingHttpHeaders } from 'http';
 import { Readable } from 'stream';
 
 const debug = createDebug('https-proxy-agent:parse-proxy-response');
 
-export interface ProxyResponse {
+export interface ConnectResponse {
 	statusCode: number;
-	buffered: Buffer;
+	statusText: string;
+	headers: IncomingHttpHeaders;
 }
 
-export default function parseProxyResponse(
+export function parseProxyResponse(
 	socket: Readable
-): Promise<ProxyResponse> {
+): Promise<{ connect: ConnectResponse; buffered: Buffer }> {
 	return new Promise((resolve, reject) => {
 		// we need to buffer any HTTP traffic that happens with the proxy before we get
 		// the CONNECT response, so that if the response is anything other than an "200"
@@ -60,16 +62,40 @@ export default function parseProxyResponse(
 				return;
 			}
 
-			const firstLine = buffered.toString(
-				'ascii',
-				0,
-				buffered.indexOf('\r\n')
-			);
-			const statusCode = +firstLine.split(' ')[1];
+			const headerParts = buffered.toString('ascii').split('\r\n');
+			const firstLine = headerParts.shift();
+			if (!firstLine) {
+				throw new Error('No header received');
+			}
+			const firstLineParts = firstLine.split(' ');
+			const statusCode = +firstLineParts[1];
+			const statusText = firstLineParts.slice(2).join(' ');
+			const headers: IncomingHttpHeaders = {};
+			for (const header of headerParts) {
+				if (!header) continue;
+				const firstColon = header.indexOf(':');
+				if (firstColon === -1) {
+					throw new Error(`Invalid header: "${header}"`);
+				}
+				const key = header.slice(0, firstColon).toLowerCase();
+				const value = header.slice(firstColon + 1).trimStart();
+				const current = headers[key];
+				if (typeof current === 'string') {
+					headers[key] = [current, value];
+				} else if (Array.isArray(current)) {
+					current.push(value);
+				} else {
+					headers[key] = value;
+				}
+			}
 			debug('got proxy server response: %o', firstLine);
 			cleanup();
 			resolve({
-				statusCode,
+				connect: {
+					statusCode,
+					statusText,
+					headers,
+				},
 				buffered,
 			});
 		}
