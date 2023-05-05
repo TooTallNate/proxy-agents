@@ -5,7 +5,7 @@ import assert from 'assert';
 import createDebug from 'debug';
 import { OutgoingHttpHeaders } from 'http';
 import { Agent, AgentConnectOpts } from 'agent-base';
-import parseProxyResponse from './parse-proxy-response';
+import { parseProxyResponse } from './parse-proxy-response';
 
 const debug = createDebug('https-proxy-agent');
 

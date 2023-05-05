@@ -10,7 +10,7 @@ export interface ConnectResponse {
 	headers: IncomingHttpHeaders;
 }
 
-export default function parseProxyResponse(
+export function parseProxyResponse(
 	socket: Readable
 ): Promise<{ connect: ConnectResponse; buffered: Buffer }> {
 	return new Promise((resolve, reject) => {
