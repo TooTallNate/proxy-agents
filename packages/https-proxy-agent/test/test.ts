@@ -82,16 +82,6 @@ describe('HttpsProxyAgent', () => {
 			assert.equal(proxyUrl.hostname, agent.proxy.hostname);
 			assert.equal(proxyUrl.port, agent.proxy.port);
 		});
-		describe('secureProxy', () => {
-			it('should be `false` when "http:" protocol is used', () => {
-				const agent = new HttpsProxyAgent(proxyUrl);
-				assert.equal(false, agent.secureProxy);
-			});
-			it('should be `true` when "https:" protocol is used', () => {
-				const agent = new HttpsProxyAgent(sslProxyUrl);
-				assert.equal(true, agent.secureProxy);
-			});
-		});
 	});
 
 	describe('"http" module', () => {
@@ -106,7 +96,13 @@ describe('HttpsProxyAgent', () => {
 
 			const agent = new HttpsProxyAgent(proxyUrl);
 
-			const res = await req(serverUrl, { agent });
+			const r = req(serverUrl, { agent });
+			const [connect] = await once(r, 'proxyConnect');
+			expect(connect.statusCode).toEqual(200);
+			expect(connect.statusText).toEqual('Connection established');
+			expect('date' in connect.headers).toBe(true);
+
+			const res = await r;
 			const body = await json(res);
 			assert.equal(serverUrl.host, body.host);
 		});
