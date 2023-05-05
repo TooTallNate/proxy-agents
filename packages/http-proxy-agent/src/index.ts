@@ -31,10 +31,6 @@ interface HttpProxyAgentClientRequest extends http.ClientRequest {
 	_implicitHeader(): void;
 }
 
-function isHTTPS(protocol?: string | null): boolean {
-	return typeof protocol === 'string' ? /^https:?$/i.test(protocol) : false;
-}
-
 /**
  * The `HttpProxyAgent` implements an HTTP Agent subclass that connects
  * to the specified "HTTP proxy server" in order to proxy HTTP requests.
@@ -44,10 +40,6 @@ export class HttpProxyAgent<Uri extends string> extends Agent {
 
 	readonly proxy: URL;
 	connectOpts: net.TcpNetConnectOpts & tls.ConnectionOptions;
-
-	get secureProxy() {
-		return isHTTPS(this.proxy.protocol);
-	}
 
 	constructor(proxy: Uri | URL, opts?: HttpProxyAgentOptions<Uri>) {
 		super(opts);
@@ -61,7 +53,7 @@ export class HttpProxyAgent<Uri extends string> extends Agent {
 		);
 		const port = this.proxy.port
 			? parseInt(this.proxy.port, 10)
-			: this.secureProxy
+			: this.proxy.protocol === 'https:'
 			? 443
 			: 80;
 		this.connectOpts = {
@@ -76,6 +68,8 @@ export class HttpProxyAgent<Uri extends string> extends Agent {
 		opts: AgentConnectOpts
 	): Promise<net.Socket> {
 		const { proxy } = this;
+		// @ts-expect-error asdf
+		console.log(this.getName(opts));
 
 		const protocol = opts.secureEndpoint ? 'https:' : 'http:';
 		const hostname = req.getHeader('host') || 'localhost';
@@ -87,7 +81,7 @@ export class HttpProxyAgent<Uri extends string> extends Agent {
 
 		// Change the `http.ClientRequest` instance's "path" field
 		// to the absolute path of the URL that will be requested.
-		req.path = String(url);
+		req.path = url.href;
 
 		// Inject the `Proxy-Authorization` header if necessary.
 		req._header = null;
@@ -110,7 +104,7 @@ export class HttpProxyAgent<Uri extends string> extends Agent {
 
 		// Create a socket connection to the proxy server.
 		let socket: net.Socket;
-		if (this.secureProxy) {
+		if (proxy.protocol === 'https:') {
 			debug('Creating `tls.Socket`: %o', this.connectOpts);
 			socket = tls.connect(this.connectOpts);
 		} else {
