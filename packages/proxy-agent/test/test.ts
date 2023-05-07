@@ -251,5 +251,31 @@ describe('ProxyAgent', () => {
 				HttpsProxyAgent
 			);
 		});
+
+		it('should call provided function with getProxyForUrl option', async () => {
+			let gotCall = false;
+			let urlParameter = "";
+			httpsServer.once('request', function (req, res) {
+				res.end(JSON.stringify(req.headers));
+			});
+
+			const agent = new ProxyAgent({
+				rejectUnauthorized: false,
+				getProxyForUrl: (u) => {
+					gotCall = true;
+					urlParameter = u;
+					return httpsProxyServerUrl.href;
+				}
+			});
+			const requestUrl = new URL('/test', httpsServerUrl);
+			const res = await req(requestUrl, {
+				agent,
+				rejectUnauthorized: false,
+			});
+			const body = await json(res);
+			assert(httpsServerUrl.host === body.host);
+			assert(gotCall);
+			assert(requestUrl.href === urlParameter);
+		});
 	});
 });
