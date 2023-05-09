@@ -1,4 +1,4 @@
-import { isRegExp } from 'util';
+import { types } from 'util';
 import { generate } from 'escodegen';
 import { parseScript } from 'esprima';
 import { visit, namedTypes as n, builders as b } from 'ast-types';
@@ -92,13 +92,13 @@ export function degenerator(code: string, _names: DegeneratorNames): string {
 		});
 	} while (lastNamesLength !== names.length);
 
-	// Second pass is for adding `await`/`yield` statements to any function
+	// Second pass is for adding `await` statements to any function
 	// invocations that match the given `names` array.
 	visit(ast, {
 		visitCallExpression(path) {
 			if (checkNames(path.node, names)) {
 				// A "function invocation" expression,
-				// we need to inject a `AwaitExpression`/`YieldExpression`
+				// we need to inject an `AwaitExpression`
 				const delegate = false;
 				const {
 					name,
@@ -203,7 +203,7 @@ function checkName(name: string, names: DegeneratorNames): boolean {
 	// now that we have the `name`, check if any entries match in the `names` array
 	for (let i = 0; i < names.length; i++) {
 		const n = names[i];
-		if (isRegExp(n)) {
+		if (types.isRegExp(n)) {
 			if (n.test(name)) {
 				return true;
 			}
