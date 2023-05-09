@@ -3,7 +3,7 @@ import * as https from 'https';
 import LRUCache from 'lru-cache';
 import { Agent, AgentConnectOpts } from 'agent-base';
 import createDebug from 'debug';
-import { getProxyForUrl } from 'proxy-from-env';
+import { getProxyForUrl as envGetProxyForUrl } from 'proxy-from-env';
 import { PacProxyAgent, PacProxyAgentOptions } from 'pac-proxy-agent';
 import { HttpProxyAgent, HttpProxyAgentOptions } from 'http-proxy-agent';
 import { HttpsProxyAgent, HttpsProxyAgentOptions } from 'https-proxy-agent';
@@ -20,6 +20,8 @@ const PROTOCOLS = [
 type ValidProtocol = (typeof PROTOCOLS)[number];
 
 type AgentConstructor = new (...args: never[]) => Agent;
+
+type GetProxyForUrlCallback = (url: string) => string;
 
 /**
  * Supported proxy types.
@@ -61,6 +63,12 @@ export type ProxyAgentOptions = HttpProxyAgentOptions<''> &
 		 * instance with the proxy agent options passed in.
 		 */
 		httpsAgent?: http.Agent;
+		/**
+		 * A callback for dynamic provision of proxy for url.
+		 * Defaults to standard proxy environment variables, 
+		 * see https://www.npmjs.com/package/proxy-from-env for details
+		 */
+		getProxyForUrl?: GetProxyForUrlCallback;
 	};
 
 /**
@@ -79,6 +87,7 @@ export class ProxyAgent extends Agent {
 	connectOpts?: ProxyAgentOptions;
 	httpAgent: http.Agent;
 	httpsAgent: http.Agent;
+	getProxyForUrl: GetProxyForUrlCallback;
 
 	constructor(opts?: ProxyAgentOptions) {
 		super(opts);
@@ -87,6 +96,7 @@ export class ProxyAgent extends Agent {
 		this.httpAgent = opts?.httpAgent || new http.Agent(opts);
 		this.httpsAgent =
 			opts?.httpsAgent || new https.Agent(opts as https.AgentOptions);
+		this.getProxyForUrl = opts?.getProxyForUrl || envGetProxyForUrl;
 	}
 
 	async connect(
@@ -97,7 +107,7 @@ export class ProxyAgent extends Agent {
 		const protocol = secureEndpoint ? 'https:' : 'http:';
 		const host = req.getHeader('host');
 		const url = new URL(req.path, `${protocol}//${host}`).href;
-		const proxy = getProxyForUrl(url);
+		const proxy = this.getProxyForUrl(url);
 
 		if (!proxy) {
 			debug('Proxy not enabled for URL: %o', url);
