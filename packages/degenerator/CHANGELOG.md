@@ -1,5 +1,11 @@
 # degenerator
 
+## 4.0.2
+
+### Patch Changes
+
+- 9326064: Use `util.types.isRegExp()` to fix deprecation warning
+
 ## 4.0.1
 
 ### Patch Changes

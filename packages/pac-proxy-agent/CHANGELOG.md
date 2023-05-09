@@ -1,5 +1,11 @@
 # pac-proxy-agent
 
+## 6.0.2
+
+### Patch Changes
+
+- bf20b04: Add `servername` to tls connection options when pac-proxy-agent results in DIRECT connection
+
 ## 6.0.1
 
 ### Patch Changes
