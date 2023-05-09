@@ -232,7 +232,15 @@ export class PacProxyAgent<Uri extends string> extends Agent {
 
 			if (type === 'DIRECT') {
 				// Direct connection to the destination endpoint
-				socket = secureEndpoint ? tls.connect(opts) : net.connect(opts);
+				if (secureEndpoint) {
+					const servername = opts.servername || opts.host;
+					socket = tls.connect({
+						...opts,
+						servername: (!servername || net.isIP(servername)) ? undefined : servername,
+					});
+				} else {
+					socket = net.connect(opts);
+				}
 			} else if (type === 'SOCKS' || type === 'SOCKS5') {
 				// Use a SOCKSv5h proxy
 				agent = new SocksProxyAgent(`socks://${target}`, this.opts);
