@@ -74,7 +74,10 @@ jobs:
     runs-on: ubuntu-latest
 
     # Don't run on 3rd party pull requests, since the secrets won't be available
-    if: github.event.pull_request.head.repo.full_name == github.repository
+    - name: Debug
+      run: |
+        echo "github.event.pull_request.head.repo.full_name=${{ github.event.pull_request.head.repo.full_name }}"
+        echo "github.repository=${{ github.repository }}"
 
     steps:
       - name: Checkout Repo
