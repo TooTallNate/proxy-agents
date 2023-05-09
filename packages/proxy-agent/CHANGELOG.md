@@ -1,5 +1,16 @@
 # proxy-agent
 
+## 6.2.0
+
+### Minor Changes
+
+- 0bbe335: Support for `getProxyForUrl` option, to provide proxy address dynamically per different URLs
+
+### Patch Changes
+
+- Updated dependencies [bf20b04]
+  - pac-proxy-agent@6.0.2
+
 ## 6.1.2
 
 ### Patch Changes
