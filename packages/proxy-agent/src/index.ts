@@ -4,7 +4,6 @@ import LRUCache from 'lru-cache';
 import { Agent, AgentConnectOpts } from 'agent-base';
 import createDebug from 'debug';
 import { getProxyForUrl as envGetProxyForUrl } from 'proxy-from-env';
-import { URL } from "url";
 import { PacProxyAgent, PacProxyAgentOptions } from 'pac-proxy-agent';
 import { HttpProxyAgent, HttpProxyAgentOptions } from 'http-proxy-agent';
 import { HttpsProxyAgent, HttpsProxyAgentOptions } from 'https-proxy-agent';
