@@ -215,12 +215,14 @@ describe('HttpsProxyAgent', () => {
 			try {
 				const res = await req(serverUrl, { agent });
 				expect(res.headers.connection).toEqual('keep-alive');
+				expect(res.statusCode).toEqual(200);
 				res.resume();
 				const s1 = res.socket;
 				await once(s1, 'free');
 
 				const res2 = await req(serverUrl, { agent });
 				expect(res2.headers.connection).toEqual('keep-alive');
+				expect(res2.statusCode).toEqual(200);
 				res2.resume();
 				const s2 = res2.socket;
 				assert(s1 === s2);
@@ -332,6 +334,7 @@ describe('HttpsProxyAgent', () => {
 					rejectUnauthorized: false,
 				});
 				expect(res.headers.connection).toEqual('keep-alive');
+				expect(res.statusCode).toEqual(200);
 				res.resume();
 				const s1 = res.socket;
 				await once(s1, 'free');
@@ -341,6 +344,7 @@ describe('HttpsProxyAgent', () => {
 					rejectUnauthorized: false,
 				});
 				expect(res2.headers.connection).toEqual('keep-alive');
+				expect(res2.statusCode).toEqual(200);
 				res2.resume();
 				const s2 = res2.socket;
 				assert(s1 === s2);

@@ -462,6 +462,7 @@ describe('Agent (TypeScript)', () => {
 				assert(gotReq);
 				expect(connectCount).toEqual(1);
 				expect(res.headers.connection).toEqual('keep-alive');
+				expect(res.statusCode).toEqual(200);
 				res.resume();
 				const s1 = res.socket;
 
@@ -473,6 +474,7 @@ describe('Agent (TypeScript)', () => {
 				});
 				expect(connectCount).toEqual(1);
 				expect(res2.headers.connection).toEqual('keep-alive');
+				expect(res2.statusCode).toEqual(200);
 				assert(res2.socket === s1);
 
 				res2.resume();

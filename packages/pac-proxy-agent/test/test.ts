@@ -8,6 +8,7 @@ import { listen } from 'async-listen';
 import { ProxyServer, createProxy } from 'proxy';
 import { req, json } from 'agent-base';
 import { PacProxyAgent } from '../src';
+import { once } from 'events';
 
 const sslOptions = {
 	key: fs.readFileSync(`${__dirname}/ssl-cert-snakeoil.key`),
@@ -244,6 +245,44 @@ describe('PacProxyAgent', () => {
 			assert.equal(httpServerUrl.host, data.host);
 			assert(gotReq);
 		}, 10000); // This test is slow on Windows :/
+
+		it('should work with `keepAlive: true`', async () => {
+			httpServer.on('request', function (req, res) {
+				res.end(JSON.stringify(req.headers));
+			});
+
+			function FindProxyForURL() {
+				return 'PROXY localhost:PORT;';
+			}
+
+			const uri = `data:,${encodeURIComponent(
+				FindProxyForURL.toString().replace('PORT', proxyServerUrl.port)
+			)}`;
+			const agent = new PacProxyAgent(uri, { keepAlive: true });
+
+			try {
+				const res = await req(new URL('/test', httpServerUrl), {
+					agent,
+				});
+				expect(res.headers.connection).toEqual('keep-alive');
+				expect(res.statusCode).toEqual(200);
+				res.resume();
+				const s1 = res.socket;
+				await once(s1, 'free');
+
+				const res2 = await req(new URL('/test', httpServerUrl), {
+					agent,
+				});
+				expect(res2.headers.connection).toEqual('keep-alive');
+				expect(res2.statusCode).toEqual(200); // FAIL, received 400
+				res2.resume();
+				const s2 = res2.socket;
+				assert(s1 === s2);
+				await once(s2, 'free');
+			} finally {
+				agent.destroy();
+			}
+		});
 	});
 
 	describe('"https" module', () => {
@@ -358,5 +397,46 @@ describe('PacProxyAgent', () => {
 			assert.equal(proxyCount, 4);
 			assert(gotReq);
 		}, 10000); // This test is slow on Windows :/
+
+		it('should work with `keepAlive: true`', async () => {
+			httpsServer.on('request', function (req, res) {
+				res.end(JSON.stringify(req.headers));
+			});
+
+			function FindProxyForURL() {
+				return 'PROXY localhost:PORT;';
+			}
+
+			const uri = `data:,${encodeURIComponent(
+				FindProxyForURL.toString().replace('PORT', proxyServerUrl.port)
+			)}`;
+			const agent = new PacProxyAgent(uri, {
+				keepAlive: true,
+				rejectUnauthorized: false,
+			});
+
+			try {
+				const res = await req(new URL('/test', httpsServerUrl), {
+					agent,
+				});
+				expect(res.headers.connection).toEqual('keep-alive');
+				expect(res.statusCode).toEqual(200);
+				res.resume();
+				const s1 = res.socket;
+				await once(s1, 'free');
+
+				const res2 = await req(new URL('/test', httpsServerUrl), {
+					agent,
+				});
+				expect(res2.headers.connection).toEqual('keep-alive');
+				expect(res2.statusCode).toEqual(200);
+				res2.resume();
+				const s2 = res2.socket;
+				assert(s1 === s2);
+				await once(s2, 'free');
+			} finally {
+				agent.destroy();
+			}
+		});
 	});
 });
