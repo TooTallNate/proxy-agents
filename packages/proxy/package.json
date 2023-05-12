@@ -1,6 +1,6 @@
 {
   "name": "proxy",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "description": "An HTTP proxy written with Node.js (think Squid)",
   "main": "./dist/proxy.js",
   "types": "./dist/proxy.d.ts",
