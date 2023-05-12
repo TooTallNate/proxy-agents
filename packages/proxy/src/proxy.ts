@@ -20,6 +20,7 @@ const hostname = os.hostname();
 
 export interface ProxyServer extends http.Server {
 	authenticate?: (req: http.IncomingMessage) => boolean | Promise<boolean>;
+    localAddress?: string;
 }
 
 /**
@@ -190,15 +191,12 @@ async function onrequest(
 		return;
 	}
 
-	//if (server.localAddress) {
-	//	parsed.localAddress = server.localAddress;
-	//}
-
 	let gotResponse = false;
 	const proxyReq = http.request({
 		...parsed,
 		method: req.method,
 		headers,
+        localAddress: this.localAddress
 	});
 	debug.proxyRequest('%s %s HTTP/1.1 ', proxyReq.method, proxyReq.path);
 
@@ -417,7 +415,8 @@ async function onconnect(
 	const lastColon = req.url.lastIndexOf(':');
 	const host = req.url.substring(0, lastColon);
 	const port = parseInt(req.url.substring(lastColon + 1), 10);
-	const opts = { host: host.replace(/^\[|\]$/g, ''), port };
+    const localAddress = this.localAddress
+	const opts = { host: host.replace(/^\[|\]$/g, ''), port, localAddress };
 
 	debug.proxyRequest('connecting to proxy target %o', opts);
 	const target = net.connect(opts);
