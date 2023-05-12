@@ -1,5 +1,11 @@
 # proxy
 
+## 2.1.0
+
+### Minor Changes
+
+- 0f31047: Add `localAddress` option to specify which networking interface the proxy should use to create outgoing connections
+
 ## 2.0.1
 
 ### Patch Changes
