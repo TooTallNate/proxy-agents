@@ -5,18 +5,6 @@ import { Duplex } from 'stream';
 
 export * from './helpers';
 
-function isSecureEndpoint(): boolean {
-	const { stack } = new Error();
-	if (typeof stack !== 'string') return false;
-	return stack
-		.split('\n')
-		.some(
-			(l) =>
-				l.indexOf('(https.js:') !== -1 ||
-				l.indexOf('node:https:') !== -1
-		);
-}
-
 interface HttpConnectOpts extends net.TcpNetConnectOpts {
 	secureEndpoint: false;
 }
@@ -27,6 +15,15 @@ interface HttpsConnectOpts extends tls.ConnectionOptions {
 }
 
 export type AgentConnectOpts = HttpConnectOpts | HttpsConnectOpts;
+
+/** Platform-provided ClientRequest type with internal fields exposed */
+export interface InternalClientRequest extends http.ClientRequest {
+	outputData?: {
+		data: string;
+	}[];
+	_header?: string | null;
+	_implicitHeader(): void;
+}
 
 export abstract class Agent extends http.Agent {
 	_defaultPort?: number;
@@ -48,6 +45,18 @@ export abstract class Agent extends http.Agent {
 		options: AgentConnectOpts
 	): Promise<Duplex | http.Agent> | Duplex | http.Agent;
 
+	protected isSecureEndpoint(): boolean {
+		const { stack } = new Error();
+		if (typeof stack !== 'string') return false;
+		return stack
+			.split('\n')
+			.some(
+				(l) =>
+					l.indexOf('(https.js:') !== -1 ||
+					l.indexOf('node:https:') !== -1
+			);
+	}
+
 	createSocket(
 		req: http.ClientRequest,
 		options: AgentConnectOpts,
@@ -55,7 +64,7 @@ export abstract class Agent extends http.Agent {
 	) {
 		const o = {
 			...options,
-			secureEndpoint: options.secureEndpoint ?? isSecureEndpoint(),
+			secureEndpoint: options.secureEndpoint ?? this.isSecureEndpoint(),
 		};
 		Promise.resolve()
 			.then(() => this.connect(req, o))
@@ -93,7 +102,7 @@ export abstract class Agent extends http.Agent {
 		if (typeof this._protocol === 'string') {
 			return this._protocol;
 		}
-		const p = isSecureEndpoint() ? 'https:' : 'http:';
+		const p = this.isSecureEndpoint() ? 'https:' : 'http:';
 		return p;
 	}
 

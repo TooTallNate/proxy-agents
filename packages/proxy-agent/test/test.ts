@@ -167,7 +167,7 @@ describe('ProxyAgent', () => {
 				});
 				res2.resume();
 				expect(res2.headers.connection).toEqual('keep-alive');
-				expect(res2.statusCode).toEqual(200); // FAIL, received 400
+				expect(res2.statusCode).toEqual(200);
 				const s2 = res2.socket;
 				assert(s1 === s2);
 

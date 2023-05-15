@@ -6,7 +6,12 @@ import { once } from 'events';
 import createDebug from 'debug';
 import { Readable } from 'stream';
 import { format } from 'url';
-import { Agent, AgentConnectOpts, toBuffer } from 'agent-base';
+import {
+	Agent,
+	AgentConnectOpts,
+	InternalClientRequest,
+	toBuffer,
+} from 'agent-base';
 import { HttpProxyAgent, HttpProxyAgentOptions } from 'http-proxy-agent';
 import { HttpsProxyAgent, HttpsProxyAgentOptions } from 'https-proxy-agent';
 import { SocksProxyAgent, SocksProxyAgentOptions } from 'socks-proxy-agent';
@@ -69,6 +74,7 @@ export class PacProxyAgent<Uri extends string> extends Agent {
 	resolver?: FindProxyForURL;
 	resolverHash: string;
 	resolverPromise?: Promise<FindProxyForURL>;
+	httpProxyAgent?: HttpProxyAgent<Uri>;
 
 	constructor(uri: Uri | URL, opts?: PacProxyAgentOptions<Uri>) {
 		super(opts);
@@ -168,6 +174,16 @@ export class PacProxyAgent<Uri extends string> extends Agent {
 		return buf.toString('utf8');
 	}
 
+	addRequest(req: InternalClientRequest, opts: AgentConnectOpts): void {
+		if (this.httpProxyAgent) {
+			// If we connected with an HttpProxyAgent, we need to use it to rewrite the URL and add headers for every request.
+			// We can't just call `this.httpProxyAgent.addRequest(req, opts)` here, because it will create a new socket.
+			this.httpProxyAgent.setRequestProps(req, opts);
+		}
+		// @ts-expect-error `addRequest()` isn't defined in `@types/node`
+		super.addRequest(req, opts);
+	}
+
 	/**
 	 * Called when the node-core HTTP client library is creating a new HTTP request.
 	 */
@@ -263,11 +279,15 @@ export class PacProxyAgent<Uri extends string> extends Agent {
 				if (secureEndpoint) {
 					agent = new HttpsProxyAgent(proxyURL, this.opts);
 				} else {
-					agent = new HttpProxyAgent(proxyURL, this.opts);
+					agent = new HttpProxyAgent(proxyURL, {
+						...this.opts,
+						setRequestPropsOnConnect: true,
+					});
 				}
 			}
 
 			try {
+				this.httpProxyAgent = undefined;
 				if (socket) {
 					// "DIRECT" connection, wait for connection confirmation
 					await once(socket, 'connect');
@@ -282,6 +302,9 @@ export class PacProxyAgent<Uri extends string> extends Agent {
 						);
 					}
 					req.emit('proxy', { proxy, socket: s });
+					if (agent instanceof HttpProxyAgent) {
+						this.httpProxyAgent = agent;
+					}
 					return s;
 				}
 				throw new Error(`Could not determine proxy type for: ${proxy}`);

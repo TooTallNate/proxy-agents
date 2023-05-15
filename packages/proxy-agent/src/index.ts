@@ -1,7 +1,7 @@
 import * as http from 'http';
 import * as https from 'https';
 import LRUCache from 'lru-cache';
-import { Agent, AgentConnectOpts } from 'agent-base';
+import { Agent, AgentConnectOpts, InternalClientRequest } from 'agent-base';
 import createDebug from 'debug';
 import { getProxyForUrl as envGetProxyForUrl } from 'proxy-from-env';
 import { PacProxyAgent, PacProxyAgentOptions } from 'pac-proxy-agent';
@@ -26,9 +26,7 @@ type GetProxyForUrlCallback = (url: string) => string;
 /**
  * Supported proxy types.
  */
-export const proxies: {
-	[P in ValidProtocol]: [AgentConstructor, AgentConstructor];
-} = {
+export const proxies = {
 	http: [HttpProxyAgent, HttpsProxyAgent],
 	https: [HttpProxyAgent, HttpsProxyAgent],
 	socks: [SocksProxyAgent, SocksProxyAgent],
@@ -41,7 +39,7 @@ export const proxies: {
 	'pac-ftp': [PacProxyAgent, PacProxyAgent],
 	'pac-http': [PacProxyAgent, PacProxyAgent],
 	'pac-https': [PacProxyAgent, PacProxyAgent],
-};
+} satisfies { [P in ValidProtocol]: [AgentConstructor, AgentConstructor] };
 
 function isValidProtocol(v: string): v is ValidProtocol {
 	return (PROTOCOLS as readonly string[]).includes(v);
@@ -99,15 +97,38 @@ export class ProxyAgent extends Agent {
 		this.getProxyForUrl = opts?.getProxyForUrl || envGetProxyForUrl;
 	}
 
-	async connect(
-		req: http.ClientRequest,
-		opts: AgentConnectOpts
-	): Promise<http.Agent> {
-		const { secureEndpoint } = opts;
+	private getProxyData(req: http.ClientRequest, opts: AgentConnectOpts) {
+		const secureEndpoint = opts.secureEndpoint ?? this.isSecureEndpoint();
 		const protocol = secureEndpoint ? 'https:' : 'http:';
 		const host = req.getHeader('host');
 		const url = new URL(req.path, `${protocol}//${host}`).href;
 		const proxy = this.getProxyForUrl(url);
+		const cacheKey = `${protocol}+${proxy}`;
+		return { secureEndpoint, url, proxy, cacheKey };
+	}
+
+	addRequest(req: InternalClientRequest, opts: AgentConnectOpts): void {
+		const { cacheKey, proxy } = this.getProxyData(req, opts);
+
+		const agent = this.cache.get(cacheKey);
+		if (agent instanceof HttpProxyAgent) {
+			debug('addRequest: cache hit for proxy URL: %o', proxy);
+			// If we connected with an HttpProxyAgent, we need to use it to rewrite the URL and add headers for every request.
+			agent.addRequest(req, opts);
+		} else {
+			// @ts-expect-error `addRequest()` isn't defined in `@types/node`
+			super.addRequest(req, opts);
+		}
+	}
+
+	async connect(
+		req: http.ClientRequest,
+		opts: AgentConnectOpts
+	): Promise<http.Agent> {
+		const { secureEndpoint, url, proxy, cacheKey } = this.getProxyData(
+			req,
+			opts
+		);
 
 		if (!proxy) {
 			debug('Proxy not enabled for URL: %o', url);
@@ -118,7 +139,6 @@ export class ProxyAgent extends Agent {
 		debug('Proxy URL: %o', proxy);
 
 		// attempt to get a cached `http.Agent` instance first
-		const cacheKey = `${protocol}+${proxy}`;
 		let agent = this.cache.get(cacheKey);
 		if (!agent) {
 			const proxyUrl = new URL(proxy);
@@ -127,8 +147,12 @@ export class ProxyAgent extends Agent {
 				throw new Error(`Unsupported protocol for proxy URL: ${proxy}`);
 			}
 			const ctor = proxies[proxyProto][secureEndpoint ? 1 : 0];
-			// @ts-expect-error meh…
-			agent = new ctor(proxy, this.connectOpts);
+			agent = new ctor(
+				proxy,
+				ctor === HttpProxyAgent
+					? { ...this.connectOpts, setRequestPropsOnConnect: true }
+					: this.connectOpts
+			);
 			this.cache.set(cacheKey, agent);
 		} else {
 			debug('Cache hit for proxy URL: %o', proxy);
