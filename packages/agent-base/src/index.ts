@@ -19,19 +19,27 @@ function isSecureEndpoint(): boolean {
 
 interface HttpConnectOpts extends net.TcpNetConnectOpts {
 	secureEndpoint: false;
+	protocol?: string;
 }
 
 interface HttpsConnectOpts extends tls.ConnectionOptions {
-	port: number;
 	secureEndpoint: true;
+	protocol?: string;
+	port: number;
 }
 
 export type AgentConnectOpts = HttpConnectOpts | HttpsConnectOpts;
 
+const INTERNAL = Symbol('AgentBaseInternalState');
+
+interface InternalState {
+	defaultPort?: number;
+	protocol?: string;
+	currentSocket?: Duplex;
+}
+
 export abstract class Agent extends http.Agent {
-	_defaultPort?: number;
-	_protocol?: string;
-	_currentSocket?: Duplex;
+	private [INTERNAL]: InternalState;
 
 	// Set by `http.Agent` - missing from `@types/node`
 	options!: Partial<net.TcpNetConnectOpts & tls.ConnectionOptions>;
@@ -39,8 +47,7 @@ export abstract class Agent extends http.Agent {
 
 	constructor(opts?: http.AgentOptions) {
 		super(opts);
-		this._defaultPort = undefined;
-		this._protocol = undefined;
+		this[INTERNAL] = {};
 	}
 
 	abstract connect(
@@ -53,51 +60,79 @@ export abstract class Agent extends http.Agent {
 		options: AgentConnectOpts,
 		cb: (err: Error | null, s?: Duplex) => void
 	) {
-		const o = {
-			...options,
-			secureEndpoint: options.secureEndpoint ?? isSecureEndpoint(),
-		};
+		// Need to determine whether this is an `http` or `https` request.
+		// First check the `secureEndpoint` property explicitly, since this
+		// means that a parent `Agent` is "passing through" to this instance.
+		let secureEndpoint =
+			typeof options.secureEndpoint === 'boolean'
+				? options.secureEndpoint
+				: undefined;
+
+		// If no explicit `secure` endpoint, check if `protocol` property is
+		// set. This will usually be the case since using a full string URL
+		// or `URL` instance should be the most common case.
+		if (
+			typeof secureEndpoint === 'undefined' &&
+			typeof options.protocol === 'string'
+		) {
+			secureEndpoint = options.protocol === 'https:';
+		}
+
+		// Finally, if no `protocol` property was set, then fall back to
+		// checking the stack trace of the current call stack, and try to
+		// detect the "https" module.
+		if (typeof secureEndpoint === 'undefined') {
+			secureEndpoint = isSecureEndpoint();
+		}
+
+		const connectOpts = { ...options, secureEndpoint };
 		Promise.resolve()
-			.then(() => this.connect(req, o))
+			.then(() => this.connect(req, connectOpts))
 			.then((socket) => {
 				if (socket instanceof http.Agent) {
 					// @ts-expect-error `addRequest()` isn't defined in `@types/node`
-					return socket.addRequest(req, o);
+					return socket.addRequest(req, connectOpts);
 				}
-				this._currentSocket = socket;
+				this[INTERNAL].currentSocket = socket;
 				// @ts-expect-error `createSocket()` isn't defined in `@types/node`
 				super.createSocket(req, options, cb);
 			}, cb);
 	}
 
 	createConnection(): Duplex {
-		if (!this._currentSocket) {
-			throw new Error('no socket');
+		const socket = this[INTERNAL].currentSocket;
+		this[INTERNAL].currentSocket = undefined;
+		if (!socket) {
+			throw new Error(
+				'No socket was returned in the `connect()` function'
+			);
 		}
-		return this._currentSocket;
+		return socket;
 	}
 
 	get defaultPort(): number {
-		if (typeof this._defaultPort === 'number') {
-			return this._defaultPort;
-		}
-		const port = this.protocol === 'https:' ? 443 : 80;
-		return port;
+		return (
+			this[INTERNAL].defaultPort ??
+			(this.protocol === 'https:' ? 443 : 80)
+		);
 	}
 
 	set defaultPort(v: number) {
-		this._defaultPort = v;
+		if (this[INTERNAL]) {
+			this[INTERNAL].defaultPort = v;
+		}
 	}
 
 	get protocol(): string {
-		if (typeof this._protocol === 'string') {
-			return this._protocol;
-		}
-		const p = isSecureEndpoint() ? 'https:' : 'http:';
-		return p;
+		return (
+			this[INTERNAL].protocol ??
+			(isSecureEndpoint() ? 'https:' : 'http:')
+		);
 	}
 
 	set protocol(v: string) {
-		this._protocol = v;
+		if (this[INTERNAL]) {
+			this[INTERNAL].protocol = v;
+		}
 	}
 }

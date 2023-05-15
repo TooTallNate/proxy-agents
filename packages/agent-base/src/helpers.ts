@@ -33,11 +33,14 @@ export function req(
 	url: string | URL,
 	opts: https.RequestOptions = {}
 ): ThenableRequest {
-	let req!: ThenableRequest;
+	const href = typeof url === 'string' ? url : url.href;
+	const req = (href.startsWith('https:') ? https : http).request(
+		url,
+		opts
+	) as ThenableRequest;
 	const promise = new Promise<http.IncomingMessage>((resolve, reject) => {
-		const href = typeof url === 'string' ? url : url.href;
-		req = (href.startsWith('https:') ? https : http)
-			.request(url, opts, resolve)
+		req
+			.once('response', resolve)
 			.once('error', reject)
 			.end() as ThenableRequest;
 	});
