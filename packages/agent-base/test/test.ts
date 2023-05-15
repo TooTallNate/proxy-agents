@@ -38,6 +38,31 @@ describe('Agent (TypeScript)', () => {
 			assert(agent instanceof Agent);
 			assert(agent instanceof MyAgent);
 		});
+
+		it('should support explicit `protocol`', async () => {
+			class MyAgent extends Agent {
+				async connect() {
+					return http.globalAgent;
+				}
+			}
+			const agent = new MyAgent();
+
+			// Default checks stack trace
+			expect(agent.protocol).toEqual('http:');
+
+			agent.protocol = 'other:';
+			expect(agent.protocol).toEqual('other:');
+
+			// If we use this with `http.get()` then it should error
+			let err: Error | undefined;
+			try {
+				req(`http://127.0.0.1/foo`, { agent });
+			} catch (_err) {
+				err = _err as Error;
+			}
+			assert(err);
+			expect(err.message).toEqual('Protocol "http:" not supported. Expected "other:"');
+		});
 	});
 
 	describe('"http" module', () => {
