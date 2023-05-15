@@ -254,7 +254,7 @@ describe('ProxyAgent', () => {
 
 		it('should call provided function with getProxyForUrl option', async () => {
 			let gotCall = false;
-			let urlParameter = "";
+			let urlParameter = '';
 			httpsServer.once('request', function (req, res) {
 				res.end(JSON.stringify(req.headers));
 			});
@@ -265,7 +265,7 @@ describe('ProxyAgent', () => {
 					gotCall = true;
 					urlParameter = u;
 					return httpsProxyServerUrl.href;
-				}
+				},
 			});
 			const requestUrl = new URL('/test', httpsServerUrl);
 			const res = await req(requestUrl, {

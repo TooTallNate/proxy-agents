@@ -236,7 +236,10 @@ export class PacProxyAgent<Uri extends string> extends Agent {
 					const servername = opts.servername || opts.host;
 					socket = tls.connect({
 						...opts,
-						servername: (!servername || net.isIP(servername)) ? undefined : servername,
+						servername:
+							!servername || net.isIP(servername)
+								? undefined
+								: servername,
 					});
 				} else {
 					socket = net.connect(opts);
