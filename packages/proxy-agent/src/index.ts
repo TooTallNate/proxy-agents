@@ -65,7 +65,7 @@ export type ProxyAgentOptions = HttpProxyAgentOptions<''> &
 		httpsAgent?: http.Agent;
 		/**
 		 * A callback for dynamic provision of proxy for url.
-		 * Defaults to standard proxy environment variables, 
+		 * Defaults to standard proxy environment variables,
 		 * see https://www.npmjs.com/package/proxy-from-env for details
 		 */
 		getProxyForUrl?: GetProxyForUrlCallback;

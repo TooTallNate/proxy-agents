@@ -125,8 +125,7 @@ export abstract class Agent extends http.Agent {
 
 	get protocol(): string {
 		return (
-			this[INTERNAL].protocol ??
-			(isSecureEndpoint() ? 'https:' : 'http:')
+			this[INTERNAL].protocol ?? (isSecureEndpoint() ? 'https:' : 'http:')
 		);
 	}
 

@@ -61,7 +61,9 @@ describe('Agent (TypeScript)', () => {
 				err = _err as Error;
 			}
 			assert(err);
-			expect(err.message).toEqual('Protocol "http:" not supported. Expected "other:"');
+			expect(err.message).toEqual(
+				'Protocol "http:" not supported. Expected "other:"'
+			);
 		});
 	});
 
