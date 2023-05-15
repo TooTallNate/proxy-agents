@@ -2,4 +2,4 @@
 "agent-base": patch
 ---
 
-[agent-base] Allow for never relying on stack trace
+Allow for never relying on stack trace
