@@ -72,7 +72,10 @@ export class HttpProxyAgent<Uri extends string> extends Agent {
 		};
 	}
 
-	setRequestProps(req: HttpProxyAgentClientRequest, opts: AgentConnectOpts): void {
+	setRequestProps(
+		req: HttpProxyAgentClientRequest,
+		opts: AgentConnectOpts
+	): void {
 		const hostname = req.getHeader('host') || 'localhost';
 		const base = `http://${hostname}`;
 		const url = new URL(req.path, base);
