@@ -3,7 +3,7 @@ import * as tls from 'tls';
 import * as http from 'http';
 import createDebug from 'debug';
 import { once } from 'events';
-import { Agent, AgentConnectOpts, InternalClientRequest } from 'agent-base';
+import { Agent, AgentConnectOpts } from 'agent-base';
 
 const debug = createDebug('http-proxy-agent');
 
@@ -21,18 +21,16 @@ type ConnectOpts<T> = {
 		: never;
 }[keyof ConnectOptsMap];
 
-type RequestOptions = {
-	/**
-	 * If using HttpProxyAgent internally for a request that has already
-	 * been generated, this option allows request properties to be
-	 * rewritten during the onConnect() method.
-	 */
-	setRequestPropsOnConnect?: boolean;
-};
+export type HttpProxyAgentOptions<T> = ConnectOpts<T> & http.AgentOptions;
 
-export type HttpProxyAgentOptions<T> = ConnectOpts<T> &
-	http.AgentOptions &
-	RequestOptions;
+interface HttpProxyAgentClientRequest extends http.ClientRequest {
+	outputData?: {
+		data: string;
+	}[];
+	_header?: string | null;
+	_implicitHeader(): void;
+	_updatedPropsForProxyAgent?: boolean;
+}
 
 function isHTTPS(protocol?: string | null): boolean {
 	return typeof protocol === 'string' ? /^https:?$/i.test(protocol) : false;
@@ -47,7 +45,6 @@ export class HttpProxyAgent<Uri extends string> extends Agent {
 
 	readonly proxy: URL;
 	connectOpts: net.TcpNetConnectOpts & tls.ConnectionOptions;
-	setRequestPropsOnConnect: boolean;
 
 	get secureProxy() {
 		return isHTTPS(this.proxy.protocol);
@@ -68,19 +65,16 @@ export class HttpProxyAgent<Uri extends string> extends Agent {
 			: this.secureProxy
 			? 443
 			: 80;
-		const { setRequestPropsOnConnect = false, ...rest } = opts || {};
 		this.connectOpts = {
-			...rest,
+			...opts,
 			host,
 			port,
 		};
-		this.setRequestPropsOnConnect = setRequestPropsOnConnect;
 	}
 
-	setRequestProps(req: InternalClientRequest, opts: AgentConnectOpts): void {
-		const protocol = opts.secureEndpoint ? 'https:' : 'http:';
+	setRequestProps(req: HttpProxyAgentClientRequest, opts: AgentConnectOpts): void {
 		const hostname = req.getHeader('host') || 'localhost';
-		const base = `${protocol}//${hostname}`;
+		const base = `http://${hostname}`;
 		const url = new URL(req.path, base);
 		if (opts.port !== 80) {
 			url.port = String(opts.port);
@@ -110,21 +104,28 @@ export class HttpProxyAgent<Uri extends string> extends Agent {
 				this.keepAlive ? 'Keep-Alive' : 'close'
 			);
 		}
+
+		req._updatedPropsForProxyAgent = true;
 	}
 
-	addRequest(req: InternalClientRequest, opts: AgentConnectOpts): void {
+	addRequest(req: HttpProxyAgentClientRequest, opts: AgentConnectOpts): void {
 		this.setRequestProps(req, opts);
 		// @ts-expect-error `addRequest()` isn't defined in `@types/node`
 		super.addRequest(req, opts);
 	}
 
 	async connect(
-		req: InternalClientRequest,
+		req: HttpProxyAgentClientRequest,
 		opts: AgentConnectOpts
 	): Promise<net.Socket> {
-		if (this.setRequestPropsOnConnect) {
+		debug('connect()');
+		if (!req._updatedPropsForProxyAgent) {
+			// Maintain backwards compatibility with ProxyAgent and
+			// PacProxyAgent, which both rely on HttpProxyAgent to set request
+			// props inside the connect() function.
 			this.setRequestProps(req, opts);
 		}
+
 		// Create a socket connection to the proxy server.
 		let socket: net.Socket;
 		if (this.secureProxy) {
@@ -135,25 +136,25 @@ export class HttpProxyAgent<Uri extends string> extends Agent {
 			socket = net.connect(this.connectOpts);
 		}
 
-		if (this.setRequestPropsOnConnect) {
-			// At this point, the http ClientRequest's internal `_header` field
-			// might have already been set. If this is the case then we'll need
-			// to re-generate the string since we just changed the `req.path`.
-			let first: string;
-			let endOfHeaders: number;
-			debug('Regenerating stored HTTP header string for request');
+		// At this point, the http ClientRequest's internal `_header` field
+		// might have already been set. If this is the case then we'll need
+		// to re-generate the string since we just changed the `req.path`.
+		let first: string;
+		let endOfHeaders: number;
+		debug('Regenerating stored HTTP header string for request');
+		if (!req._header) {
 			req._implicitHeader();
-			if (req.outputData && req.outputData.length > 0) {
-				// Node >= 12
-				debug(
-					'Patching connection write() output buffer with updated header'
-				);
-				first = req.outputData[0].data;
-				endOfHeaders = first.indexOf('\r\n\r\n') + 4;
-				req.outputData[0].data =
-					req._header + first.substring(endOfHeaders);
-				debug('Output buffer: %o', req.outputData[0].data);
-			}
+		}
+		if (req.outputData && req.outputData.length > 0) {
+			// Node >= 12
+			debug(
+				'Patching connection write() output buffer with updated header'
+			);
+			first = req.outputData[0].data;
+			endOfHeaders = first.indexOf('\r\n\r\n') + 4;
+			req.outputData[0].data =
+				req._header + first.substring(endOfHeaders);
+			debug('Output buffer: %o', req.outputData[0].data);
 		}
 
 		// Wait for the socket's `connect` event, so that this `callback()`
