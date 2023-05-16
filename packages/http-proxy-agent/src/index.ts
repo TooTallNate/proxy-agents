@@ -118,7 +118,6 @@ export class HttpProxyAgent<Uri extends string> extends Agent {
 		req: HttpProxyAgentClientRequest,
 		opts: AgentConnectOpts
 	): Promise<net.Socket> {
-		debug('connect()');
 		if (!req._updatedPropsForProxyAgent) {
 			// Maintain backwards compatibility with ProxyAgent and
 			// PacProxyAgent, which both rely on HttpProxyAgent to set request
