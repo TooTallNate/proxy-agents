@@ -176,6 +176,38 @@ describe('HttpProxyAgent', () => {
 			assert(err);
 			expect(err.code).toEqual('ECONNREFUSED');
 		});
+
+		it('should allow custom proxy "headers" object', async () => {
+			httpServer.once('request', (req, res) => {
+				res.end(JSON.stringify(req.headers));
+			});
+			const agent = new HttpProxyAgent(proxyUrl, {
+				headers: { Foo: 'bar' },
+			});
+
+			const res = await req(httpServerUrl, { agent });
+			const body = await json(res);
+			expect(body.foo).toEqual('bar');
+		});
+
+		it('should allow custom proxy "headers" function', async () => {
+			let count = 1;
+			httpServer.on('request', (req, res) => {
+				res.end(JSON.stringify(req.headers));
+			});
+			const agent = new HttpProxyAgent(proxyUrl, {
+				headers: () => ({ number: count++ }),
+			});
+
+			const res = await req(httpServerUrl, { agent });
+			const body = await json(res);
+			expect(body.number).toEqual('1');
+
+			const res2 = await req(httpServerUrl, { agent });
+			const body2 = await json(res2);
+			expect(body2.number).toEqual('2');
+		});
+
 		it('should not send a port number for the default port', async () => {
 			httpServer.once('request', (req, res) => {
 				res.end(JSON.stringify(req.headers));
