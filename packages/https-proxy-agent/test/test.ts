@@ -188,7 +188,7 @@ describe('HttpsProxyAgent', () => {
 			assert.equal('ECONNREFUSED', err.code);
 		});
 
-		it('should allow custom proxy "headers"', async () => {
+		it('should allow custom proxy "headers" object', async () => {
 			const agent = new HttpsProxyAgent(serverUrl, {
 				headers: {
 					Foo: 'bar',
@@ -203,6 +203,29 @@ describe('HttpsProxyAgent', () => {
 			assert.equal('CONNECT', req.method);
 			assert.equal('bar', req.headers.foo);
 			socket.destroy();
+		});
+
+		it('should allow custom proxy "headers" function', async () => {
+			let count = 1;
+			const agent = new HttpsProxyAgent(serverUrl, {
+				headers: () => ({ number: count++ }),
+			});
+
+			const connectPromise = once(server, 'connect');
+			http.get({ agent });
+
+			const [req, socket] = await connectPromise;
+			assert.equal('CONNECT', req.method);
+			assert.equal('1', req.headers.number);
+			socket.destroy();
+
+			const connectPromise2 = once(server, 'connect');
+			http.get({ agent });
+
+			const [req2, socket2] = await connectPromise2;
+			assert.equal('CONNECT', req2.method);
+			assert.equal('2', req2.headers.number);
+			socket2.destroy();
 		});
 
 		it('should work with `keepAlive: true`', async () => {
