@@ -11,6 +11,9 @@
 ### Major Changes
 
 - d99a7c8: Major version bump for all packages
+  - ⚠️ This is a breaking change! In version 6.x, this package had a default export of a function that could be used to construct an
+    `http.Agent`. Now this default export has been removed, instead there is a named export for the `Agent` abstract class. See the
+    [README](README.md) for details on how to use the abstract class.
 
 ### Minor Changes
 

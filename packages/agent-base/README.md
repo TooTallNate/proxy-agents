@@ -4,7 +4,7 @@ agent-base
 
 This module is a thin wrapper around the base `http.Agent` class.
 
-It provides an absract class that must define a `connect()` function,
+It provides an abstract class that must define a `connect()` function,
 which is responsible for creating the underlying socket that the HTTP
 client requests will use.
 
@@ -19,7 +19,7 @@ to determine what type of socket should be returned.
 
 #### Some subclasses:
 
-Here's some more interesting uses of `agent-base`.
+Here are some more interesting uses of `agent-base`.
 Send a pull request to list yours!
 
  * [`http-proxy-agent`][http-proxy-agent]: An HTTP(s) proxy `http.Agent` implementation for HTTP endpoints
