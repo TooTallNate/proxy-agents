@@ -3,7 +3,7 @@ import * as tls from 'tls';
 import * as http from 'http';
 import assert from 'assert';
 import createDebug from 'debug';
-import { OutgoingHttpHeaders } from 'http';
+import type { OutgoingHttpHeaders } from 'http';
 import { Agent, AgentConnectOpts } from 'agent-base';
 import { parseProxyResponse } from './parse-proxy-response';
 
@@ -25,7 +25,7 @@ type ConnectOpts<T> = {
 
 export type HttpsProxyAgentOptions<T> = ConnectOpts<T> &
 	http.AgentOptions & {
-		headers?: OutgoingHttpHeaders;
+		headers?: OutgoingHttpHeaders | (() => OutgoingHttpHeaders);
 	};
 
 /**
@@ -44,7 +44,7 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 	static protocols = ['http', 'https'] as const;
 
 	readonly proxy: URL;
-	proxyHeaders: OutgoingHttpHeaders;
+	proxyHeaders: OutgoingHttpHeaders | (() => OutgoingHttpHeaders);
 	connectOpts: net.TcpNetConnectOpts & tls.ConnectionOptions;
 
 	get secureProxy() {
@@ -101,7 +101,10 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 			socket = net.connect(this.connectOpts);
 		}
 
-		const headers: OutgoingHttpHeaders = { ...this.proxyHeaders };
+		const headers: OutgoingHttpHeaders =
+			typeof this.proxyHeaders === 'function'
+				? this.proxyHeaders()
+				: { ...this.proxyHeaders };
 		const host = net.isIPv6(opts.host) ? `[${opts.host}]` : opts.host;
 		let payload = `CONNECT ${host}:${opts.port} HTTP/1.1\r\n`;
 
