@@ -30,8 +30,7 @@ API
 ### new HttpProxyAgent(proxy: string | URL, options?: HttpProxyAgentOptions)
 
 The `HttpProxyAgent` class implements an `http.Agent` subclass that connects
-to the specified "HTTP(s) proxy server" in order to proxy HTTP and/or WebSocket
-requests. This is achieved by using the [HTTP `CONNECT` method][CONNECT].
+to the specified "HTTP(s) proxy server" in order to proxy HTTP requests.
 
 The `proxy` argument is the URL for the proxy server.
 
@@ -39,8 +38,7 @@ The `options` argument accepts the usual `http.Agent` constructor options, and
 some additional properties:
 
  * `headers` - Object containing additional headers to send to the proxy server
-   in the `CONNECT` request. This may also be a function that returns a headers
-   object.
+   in each request. This may also be a function that returns a headers object.
   
    **NOTE:** If your proxy does not strip these headers from the request, they
    will also be sent to the destination server.
