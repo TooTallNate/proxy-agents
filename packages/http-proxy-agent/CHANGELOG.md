@@ -27,7 +27,7 @@ Now the constructor takes two _separate_ arguments:
 * Argument 2 (optional): An object with standard [`http.Agent`](https://nodejs.org/docs/latest-v14.x/api/url.html#url_the_whatwg_url_api),
   `net.TcpNetConnectOpts`, and `tls.ConnectionOptions` properties.
 
-If you were using an object argument in 5.x, you'll need to change the first arguemnt to match the structure of the `URL` class, and move
+If you were using an object argument in 5.x, you'll need to change the first argument to match the structure of the `URL` class, and move
 any other options to the second argument.
 
 5.x usage:
