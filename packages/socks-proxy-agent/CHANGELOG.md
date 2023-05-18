@@ -34,7 +34,7 @@ any other options to the second argument.
 ```ts
 const agent = new SocksProxyAgent({
 	hostname: 'myproxy.mydomain.com',
-	userId: 'proxyUser@mydomain.com',
+	userId: 'proxyUser',
 	password: 'proxyPass'
   timeout: 1000
 });
