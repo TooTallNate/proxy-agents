@@ -1,5 +1,11 @@
 # proxy
 
+## 2.1.1
+
+### Patch Changes
+
+- 25e0c93: Ensure that `socket.remoteAddress` is a string
+
 ## 2.1.0
 
 ### Minor Changes

@@ -107,7 +107,7 @@
     "socks5h"
   ],
   "dependencies": {
-    "agent-base": "^7.0.1",
+    "agent-base": "^7.0.2",
     "debug": "^4.3.4",
     "socks": "^2.7.1"
   },
