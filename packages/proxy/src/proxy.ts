@@ -116,12 +116,14 @@ async function onrequest(
 			// append to existing "X-Forwarded-For" header
 			// http://en.wikipedia.org/wiki/X-Forwarded-For
 			hasXForwardedFor = true;
-			value += ', ' + socket.remoteAddress;
-			debug.proxyRequest(
-				'appending to existing "%s" header: "%s"',
-				key,
-				value
-			);
+			if (typeof socket.remoteAddress === 'string') {
+				value += ', ' + socket.remoteAddress;
+				debug.proxyRequest(
+					'appending to existing "%s" header: "%s"',
+					key,
+					value
+				);
+			}
 		}
 
 		if (!hasVia && 'via' === keyLower) {
@@ -151,7 +153,7 @@ async function onrequest(
 
 	// add "X-Forwarded-For" header if it's still not here by now
 	// http://en.wikipedia.org/wiki/X-Forwarded-For
-	if (!hasXForwardedFor) {
+	if (!hasXForwardedFor && typeof socket.remoteAddress === 'string') {
 		headers['X-Forwarded-For'] = socket.remoteAddress;
 		debug.proxyRequest(
 			'adding new "X-Forwarded-For" header: "%s"',
