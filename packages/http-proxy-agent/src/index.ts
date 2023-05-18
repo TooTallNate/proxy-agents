@@ -3,6 +3,7 @@ import * as tls from 'tls';
 import * as http from 'http';
 import createDebug from 'debug';
 import { once } from 'events';
+import type { OutgoingHttpHeaders } from 'http';
 import { Agent, AgentConnectOpts } from 'agent-base';
 
 const debug = createDebug('http-proxy-agent');
@@ -21,7 +22,10 @@ type ConnectOpts<T> = {
 		: never;
 }[keyof ConnectOptsMap];
 
-export type HttpProxyAgentOptions<T> = ConnectOpts<T> & http.AgentOptions;
+export type HttpProxyAgentOptions<T> = ConnectOpts<T> &
+	http.AgentOptions & {
+		headers?: OutgoingHttpHeaders | (() => OutgoingHttpHeaders);
+	};
 
 interface HttpProxyAgentClientRequest extends http.ClientRequest {
 	outputData?: {
@@ -43,6 +47,7 @@ export class HttpProxyAgent<Uri extends string> extends Agent {
 	static protocols = ['http', 'https'] as const;
 
 	readonly proxy: URL;
+	proxyHeaders: OutgoingHttpHeaders | (() => OutgoingHttpHeaders);
 	connectOpts: net.TcpNetConnectOpts & tls.ConnectionOptions;
 
 	get secureProxy() {
@@ -52,6 +57,7 @@ export class HttpProxyAgent<Uri extends string> extends Agent {
 	constructor(proxy: Uri | URL, opts?: HttpProxyAgentOptions<Uri>) {
 		super(opts);
 		this.proxy = typeof proxy === 'string' ? new URL(proxy) : proxy;
+		this.proxyHeaders = opts?.headers ?? {};
 		debug('Creating new HttpProxyAgent instance: %o', this.proxy.href);
 
 		// Trim off the brackets from IPv6 addresses
@@ -65,7 +71,7 @@ export class HttpProxyAgent<Uri extends string> extends Agent {
 			? 443
 			: 80;
 		this.connectOpts = {
-			...opts,
+			...(opts ? omit(opts, 'headers') : null),
 			host,
 			port,
 		};
@@ -91,21 +97,29 @@ export class HttpProxyAgent<Uri extends string> extends Agent {
 
 		// Inject the `Proxy-Authorization` header if necessary.
 		req._header = null;
+		const headers: OutgoingHttpHeaders =
+			typeof this.proxyHeaders === 'function'
+				? this.proxyHeaders()
+				: { ...this.proxyHeaders };
 		if (proxy.username || proxy.password) {
 			const auth = `${decodeURIComponent(
 				proxy.username
 			)}:${decodeURIComponent(proxy.password)}`;
-			req.setHeader(
-				'Proxy-Authorization',
-				`Basic ${Buffer.from(auth).toString('base64')}`
-			);
+			headers['Proxy-Authorization'] = `Basic ${Buffer.from(
+				auth
+			).toString('base64')}`;
 		}
 
-		if (!req.hasHeader('proxy-connection')) {
-			req.setHeader(
-				'Proxy-Connection',
-				this.keepAlive ? 'Keep-Alive' : 'close'
-			);
+		if (!headers['Proxy-Connection']) {
+			headers['Proxy-Connection'] = this.keepAlive
+				? 'Keep-Alive'
+				: 'close';
+		}
+		for (const name of Object.keys(headers)) {
+			const value = headers[name];
+			if (value) {
+				req.setHeader(name, value);
+			}
 		}
 
 		// Create a socket connection to the proxy server.
@@ -145,4 +159,22 @@ export class HttpProxyAgent<Uri extends string> extends Agent {
 
 		return socket;
 	}
+}
+
+function omit<T extends object, K extends [...(keyof T)[]]>(
+	obj: T,
+	...keys: K
+): {
+	[K2 in Exclude<keyof T, K[number]>]: T[K2];
+} {
+	const ret = {} as {
+		[K in keyof typeof obj]: (typeof obj)[K];
+	};
+	let key: keyof typeof obj;
+	for (key in obj) {
+		if (!keys.includes(key)) {
+			ret[key] = obj[key];
+		}
+	}
+	return ret;
 }
