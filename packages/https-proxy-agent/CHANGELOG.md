@@ -1,5 +1,16 @@
 # https-proxy-agent
 
+## 6.2.0
+
+### Minor Changes
+
+- 8ff9faa: "headers" option can now be a function
+
+### Patch Changes
+
+- Updated dependencies [66b4c63]
+  - agent-base@7.0.2
+
 ## 6.1.0
 
 ### Minor Changes
@@ -25,11 +36,11 @@
 In version 5.x, the `HttpsProxyAgent` constructor took a single argument of either (A) a `string`, or (B) an object matching the output of
 the [deprecated `url.parse()` method](https://nodejs.org/docs/latest-v14.x/api/url.html#url_url_parse_urlstring_parsequerystring_slashesdenotehost)
 _and_ various extra options.
-    
+
 Now the constructor takes two _separate_ arguments:
 
-* Argument 1: Either (A) a `string`, or (B) a [WHATWG `URL` object](https://nodejs.org/docs/latest-v14.x/api/url.html#url_the_whatwg_url_api)
-* Argument 2 (optional): An object with standard [`http.Agent`](https://nodejs.org/docs/latest-v14.x/api/url.html#url_the_whatwg_url_api),
+- Argument 1: Either (A) a `string`, or (B) a [WHATWG `URL` object](https://nodejs.org/docs/latest-v14.x/api/url.html#url_the_whatwg_url_api)
+- Argument 2 (optional): An object with standard [`http.Agent`](https://nodejs.org/docs/latest-v14.x/api/url.html#url_the_whatwg_url_api),
   `net.TcpNetConnectOpts`, and `tls.ConnectionOptions` properties and/or custom options supported by this package.
 
 If you were using an object argument in 5.x, you'll need to change the first argument to match the structure of the `URL` class, and move

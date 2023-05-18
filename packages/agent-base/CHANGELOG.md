@@ -1,5 +1,11 @@
 # agent-base
 
+## 7.0.2
+
+### Patch Changes
+
+- 66b4c63: Allow for never relying on stack trace
+
 ## 7.0.1
 
 ### Patch Changes
