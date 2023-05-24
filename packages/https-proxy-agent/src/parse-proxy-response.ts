@@ -30,16 +30,17 @@ export function parseProxyResponse(
 		function cleanup() {
 			socket.removeListener('end', onend);
 			socket.removeListener('error', onerror);
-			socket.removeListener('close', onclose);
 			socket.removeListener('readable', read);
 		}
 
-		function onclose(err?: Error) {
-			debug('onclose had error %o', err);
-		}
-
 		function onend() {
+			cleanup();
 			debug('onend');
+			reject(
+				new Error(
+					'Proxy connection ended before receiving CONNECT response'
+				)
+			);
 		}
 
 		function onerror(err: Error) {
@@ -65,7 +66,10 @@ export function parseProxyResponse(
 			const headerParts = buffered.toString('ascii').split('\r\n');
 			const firstLine = headerParts.shift();
 			if (!firstLine) {
-				throw new Error('No header received');
+				socket.destroy();
+				return reject(
+					new Error('No header received from proxy CONNECT response')
+				);
 			}
 			const firstLineParts = firstLine.split(' ');
 			const statusCode = +firstLineParts[1];
@@ -75,7 +79,12 @@ export function parseProxyResponse(
 				if (!header) continue;
 				const firstColon = header.indexOf(':');
 				if (firstColon === -1) {
-					throw new Error(`Invalid header: "${header}"`);
+					socket.destroy();
+					return reject(
+						new Error(
+							`Invalid header from proxy CONNECT response: "${header}"`
+						)
+					);
 				}
 				const key = header.slice(0, firstColon).toLowerCase();
 				const value = header.slice(firstColon + 1).trimStart();
@@ -88,7 +97,7 @@ export function parseProxyResponse(
 					headers[key] = value;
 				}
 			}
-			debug('got proxy server response: %o', firstLine);
+			debug('got proxy server response: %o %o', firstLine, headers);
 			cleanup();
 			resolve({
 				connect: {
@@ -101,7 +110,6 @@ export function parseProxyResponse(
 		}
 
 		socket.on('error', onerror);
-		socket.on('close', onclose);
 		socket.on('end', onend);
 
 		read();
