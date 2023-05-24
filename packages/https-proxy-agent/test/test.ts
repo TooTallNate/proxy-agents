@@ -1,7 +1,7 @@
-import fs from 'fs';
-import net from 'net';
-import http from 'http';
-import https from 'https';
+import * as fs from 'fs';
+import * as net from 'net';
+import * as http from 'http';
+import * as https from 'https';
 import assert from 'assert';
 import { once } from 'events';
 import { listen } from 'async-listen';

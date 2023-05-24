@@ -265,14 +265,14 @@ describe('Agent (TypeScript)', () => {
 				reqCount1++;
 				res.end();
 			});
-			const addr1 = (await listen(server1)) as URL;
+			const addr1 = await listen(server1);
 
 			const server2 = http.createServer((req, res) => {
 				expect(req.headers.connection).toEqual('keep-alive');
 				reqCount2++;
 				res.end();
 			});
-			const addr2 = (await listen(server2)) as URL;
+			const addr2 = await listen(server2);
 
 			try {
 				const res = await req(new URL('/foo', addr1), { agent });
@@ -479,7 +479,7 @@ describe('Agent (TypeScript)', () => {
 				gotReq = true;
 				res.end();
 			});
-			const addr = (await listen(server)) as URL;
+			const addr = await listen(server);
 
 			try {
 				const res = await req(new URL('/foo', addr), {

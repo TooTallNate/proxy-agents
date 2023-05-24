@@ -40,7 +40,7 @@
     "@types/ftpd": "^0.2.35",
     "@types/jest": "^29.5.1",
     "@types/node": "^14.18.45",
-    "async-listen": "^2.1.0",
+    "async-listen": "^3.0.0",
     "ftpd": "https://files-jg1s1zt9l.n8.io/ftpd-v0.2.14.tgz",
     "jest": "^29.5.0",
     "st": "^1.2.2",

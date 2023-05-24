@@ -33,13 +33,13 @@ describe('PacProxyAgent', () => {
 	beforeAll(async () => {
 		// setup target HTTP server
 		httpServer = http.createServer();
-		httpServerUrl = (await listen(httpServer)) as URL;
+		httpServerUrl = await listen(httpServer);
 	});
 
 	beforeAll(async () => {
 		// setup target SSL HTTPS server
 		httpsServer = https.createServer(sslOptions);
-		httpsServerUrl = (await listen(httpsServer)) as URL;
+		httpsServerUrl = await listen(httpsServer);
 	});
 
 	beforeAll(async () => {
@@ -57,13 +57,13 @@ describe('PacProxyAgent', () => {
 	beforeAll(async () => {
 		// setup HTTP proxy server
 		proxyServer = createProxy();
-		proxyServerUrl = (await listen(proxyServer)) as URL;
+		proxyServerUrl = await listen(proxyServer);
 	});
 
 	beforeAll(async () => {
 		// setup SSL HTTPS proxy server
 		proxyHttpsServer = createProxy(https.createServer(sslOptions));
-		proxyHttpsServerUrl = (await listen(proxyHttpsServer)) as URL;
+		proxyHttpsServerUrl = await listen(proxyHttpsServer);
 	});
 
 	afterAll(() => {

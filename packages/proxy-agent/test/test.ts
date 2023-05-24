@@ -36,13 +36,13 @@ describe('ProxyAgent', () => {
 	beforeAll(async () => {
 		// setup target HTTP server
 		httpServer = http.createServer();
-		httpServerUrl = (await listen(httpServer)) as URL;
+		httpServerUrl = await listen(httpServer);
 	});
 
 	beforeAll(async () => {
 		// setup target SSL HTTPS server
 		httpsServer = https.createServer(sslOptions);
-		httpsServerUrl = (await listen(httpsServer)) as URL;
+		httpsServerUrl = await listen(httpsServer);
 	});
 
 	beforeAll(async () => {
@@ -59,13 +59,13 @@ describe('ProxyAgent', () => {
 	beforeAll(async () => {
 		// setup HTTP proxy server
 		httpProxyServer = createProxy();
-		httpProxyServerUrl = (await listen(httpProxyServer)) as URL;
+		httpProxyServerUrl = await listen(httpProxyServer);
 	});
 
 	beforeAll(async () => {
 		// setup SSL HTTPS proxy server
 		httpsProxyServer = createProxy(https.createServer(sslOptions));
-		httpsProxyServerUrl = (await listen(httpsProxyServer)) as URL;
+		httpsProxyServerUrl = await listen(httpsProxyServer);
 	});
 
 	afterAll(() => {

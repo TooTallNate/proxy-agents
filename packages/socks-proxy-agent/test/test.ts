@@ -36,7 +36,7 @@ describe('SocksProxyAgent', () => {
 	beforeAll(async () => {
 		// setup target HTTP server
 		httpServer = http.createServer();
-		httpServerUrl = (await listen(httpServer)) as URL;
+		httpServerUrl = await listen(httpServer);
 	});
 
 	beforeAll(async () => {
@@ -50,7 +50,7 @@ describe('SocksProxyAgent', () => {
 			),
 		};
 		httpsServer = https.createServer(options);
-		httpsServerUrl = (await listen(httpsServer)) as URL;
+		httpsServerUrl = await listen(httpsServer);
 	});
 
 	afterAll(() => {

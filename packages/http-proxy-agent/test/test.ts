@@ -20,13 +20,13 @@ describe('HttpProxyAgent', () => {
 	beforeAll(async () => {
 		// setup HTTP proxy server
 		proxy = createProxy();
-		proxyUrl = (await listen(proxy)) as URL;
+		proxyUrl = await listen(proxy);
 	});
 
 	beforeAll(async () => {
 		// setup target HTTP server
 		httpServer = http.createServer();
-		httpServerUrl = (await listen(httpServer)) as URL;
+		httpServerUrl = await listen(httpServer);
 	});
 
 	beforeAll(async () => {
@@ -36,7 +36,7 @@ describe('HttpProxyAgent', () => {
 			cert: fs.readFileSync(`${__dirname}/ssl-cert-snakeoil.pem`),
 		};
 		sslProxy = createProxy(https.createServer(options));
-		sslProxyUrl = (await listen(sslProxy)) as URL;
+		sslProxyUrl = await listen(sslProxy);
 	});
 
 	beforeEach(() => {

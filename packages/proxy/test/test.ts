@@ -15,13 +15,13 @@ describe('proxy', () => {
 	beforeAll(async () => {
 		// setup proxy server
 		proxy = createProxy(http.createServer());
-		proxyUrl = (await listen(proxy)) as URL;
+		proxyUrl = await listen(proxy);
 	});
 
 	beforeAll(async () => {
 		// setup target server
 		server = http.createServer();
-		serverUrl = (await listen(server)) as URL;
+		serverUrl = await listen(server);
 	});
 
 	afterAll(() => {
