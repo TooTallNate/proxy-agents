@@ -1,5 +1,11 @@
 # https-proxy-agent
 
+## 6.2.1
+
+### Patch Changes
+
+- 0b8a0b7: Properly reject errors during proxy `CONNECT` response
+
 ## 6.2.0
 
 ### Minor Changes
