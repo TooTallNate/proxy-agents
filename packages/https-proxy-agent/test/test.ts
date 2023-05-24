@@ -1,4 +1,5 @@
 import fs from 'fs';
+import net from 'net';
 import http from 'http';
 import https from 'https';
 import assert from 'assert';
@@ -32,25 +33,25 @@ describe('HttpsProxyAgent', () => {
 	beforeAll(async () => {
 		// setup target HTTP server
 		server = http.createServer();
-		serverUrl = (await listen(server)) as URL;
+		serverUrl = await listen(server);
 	});
 
 	beforeAll(async () => {
 		// setup HTTP proxy server
 		proxy = createProxy();
-		proxyUrl = (await listen(proxy)) as URL;
+		proxyUrl = await listen(proxy);
 	});
 
 	beforeAll(async () => {
 		// setup target HTTPS server
 		sslServer = https.createServer(sslOptions);
-		sslServerUrl = (await listen(sslServer)) as URL;
+		sslServerUrl = await listen(sslServer);
 	});
 
 	beforeAll(async () => {
 		// setup SSL HTTP proxy server
 		sslProxy = createProxy(https.createServer(sslOptions));
-		sslProxyUrl = (await listen(sslProxy)) as URL;
+		sslProxyUrl = await listen(sslProxy);
 	});
 
 	beforeEach(() => {
@@ -197,7 +198,11 @@ describe('HttpsProxyAgent', () => {
 
 			const connectPromise = once(server, 'connect');
 
-			http.get({ agent });
+			http.get({ agent }).on('error', () => {
+				// "error" happens because agent didn't receive proper
+				// CONNECT response before the socket was closed.
+				// We can safely ignore that.
+			});
 
 			const [req, socket] = await connectPromise;
 			assert.equal('CONNECT', req.method);
@@ -212,7 +217,11 @@ describe('HttpsProxyAgent', () => {
 			});
 
 			const connectPromise = once(server, 'connect');
-			http.get({ agent });
+			http.get({ agent }).on('error', () => {
+				// "error" happens because agent didn't receive proper
+				// CONNECT response before the socket was closed.
+				// We can safely ignore that.
+			});
 
 			const [req, socket] = await connectPromise;
 			assert.equal('CONNECT', req.method);
@@ -220,7 +229,11 @@ describe('HttpsProxyAgent', () => {
 			socket.destroy();
 
 			const connectPromise2 = once(server, 'connect');
-			http.get({ agent });
+			http.get({ agent }).on('error', () => {
+				// "error" happens because agent didn't receive proper
+				// CONNECT response before the socket was closed.
+				// We can safely ignore that.
+			});
 
 			const [req2, socket2] = await connectPromise2;
 			assert.equal('CONNECT', req2.method);
@@ -251,6 +264,30 @@ describe('HttpsProxyAgent', () => {
 			} finally {
 				agent.destroy();
 			}
+		});
+
+		it('should emit "error" on request if proxy has invalid header', async () => {
+			const badProxy = net.createServer((socket) => {
+				socket.write(
+					'HTTP/1.1 200 Connection established\r\nbadheader\r\n\r\n'
+				);
+			});
+			const addr = await listen(badProxy);
+			let err: Error | undefined;
+			try {
+				const agent = new HttpsProxyAgent(
+					addr.href.replace('tcp', 'http')
+				);
+				await req('http://example.com', { agent });
+			} catch (_err) {
+				err = _err as Error;
+			} finally {
+				badProxy.close();
+			}
+			assert(err);
+			expect(err.message).toEqual(
+				'Invalid header from proxy CONNECT response: "badheader"'
+			);
 		});
 	});
 
