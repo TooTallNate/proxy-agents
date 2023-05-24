@@ -1,5 +1,13 @@
 # http-proxy-agent
 
+## 6.1.1
+
+### Patch Changes
+
+- eb6906b: Fix `keepAlive: true`
+- Updated dependencies [da699b1]
+  - agent-base@7.1.0
+
 ## 6.1.0
 
 ### Minor Changes

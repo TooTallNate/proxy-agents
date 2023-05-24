@@ -1,21 +1,9 @@
 import * as net from 'net';
 import * as tls from 'tls';
 import * as http from 'http';
-import { Duplex } from 'stream';
+import type { Duplex } from 'stream';
 
 export * from './helpers';
-
-function isSecureEndpoint(): boolean {
-	const { stack } = new Error();
-	if (typeof stack !== 'string') return false;
-	return stack
-		.split('\n')
-		.some(
-			(l) =>
-				l.indexOf('(https.js:') !== -1 ||
-				l.indexOf('node:https:') !== -1
-		);
-}
 
 interface HttpConnectOpts extends net.TcpNetConnectOpts {
 	secureEndpoint: false;
@@ -55,37 +43,49 @@ export abstract class Agent extends http.Agent {
 		options: AgentConnectOpts
 	): Promise<Duplex | http.Agent> | Duplex | http.Agent;
 
-	createSocket(
-		req: http.ClientRequest,
-		options: AgentConnectOpts,
-		cb: (err: Error | null, s?: Duplex) => void
-	) {
-		// Need to determine whether this is an `http` or `https` request.
-		// First check the `secureEndpoint` property explicitly, since this
-		// means that a parent `Agent` is "passing through" to this instance.
-		let secureEndpoint =
-			typeof options.secureEndpoint === 'boolean'
-				? options.secureEndpoint
-				: undefined;
+	/**
+	 * Determine whether this is an `http` or `https` request.
+	 */
+	isSecureEndpoint(options?: AgentConnectOpts): boolean {
+		if (options) {
+			// First check the `secureEndpoint` property explicitly, since this
+			// means that a parent `Agent` is "passing through" to this instance.
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			if (typeof (options as any).secureEndpoint === 'boolean') {
+				return options.secureEndpoint;
+			}
 
-		// If no explicit `secure` endpoint, check if `protocol` property is
-		// set. This will usually be the case since using a full string URL
-		// or `URL` instance should be the most common case.
-		if (
-			typeof secureEndpoint === 'undefined' &&
-			typeof options.protocol === 'string'
-		) {
-			secureEndpoint = options.protocol === 'https:';
+			// If no explicit `secure` endpoint, check if `protocol` property is
+			// set. This will usually be the case since using a full string URL
+			// or `URL` instance should be the most common usage.
+			if (typeof options.protocol === 'string') {
+				return options.protocol === 'https:';
+			}
 		}
 
 		// Finally, if no `protocol` property was set, then fall back to
 		// checking the stack trace of the current call stack, and try to
 		// detect the "https" module.
-		if (typeof secureEndpoint === 'undefined') {
-			secureEndpoint = isSecureEndpoint();
-		}
+		const { stack } = new Error();
+		if (typeof stack !== 'string') return false;
+		return stack
+			.split('\n')
+			.some(
+				(l) =>
+					l.indexOf('(https.js:') !== -1 ||
+					l.indexOf('node:https:') !== -1
+			);
+	}
 
-		const connectOpts = { ...options, secureEndpoint };
+	createSocket(
+		req: http.ClientRequest,
+		options: AgentConnectOpts,
+		cb: (err: Error | null, s?: Duplex) => void
+	) {
+		const connectOpts = {
+			...options,
+			secureEndpoint: this.isSecureEndpoint(options),
+		};
 		Promise.resolve()
 			.then(() => this.connect(req, connectOpts))
 			.then((socket) => {
@@ -125,7 +125,8 @@ export abstract class Agent extends http.Agent {
 
 	get protocol(): string {
 		return (
-			this[INTERNAL].protocol ?? (isSecureEndpoint() ? 'https:' : 'http:')
+			this[INTERNAL].protocol ??
+			(this.isSecureEndpoint() ? 'https:' : 'http:')
 		);
 	}
 

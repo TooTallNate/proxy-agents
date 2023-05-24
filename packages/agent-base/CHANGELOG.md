@@ -1,5 +1,11 @@
 # agent-base
 
+## 7.1.0
+
+### Minor Changes
+
+- da699b1: Add `isSecureEndpoint()` as an instance method
+
 ## 7.0.2
 
 ### Patch Changes
