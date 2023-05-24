@@ -67,20 +67,6 @@ describe('HttpProxyAgent', () => {
 			const agent = new HttpProxyAgent(proxyUrl);
 			assert.equal(80, agent.defaultPort);
 		});
-		describe('secureProxy', () => {
-			it('should be `false` when "http:" protocol is used', () => {
-				const agent = new HttpProxyAgent(
-					`http://127.0.0.1:${proxyUrl.port}`
-				);
-				assert.equal(false, agent.secureProxy);
-			});
-			it('should be `true` when "https:" protocol is used', () => {
-				const agent = new HttpProxyAgent(
-					`https://127.0.0.1:${proxyUrl.port}`
-				);
-				assert.equal(true, agent.secureProxy);
-			});
-		});
 	});
 
 	describe('"http" module', () => {

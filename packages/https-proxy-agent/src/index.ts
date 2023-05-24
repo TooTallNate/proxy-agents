@@ -47,10 +47,6 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 	proxyHeaders: OutgoingHttpHeaders | (() => OutgoingHttpHeaders);
 	connectOpts: net.TcpNetConnectOpts & tls.ConnectionOptions;
 
-	get secureProxy() {
-		return isHTTPS(this.proxy.protocol);
-	}
-
 	constructor(proxy: Uri | URL, opts?: HttpsProxyAgentOptions<Uri>) {
 		super(opts);
 		this.options = { path: undefined };
@@ -65,7 +61,7 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 		);
 		const port = this.proxy.port
 			? parseInt(this.proxy.port, 10)
-			: this.secureProxy
+			: this.proxy.protocol === 'https:'
 			? 443
 			: 80;
 		this.connectOpts = {
@@ -85,7 +81,7 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 		req: http.ClientRequest,
 		opts: AgentConnectOpts
 	): Promise<net.Socket> {
-		const { proxy, secureProxy } = this;
+		const { proxy } = this;
 
 		if (!opts.host) {
 			throw new TypeError('No "host" provided');
@@ -93,7 +89,7 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 
 		// Create a socket connection to the proxy server.
 		let socket: net.Socket;
-		if (secureProxy) {
+		if (proxy.protocol === 'https:') {
 			debug('Creating `tls.Socket`: %o', this.connectOpts);
 			socket = tls.connect(this.connectOpts);
 		} else {
@@ -189,10 +185,6 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 
 function resume(socket: net.Socket | tls.TLSSocket): void {
 	socket.resume();
-}
-
-function isHTTPS(protocol?: string | null): boolean {
-	return typeof protocol === 'string' ? /^https:?$/i.test(protocol) : false;
 }
 
 function omit<T extends object, K extends [...(keyof T)[]]>(

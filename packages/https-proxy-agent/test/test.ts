@@ -83,16 +83,6 @@ describe('HttpsProxyAgent', () => {
 			assert.equal(proxyUrl.hostname, agent.proxy.hostname);
 			assert.equal(proxyUrl.port, agent.proxy.port);
 		});
-		describe('secureProxy', () => {
-			it('should be `false` when "http:" protocol is used', () => {
-				const agent = new HttpsProxyAgent(proxyUrl);
-				assert.equal(false, agent.secureProxy);
-			});
-			it('should be `true` when "https:" protocol is used', () => {
-				const agent = new HttpsProxyAgent(sslProxyUrl);
-				assert.equal(true, agent.secureProxy);
-			});
-		});
 	});
 
 	describe('"http" module', () => {
