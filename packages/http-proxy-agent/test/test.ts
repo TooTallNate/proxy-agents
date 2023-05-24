@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as http from 'http';
 import * as https from 'https';
 import assert from 'assert';
+import { once } from 'events';
 import { createProxy, ProxyServer } from 'proxy';
 import { listen } from 'async-listen';
 import { json, req } from 'agent-base';
@@ -218,6 +219,33 @@ describe('HttpProxyAgent', () => {
 			const res = await req(httpServerUrl, { agent });
 			const body = await json(res);
 			expect(body.host).toEqual(httpServerUrl.hostname);
+		});
+
+		it('should work with `keepAlive: true`', async () => {
+			httpServer.on('request', (req, res) => {
+				res.end(JSON.stringify(req.headers));
+			});
+
+			const agent = new HttpProxyAgent(proxyUrl, { keepAlive: true });
+
+			try {
+				const res = await req(httpServerUrl, { agent });
+				expect(res.headers.connection).toEqual('keep-alive');
+				expect(res.statusCode).toEqual(200);
+				res.resume();
+				const s1 = res.socket;
+				await once(s1, 'free');
+
+				const res2 = await req(httpServerUrl, { agent });
+				expect(res2.headers.connection).toEqual('keep-alive');
+				expect(res2.statusCode).toEqual(200);
+				res2.resume();
+				const s2 = res2.socket;
+				assert(s1 === s2);
+				await once(s2, 'free');
+			} finally {
+				agent.destroy();
+			}
 		});
 	});
 });

@@ -77,12 +77,18 @@ export class HttpProxyAgent<Uri extends string> extends Agent {
 		};
 	}
 
-	async connect(
+	addRequest(req: HttpProxyAgentClientRequest, opts: AgentConnectOpts): void {
+		req._header = null;
+		this.setRequestProps(req, opts);
+		// @ts-expect-error `addRequest()` isn't defined in `@types/node`
+		super.addRequest(req, opts);
+	}
+
+	setRequestProps(
 		req: HttpProxyAgentClientRequest,
 		opts: AgentConnectOpts
-	): Promise<net.Socket> {
+	): void {
 		const { proxy } = this;
-
 		const protocol = opts.secureEndpoint ? 'https:' : 'http:';
 		const hostname = req.getHeader('host') || 'localhost';
 		const base = `${protocol}//${hostname}`;
@@ -96,7 +102,7 @@ export class HttpProxyAgent<Uri extends string> extends Agent {
 		req.path = String(url);
 
 		// Inject the `Proxy-Authorization` header if necessary.
-		req._header = null;
+
 		const headers: OutgoingHttpHeaders =
 			typeof this.proxyHeaders === 'function'
 				? this.proxyHeaders()
@@ -121,15 +127,16 @@ export class HttpProxyAgent<Uri extends string> extends Agent {
 				req.setHeader(name, value);
 			}
 		}
+	}
 
-		// Create a socket connection to the proxy server.
-		let socket: net.Socket;
-		if (this.secureProxy) {
-			debug('Creating `tls.Socket`: %o', this.connectOpts);
-			socket = tls.connect(this.connectOpts);
-		} else {
-			debug('Creating `net.Socket`: %o', this.connectOpts);
-			socket = net.connect(this.connectOpts);
+	async connect(
+		req: HttpProxyAgentClientRequest,
+		opts: AgentConnectOpts
+	): Promise<net.Socket> {
+		req._header = null;
+
+		if (!req.path.includes('://')) {
+			this.setRequestProps(req, opts);
 		}
 
 		// At this point, the http ClientRequest's internal `_header` field
@@ -140,7 +147,6 @@ export class HttpProxyAgent<Uri extends string> extends Agent {
 		debug('Regenerating stored HTTP header string for request');
 		req._implicitHeader();
 		if (req.outputData && req.outputData.length > 0) {
-			// Node >= 12
 			debug(
 				'Patching connection write() output buffer with updated header'
 			);
@@ -149,6 +155,16 @@ export class HttpProxyAgent<Uri extends string> extends Agent {
 			req.outputData[0].data =
 				req._header + first.substring(endOfHeaders);
 			debug('Output buffer: %o', req.outputData[0].data);
+		}
+
+		// Create a socket connection to the proxy server.
+		let socket: net.Socket;
+		if (this.secureProxy) {
+			debug('Creating `tls.Socket`: %o', this.connectOpts);
+			socket = tls.connect(this.connectOpts);
+		} else {
+			debug('Creating `net.Socket`: %o', this.connectOpts);
+			socket = net.connect(this.connectOpts);
 		}
 
 		// Wait for the socket's `connect` event, so that this `callback()`
