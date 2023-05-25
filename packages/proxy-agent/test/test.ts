@@ -329,10 +329,13 @@ describe('ProxyAgent', () => {
 			process.env.WSS_PROXY = httpProxyServerUrl.href;
 			const agent = new ProxyAgent();
 
-			const ws = new WebSocket(httpsServerUrl.href.replace('https', 'wss'), {
-				agent,
-				rejectUnauthorized: false
-			});
+			const ws = new WebSocket(
+				httpsServerUrl.href.replace('https', 'wss'),
+				{
+					agent,
+					rejectUnauthorized: false,
+				}
+			);
 			const [message] = await once(ws, 'message');
 			expect(connectionCount).toEqual(1);
 			expect(requestCount).toEqual(0);
