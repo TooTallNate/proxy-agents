@@ -3,6 +3,7 @@ import * as http from 'http';
 import * as https from 'https';
 import { once } from 'events';
 import assert from 'assert';
+import WebSocket, { WebSocketServer } from 'ws';
 import { json, req } from 'agent-base';
 import { ProxyServer, createProxy } from 'proxy';
 // @ts-expect-error no types
@@ -20,8 +21,10 @@ const sslOptions = {
 describe('ProxyAgent', () => {
 	// target servers
 	let httpServer: http.Server;
+	let httpWebSocketServer: WebSocketServer;
 	let httpServerUrl: URL;
 	let httpsServer: https.Server;
+	let httpsWebSocketServer: WebSocketServer;
 	let httpsServerUrl: URL;
 
 	// proxy servers
@@ -36,12 +39,14 @@ describe('ProxyAgent', () => {
 	beforeAll(async () => {
 		// setup target HTTP server
 		httpServer = http.createServer();
+		httpWebSocketServer = new WebSocketServer({ server: httpServer });
 		httpServerUrl = await listen(httpServer);
 	});
 
 	beforeAll(async () => {
 		// setup target SSL HTTPS server
 		httpsServer = https.createServer(sslOptions);
+		httpsWebSocketServer = new WebSocketServer({ server: httpsServer });
 		httpsServerUrl = await listen(httpsServer);
 	});
 
@@ -79,9 +84,13 @@ describe('ProxyAgent', () => {
 	beforeEach(() => {
 		delete process.env.HTTP_PROXY;
 		delete process.env.HTTPS_PROXY;
+		delete process.env.WS_PROXY;
+		delete process.env.WSS_PROXY;
 		delete process.env.NO_PROXY;
 		httpServer.removeAllListeners('request');
 		httpsServer.removeAllListeners('request');
+		httpWebSocketServer.removeAllListeners('connection');
+		httpsWebSocketServer.removeAllListeners('connection');
 	});
 
 	describe('"http" module', () => {
@@ -276,6 +285,59 @@ describe('ProxyAgent', () => {
 			assert(httpsServerUrl.host === body.host);
 			assert(gotCall);
 			assert(requestUrl.href === urlParameter);
+		});
+	});
+
+	describe('"ws" module', () => {
+		it('should work over "http" proxy to `ws:` URL', async () => {
+			let requestCount = 0;
+			let connectionCount = 0;
+			httpServer.once('request', function (req, res) {
+				requestCount++;
+				res.end();
+			});
+			httpWebSocketServer.on('connection', (ws) => {
+				connectionCount++;
+				ws.send('OK');
+			});
+
+			process.env.WS_PROXY = httpProxyServerUrl.href;
+			const agent = new ProxyAgent();
+
+			const ws = new WebSocket(httpServerUrl.href.replace('http', 'ws'), {
+				agent,
+			});
+			const [message] = await once(ws, 'message');
+			expect(connectionCount).toEqual(1);
+			expect(requestCount).toEqual(0);
+			expect(message.toString()).toEqual('OK');
+			ws.close();
+		});
+
+		it('should work over "http" proxy to `wss:` URL', async () => {
+			let requestCount = 0;
+			let connectionCount = 0;
+			httpsServer.once('request', function (req, res) {
+				requestCount++;
+				res.end();
+			});
+			httpsWebSocketServer.on('connection', (ws) => {
+				connectionCount++;
+				ws.send('OK');
+			});
+
+			process.env.WSS_PROXY = httpProxyServerUrl.href;
+			const agent = new ProxyAgent();
+
+			const ws = new WebSocket(httpsServerUrl.href.replace('https', 'wss'), {
+				agent,
+				rejectUnauthorized: false
+			});
+			const [message] = await once(ws, 'message');
+			expect(connectionCount).toEqual(1);
+			expect(requestCount).toEqual(0);
+			expect(message.toString()).toEqual('OK');
+			ws.close();
 		});
 	});
 });

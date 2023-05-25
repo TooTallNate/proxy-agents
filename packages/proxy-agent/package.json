@@ -47,12 +47,14 @@
     "@types/jest": "^29.5.1",
     "@types/node": "^14.18.45",
     "@types/proxy-from-env": "^1.0.1",
+    "@types/ws": "^8.5.4",
     "async-listen": "^3.0.0",
     "jest": "^29.5.0",
     "proxy": "workspace:*",
     "socksv5": "github:TooTallNate/socksv5#fix/dstSock-close-event",
     "ts-jest": "^29.1.0",
     "tsconfig": "workspace:*",
-    "typescript": "^5.0.4"
+    "typescript": "^5.0.4",
+    "ws": "^8.13.0"
   }
 }

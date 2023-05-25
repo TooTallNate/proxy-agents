@@ -3,6 +3,8 @@
   "globalEnv": [
     "HTTP_PROXY",
     "HTTPS_PROXY",
+    "WS_PROXY",
+    "WSS_PROXY",
     "ALL_PROXY",
     "NO_PROXY",
     "NORDVPN_USERNAME",
