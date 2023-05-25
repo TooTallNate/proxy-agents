@@ -437,8 +437,8 @@ importers:
         specifier: ^1.0.1
         version: 1.0.1
       '@types/ws':
-        specifier: ^6.0.4
-        version: 6.0.4
+        specifier: ^8.5.4
+        version: 8.5.4
       async-listen:
         specifier: ^3.0.0
         version: 3.0.0
@@ -461,8 +461,8 @@ importers:
         specifier: ^5.0.4
         version: 5.0.4
       ws:
-        specifier: ^3.3.3
-        version: 3.3.3
+        specifier: ^8.13.0
+        version: 8.13.0
 
   packages/socks-proxy-agent:
     dependencies:
@@ -1634,6 +1634,12 @@ packages:
 
   /@types/ws@6.0.4:
     resolution: {integrity: sha512-PpPrX7SZW9re6+Ha8ojZG4Se8AZXgf0GK6zmfqEuCsY49LFDNXO3SByp44X3dFEqtB73lkCDAdUazhAjVPiNwg==}
+    dependencies:
+      '@types/node': 14.18.45
+    dev: true
+
+  /@types/ws@8.5.4:
+    resolution: {integrity: sha512-zdQDHKUgcX/zBc4GrwsE/7dVdAD8JR4EuiAXiiUhhfyIJXXb2+PrGshFyeXWQPMmmZ2XxgaqclgpIC7eTXc1mg==}
     dependencies:
       '@types/node': 14.18.45
     dev: true
@@ -5308,6 +5314,19 @@ packages:
       async-limiter: 1.0.1
       safe-buffer: 5.1.2
       ultron: 1.1.1
+    dev: true
+
+  /ws@8.13.0:
+    resolution: {integrity: sha512-x9vcZYTrFPC7aSIbj7sRCYo7L/Xb8Iy+pW0ng0wt2vCJv7M9HOMy0UoN3rr+IFC7hb7vXoqS+P9ktyLLLhO+LA==}
+    engines: {node: '>=10.0.0'}
+    peerDependencies:
+      bufferutil: ^4.0.1
+      utf-8-validate: '>=5.0.2'
+    peerDependenciesMeta:
+      bufferutil:
+        optional: true
+      utf-8-validate:
+        optional: true
     dev: true
 
   /y18n@4.0.3:

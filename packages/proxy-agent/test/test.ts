@@ -3,7 +3,7 @@ import * as http from 'http';
 import * as https from 'https';
 import { once } from 'events';
 import assert from 'assert';
-import WebSocket from 'ws';
+import WebSocket, { WebSocketServer } from 'ws';
 import { json, req } from 'agent-base';
 import { ProxyServer, createProxy } from 'proxy';
 // @ts-expect-error no types
@@ -21,10 +21,10 @@ const sslOptions = {
 describe('ProxyAgent', () => {
 	// target servers
 	let httpServer: http.Server;
-	let httpWebSocketServer: WebSocket.Server;
+	let httpWebSocketServer: WebSocketServer;
 	let httpServerUrl: URL;
 	let httpsServer: https.Server;
-	let httpsWebSocketServer: WebSocket.Server;
+	let httpsWebSocketServer: WebSocketServer;
 	let httpsServerUrl: URL;
 
 	// proxy servers
@@ -39,14 +39,14 @@ describe('ProxyAgent', () => {
 	beforeAll(async () => {
 		// setup target HTTP server
 		httpServer = http.createServer();
-		httpWebSocketServer = new WebSocket.Server({ server: httpServer });
+		httpWebSocketServer = new WebSocketServer({ server: httpServer });
 		httpServerUrl = await listen(httpServer);
 	});
 
 	beforeAll(async () => {
 		// setup target SSL HTTPS server
 		httpsServer = https.createServer(sslOptions);
-		httpsWebSocketServer = new WebSocket.Server({ server: httpsServer });
+		httpsWebSocketServer = new WebSocketServer({ server: httpsServer });
 		httpsServerUrl = await listen(httpsServer);
 	});
 
@@ -310,7 +310,7 @@ describe('ProxyAgent', () => {
 			const [message] = await once(ws, 'message');
 			expect(connectionCount).toEqual(1);
 			expect(requestCount).toEqual(0);
-			expect(message).toEqual('OK');
+			expect(message.toString()).toEqual('OK');
 			ws.close();
 		});
 
@@ -336,7 +336,7 @@ describe('ProxyAgent', () => {
 			const [message] = await once(ws, 'message');
 			expect(connectionCount).toEqual(1);
 			expect(requestCount).toEqual(0);
-			expect(message).toEqual('OK');
+			expect(message.toString()).toEqual('OK');
 			ws.close();
 		});
 	});
