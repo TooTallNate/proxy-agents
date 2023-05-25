@@ -1,5 +1,15 @@
 # proxy-agent
 
+## 6.2.1
+
+### Patch Changes
+
+- 4a45593: Fix WebSocket connections over "http"/"https" proxies
+- Updated dependencies [b3860aa]
+  - https-proxy-agent@7.0.0
+  - http-proxy-agent@7.0.0
+  - pac-proxy-agent@6.0.3
+
 ## 6.2.0
 
 ### Minor Changes

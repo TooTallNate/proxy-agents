@@ -1,6 +1,6 @@
 {
   "name": "pac-proxy-agent",
-  "version": "6.0.2",
+  "version": "6.0.3",
   "description": "A PAC file proxy `http.Agent` implementation for HTTP",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -34,8 +34,8 @@
     "agent-base": "^7.0.2",
     "debug": "^4.3.4",
     "get-uri": "^6.0.1",
-    "http-proxy-agent": "^6.1.0",
-    "https-proxy-agent": "^6.2.0",
+    "http-proxy-agent": "^7.0.0",
+    "https-proxy-agent": "^7.0.0",
     "pac-resolver": "^6.0.1",
     "socks-proxy-agent": "^8.0.1"
   },

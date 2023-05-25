@@ -1,5 +1,13 @@
 # pac-proxy-agent
 
+## 6.0.3
+
+### Patch Changes
+
+- Updated dependencies [b3860aa]
+  - https-proxy-agent@7.0.0
+  - http-proxy-agent@7.0.0
+
 ## 6.0.2
 
 ### Patch Changes
