@@ -104,7 +104,14 @@ export class ProxyAgent extends Agent {
 		opts: AgentConnectOpts
 	): Promise<http.Agent> {
 		const { secureEndpoint } = opts;
-		const protocol = secureEndpoint ? 'https:' : 'http:';
+		const isWebSocket = req.getHeader('upgrade') === 'websocket';
+		const protocol = secureEndpoint
+			? isWebSocket
+				? 'wss:'
+				: 'https:'
+			: isWebSocket
+			? 'ws:'
+			: 'http:';
 		const host = req.getHeader('host');
 		const url = new URL(req.path, `${protocol}//${host}`).href;
 		const proxy = this.getProxyForUrl(url);
@@ -126,7 +133,8 @@ export class ProxyAgent extends Agent {
 			if (!isValidProtocol(proxyProto)) {
 				throw new Error(`Unsupported protocol for proxy URL: ${proxy}`);
 			}
-			const ctor = proxies[proxyProto][secureEndpoint ? 1 : 0];
+			const ctor =
+				proxies[proxyProto][secureEndpoint || isWebSocket ? 1 : 0];
 			// @ts-expect-error meh…
 			agent = new ctor(proxy, this.connectOpts);
 			this.cache.set(cacheKey, agent);
