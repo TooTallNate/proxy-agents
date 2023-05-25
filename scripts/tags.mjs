@@ -1,6 +1,6 @@
 import 'zx/globals';
 
-const sha = process.argv[2] || 'HEAD';
+const sha = process.argv[2] || process.env.GITHUB_SHA;
 
 await $`git show ${sha}`;
 
