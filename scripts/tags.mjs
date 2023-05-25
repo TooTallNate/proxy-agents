@@ -4,7 +4,7 @@ const sha = process.argv[2] || process.env.GITHUB_SHA || 'HEAD';
 
 try {
 	const modifiedPackages =
-		await $`git show ${sha} --pretty="format:" --name-only -- packages/*/package.json`.nothrow();
+		await $`git show ${sha} --pretty="format:" --name-only -- packages/*/package.json`;
 
 	const packageJsonPaths = modifiedPackages.stdout.trim().split('\n');
 
