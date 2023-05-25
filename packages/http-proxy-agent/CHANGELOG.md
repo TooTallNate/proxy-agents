@@ -1,5 +1,13 @@
 # http-proxy-agent
 
+## 7.0.0
+
+### Major Changes
+
+- b3860aa: Remove `secureProxy` getter
+
+  It was not meant to be a public property. If you were using it, just use `agent.proxy.protocol === 'https:'` instead.
+
 ## 6.1.1
 
 ### Patch Changes
