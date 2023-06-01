@@ -46,8 +46,13 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 	readonly proxy: URL;
 	proxyHeaders: OutgoingHttpHeaders | (() => OutgoingHttpHeaders);
 	connectOpts: net.TcpNetConnectOpts & tls.ConnectionOptions;
+	upgradeOpts: tls.ConnectionOptions;
 
-	constructor(proxy: Uri | URL, opts?: HttpsProxyAgentOptions<Uri>) {
+	constructor(
+		proxy: Uri | URL,
+		opts?: HttpsProxyAgentOptions<Uri>,
+		upgradeOpts?: tls.ConnectionOptions
+	) {
 		super(opts);
 		this.options = { path: undefined };
 		this.proxy = typeof proxy === 'string' ? new URL(proxy) : proxy;
@@ -71,6 +76,7 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 			host,
 			port,
 		};
+		this.upgradeOpts = upgradeOpts ? {...upgradeOpts} : {}
 	}
 
 	/**
@@ -143,6 +149,7 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 				const servername = opts.servername || opts.host;
 				return tls.connect({
 					...omit(opts, 'host', 'path', 'port'),
+					...this.upgradeOpts,
 					socket,
 					servername: net.isIP(servername) ? undefined : servername,
 				});
