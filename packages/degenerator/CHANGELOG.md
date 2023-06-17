@@ -1,5 +1,11 @@
 # degenerator
 
+## 4.0.3
+
+### Patch Changes
+
+- 8e92eb8: Update `vm2` dependency to v3.9.19
+
 ## 4.0.2
 
 ### Patch Changes
