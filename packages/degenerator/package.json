@@ -1,6 +1,6 @@
 {
   "name": "degenerator",
-  "version": "4.0.2",
+  "version": "4.0.3",
   "description": "Compiles sync functions into async generator functions",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -27,7 +27,7 @@
     "ast-types": "^0.13.2",
     "escodegen": "^1.8.1",
     "esprima": "^4.0.0",
-    "vm2": "^3.9.17"
+    "vm2": "^3.9.19"
   },
   "devDependencies": {
     "@types/escodegen": "^0.0.6",

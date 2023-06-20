@@ -77,13 +77,7 @@ Updated 6.x usage:
 
 ```ts
 const agent = new HttpsProxyAgent(
-  {
-    protocol: 'https:',
-    hostname: 'myproxy.mydomain.com'
-    port: '1234',
-    username: 'proxyUser',
-    password: 'proxyPass'
-  },
+  'https://proxyUser:proxyPass@myproxy.mydomain.com:1234',
   {
     timeout: 1000,
     headers: { 'trace', 'foo' }
