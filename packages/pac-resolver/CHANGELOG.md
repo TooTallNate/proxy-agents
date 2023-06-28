@@ -1,5 +1,12 @@
 # pac-resolver
 
+## 6.0.2
+
+### Patch Changes
+
+- Updated dependencies
+  - degenerator@4.0.3
+
 ## 6.0.1
 
 ### Patch Changes
