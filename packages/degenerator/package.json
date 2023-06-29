@@ -1,6 +1,6 @@
 {
   "name": "degenerator",
-  "version": "4.0.3",
+  "version": "4.0.4",
   "description": "Compiles sync functions into async generator functions",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

@@ -1,5 +1,11 @@
 # degenerator
 
+## 4.0.4
+
+### Patch Changes
+
+- 7008a93: Update dependencies to fix ReDoS vulnerability
+
 ## 4.0.3
 
 ### Patch Changes
