@@ -1,5 +1,11 @@
 # https-proxy-agent
 
+## 7.0.1
+
+### Patch Changes
+
+- 23fe1e3: Correct the header parsing logic to stop before the response content to avoid generating an exception.
+
 ## 7.0.0
 
 ### Major Changes
