@@ -462,5 +462,5 @@ function requestAuthorization(
 		'Proxy-Authenticate': 'Basic realm="' + realm + '"',
 	};
 	res.writeHead(407, headers);
-	res.end();
+	res.end('Proxy authorization required');
 }
