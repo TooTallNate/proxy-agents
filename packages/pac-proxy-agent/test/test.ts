@@ -280,7 +280,7 @@ describe('PacProxyAgent', () => {
 				return 'HTTPS localhost:PORT;';
 			}
 
-			const uri = `data:,${encodeURIComponent(
+			const uri = `pac+data:,${encodeURIComponent(
 				FindProxyForURL.toString().replace(
 					'PORT',
 					proxyHttpsServerUrl.port
