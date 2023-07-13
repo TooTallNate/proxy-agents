@@ -1,5 +1,11 @@
 # pac-proxy-agent
 
+## 6.0.4
+
+### Patch Changes
+
+- 999dd9d: Fix `pac+` prefixed protocol URIs
+
 ## 6.0.3
 
 ### Patch Changes
