@@ -55,12 +55,12 @@ export type PacProxyAgentOptions<T> = http.AgentOptions &
  *   - "pac+https", "https" - refers to an HTTPS endpoint
  */
 export class PacProxyAgent<Uri extends string> extends Agent {
-	static readonly protocols: `pac-${Protocols}`[] = [
-		'pac-data',
-		'pac-file',
-		'pac-ftp',
-		'pac-http',
-		'pac-https',
+	static readonly protocols: `pac+${Protocols}`[] = [
+		'pac+data',
+		'pac+file',
+		'pac+ftp',
+		'pac+http',
+		'pac+https',
 	];
 
 	uri: URL;
