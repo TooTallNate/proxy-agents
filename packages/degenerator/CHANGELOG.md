@@ -1,5 +1,11 @@
 # degenerator
 
+## 5.0.0
+
+### Major Changes
+
+- f1f3220: Use `quickjs-emscripten` instead of `vm2` to execute PAC file code
+
 ## 4.0.4
 
 ### Patch Changes

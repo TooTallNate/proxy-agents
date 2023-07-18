@@ -1,5 +1,16 @@
 # proxy-agent
 
+## 6.3.0
+
+### Minor Changes
+
+- f1f3220: Use QuickJS version of `pac-proxy-agent`
+
+### Patch Changes
+
+- Updated dependencies [f1f3220]
+  - pac-proxy-agent@7.0.0
+
 ## 6.2.2
 
 ### Patch Changes

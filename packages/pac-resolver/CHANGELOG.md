@@ -1,5 +1,16 @@
 # pac-resolver
 
+## 7.0.0
+
+### Major Changes
+
+- f1f3220: Use `quickjs-emscripten` instead of `vm2` to execute PAC file code
+
+### Patch Changes
+
+- Updated dependencies [f1f3220]
+  - degenerator@5.0.0
+
 ## 6.0.2
 
 ### Patch Changes
