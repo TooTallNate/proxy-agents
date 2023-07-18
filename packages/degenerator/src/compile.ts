@@ -69,9 +69,24 @@ export function compile<R = unknown, A extends unknown[] = []>(
 			const resolvedResult = await resolvedResultP;
 			resolvedHandle = vm.unwrapResult(resolvedResult);
 			return quickJSHandleToHost(vm, resolvedHandle);
-		} catch (err: any) {
-			err.cause.stack = `${err.cause.name}: ${err.cause.message}\n${err.cause.stack}`;
-			throw err.cause;
+		} catch (err: unknown) {
+			if (err && typeof err === 'object' && 'cause' in err && err.cause) {
+				if (
+					typeof err.cause === 'object' &&
+					'stack' in err.cause &&
+					'name' in err.cause &&
+					'message' in err.cause &&
+					typeof err.cause.stack === 'string' &&
+					typeof err.cause.name === 'string' &&
+					typeof err.cause.message === 'string'
+				) {
+					// QuickJS Error `stack` does not include the name +
+					// message, so patch those in to behave more like V8
+					err.cause.stack = `${err.cause.name}: ${err.cause.message}\n${err.cause.stack}`;
+				}
+				throw err.cause;
+			}
+			throw err;
 		} finally {
 			promiseHandle?.dispose();
 			resolvedHandle?.dispose();
