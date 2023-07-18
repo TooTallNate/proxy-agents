@@ -20,7 +20,7 @@ import {
 	FindProxyForURL,
 	PacResolverOptions,
 } from 'pac-resolver';
-import { getQuickJS } from 'quickjs-emscripten';
+import { getQuickJS } from '@tootallnate/quickjs-emscripten';
 
 const debug = createDebug('pac-proxy-agent');
 

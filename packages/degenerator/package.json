@@ -29,12 +29,12 @@
     "esprima": "^4.0.1"
   },
   "devDependencies": {
+    "@tootallnate/quickjs-emscripten": "^0.23.0",
     "@types/escodegen": "^0.0.6",
     "@types/esprima": "^4.0.3",
     "@types/jest": "^29.5.2",
     "@types/node": "^14.18.52",
     "jest": "^29.5.0",
-    "quickjs-emscripten": "https://files-oifsdg2uu-tootallnate.vercel.app/index.tgz",
     "ts-jest": "^29.1.0",
     "tsconfig": "workspace:*",
     "typescript": "^5.1.6"

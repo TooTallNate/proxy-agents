@@ -16,7 +16,7 @@ import myIpAddress from './myIpAddress';
 import shExpMatch from './shExpMatch';
 import timeRange from './timeRange';
 import weekdayRange from './weekdayRange';
-import { QuickJSWASMModule } from 'quickjs-emscripten';
+import type { QuickJSWASMModule } from '@tootallnate/quickjs-emscripten';
 
 /**
  * Returns an asynchronous `FindProxyForURL()` function

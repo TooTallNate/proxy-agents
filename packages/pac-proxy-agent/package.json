@@ -31,13 +31,13 @@
   "author": "Nathan Rajlich <nathan@tootallnate.net> (http://n8.io/)",
   "license": "MIT",
   "dependencies": {
+    "@tootallnate/quickjs-emscripten": "^0.23.0",
     "agent-base": "^7.0.2",
     "debug": "^4.3.4",
     "get-uri": "^6.0.1",
     "http-proxy-agent": "^7.0.0",
     "https-proxy-agent": "^7.0.0",
     "pac-resolver": "^6.0.1",
-    "quickjs-emscripten": "https://files-oifsdg2uu-tootallnate.vercel.app/index.tgz",
     "socks-proxy-agent": "^8.0.1"
   },
   "devDependencies": {

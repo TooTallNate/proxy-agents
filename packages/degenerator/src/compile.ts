@@ -5,7 +5,7 @@ import type {
 	QuickJSContext,
 	QuickJSHandle,
 	QuickJSWASMModule,
-} from 'quickjs-emscripten';
+} from '@tootallnate/quickjs-emscripten';
 import type { DegeneratorNames } from './degenerator';
 
 export interface CompileOptions {
