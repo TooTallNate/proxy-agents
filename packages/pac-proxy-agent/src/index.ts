@@ -20,6 +20,7 @@ import {
 	FindProxyForURL,
 	PacResolverOptions,
 } from 'pac-resolver';
+import { getQuickJS } from '@tootallnate/quickjs-emscripten';
 
 const debug = createDebug('pac-proxy-agent');
 
@@ -116,7 +117,10 @@ export class PacProxyAgent<Uri extends string> extends Agent {
 	private async loadResolver(): Promise<FindProxyForURL> {
 		try {
 			// (Re)load the contents of the PAC file URI
-			const code = await this.loadPacFile();
+			const [qjs, code] = await Promise.all([
+				getQuickJS(),
+				this.loadPacFile(),
+			]);
 
 			// Create a sha1 hash of the JS code
 			const hash = crypto.createHash('sha1').update(code).digest('hex');
@@ -130,7 +134,7 @@ export class PacProxyAgent<Uri extends string> extends Agent {
 
 			// Cache the resolver
 			debug('Creating new proxy resolver instance');
-			this.resolver = createPacResolver(code, this.opts);
+			this.resolver = createPacResolver(qjs, code, this.opts);
 
 			// Store that sha1 hash for future comparison purposes
 			this.resolverHash = hash;

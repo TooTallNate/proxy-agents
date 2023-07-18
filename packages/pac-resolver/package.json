@@ -13,6 +13,7 @@
     "netmask": "^2.0.2"
   },
   "devDependencies": {
+    "@tootallnate/quickjs-emscripten": "^0.23.0",
     "@types/ip": "^1.1.0",
     "@types/jest": "^29.5.2",
     "@types/netmask": "^1.0.30",

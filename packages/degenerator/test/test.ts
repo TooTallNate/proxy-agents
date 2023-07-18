@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import assert from 'assert';
 import { degenerator, compile } from '../src';
+import { getQuickJS, type QuickJSWASMModule } from '@tootallnate/quickjs-emscripten';
 
 describe('degenerator()', () => {
 	it('should support "async" output functions', () => {
@@ -64,79 +65,76 @@ describe('degenerator()', () => {
 	});
 
 	describe('`compile()`', () => {
+		let qjs: QuickJSWASMModule;
+
+		beforeAll(async () => {
+			qjs = await getQuickJS();
+		});
+
 		it('should compile code into an invocable async function', async () => {
 			const a = (v: string) => Promise.resolve(v);
 			const b = () => 'b';
 			function aPlusB(v: string): string {
 				return a(v) + b();
 			}
-			const fn = compile<string, [string]>('' + aPlusB, 'aPlusB', ['a'], {
+			const fn = compile<string, [string]>(qjs, '' + aPlusB, 'aPlusB', {
+				names: ['a'],
 				sandbox: { a, b },
 			});
 			const val = await fn('c');
 			assert.equal(val, 'cb');
 		});
-		it('should contain the compiled code in `toString()` output', () => {
+		it('should contain the compiled code in `toString()` output', async () => {
 			const a = () => 'a';
 			const b = () => 'b';
 			function aPlusB(): string {
 				return a() + b();
 			}
-			const fn = compile<() => Promise<string>>(
-				'' + aPlusB,
-				'aPlusB',
-				['b'],
-				{
-					sandbox: { a, b },
-				}
-			);
-			assert(/await b\(\)/.test(fn + ''));
-		});
-		it('should be able to await non-promises', () => {
-			const a = () => 'a';
-			const b = () => 'b';
-			function aPlusB(): string {
-				return a() + b();
-			}
-			const fn = compile<() => Promise<string>>(
-				'' + aPlusB,
-				'aPlusB',
-				['a'],
-				{
-					sandbox: { a, b },
-				}
-			);
-			return fn().then((val) => {
-				assert.equal(val, 'ab');
-			});
-		});
-		it('should be able to compile functions with no async', () => {
-			const a = () => 'a';
-			const b = () => 'b';
-			function aPlusB(): string {
-				return a() + b();
-			}
-			const fn = compile<string>('' + aPlusB, 'aPlusB', [], {
+			const fn = compile<string>(qjs, '' + aPlusB, 'aPlusB', {
+				names: ['b'],
 				sandbox: { a, b },
 			});
-			return fn().then((val: string) => {
-				assert.equal(val, 'ab');
-			});
+			assert(/await b\(\)/.test(fn + ''));
 		});
-		it('should throw an Error if no function is returned from the `vm`', () => {
+		it('should be able to await non-promises', async () => {
+			const a = () => 'a';
+			const b = () => 'b';
+			function aPlusB(): string {
+				return a() + b();
+			}
+			const fn = compile<string>(qjs, '' + aPlusB, 'aPlusB', {
+				names: ['a'],
+				sandbox: { a, b },
+			});
+			const val = await fn();
+			assert.equal(val, 'ab');
+		});
+		it('should be able to compile functions with no async', async () => {
+			const a = () => 'a';
+			const b = () => 'b';
+			function aPlusB(): string {
+				return a() + b();
+			}
+			const fn = compile<string>(qjs, '' + aPlusB, 'aPlusB', {
+				sandbox: { a, b },
+			});
+			const val = await fn();
+			assert.equal(val, 'ab');
+		});
+		it('should throw an Error if no function is returned from the `vm`', async () => {
 			let err: Error | undefined;
 			try {
-				compile<() => Promise<string>>('const foo = 1', 'foo', []);
+				compile<() => Promise<string>>(qjs, 'const foo = 1', 'foo');
 			} catch (_err) {
 				err = _err as Error;
 			}
 			assert(err);
 			assert.equal(
 				err.message,
-				'Expected a "function" to be returned for `foo`, but got "number"'
+				'Expected a "function" named `foo` to be defined, but got "number"'
 			);
 		});
-		it('should compile if branches', () => {
+		it('should compile if branches', async () => {
 			function ifA(): string {
 				if (a()) {
 					return 'foo';
@@ -152,43 +150,42 @@ describe('degenerator()', () => {
 			function b() {
 				return false;
 			}
-			const fn = compile<string>(`${ifA};${a}`, 'ifA', ['b'], {
+			const fn = compile<string>(qjs, `${ifA};${a}`, 'ifA', {
+				names: ['b'],
 				sandbox: { b },
 			});
-			return fn().then((val: string) => {
-				assert.equal(val, 'foo');
-			});
+			const val = await fn();
+			assert.equal(val, 'foo');
 		});
 		it('should prevent privilege escalation of untrusted code', async () => {
 			let err: Error | undefined;
 			try {
 				const fn = compile<typeof process>(
+					qjs,
 					`const f = this.constructor.constructor('return process');`,
-					'f',
-					[]
+					'f'
 				);
 				await fn();
 			} catch (_err) {
 				err = _err as Error;
 			}
 			assert(err);
-			assert.equal(err.message, 'process is not defined');
+			assert.equal(err.message, "'process' is not defined");
 		});
-		it('should allow to return synchronous undefined', () => {
+		it('should allow to return synchronous undefined', async () => {
 			function u() {
 				// empty
 			}
-			const fn = compile(`${u}`, 'u', ['']);
-			return fn().then((val) => {
-				assert.strictEqual(val, undefined);
-			});
+			const fn = compile(qjs, `${u}`, 'u');
+			const val = await fn();
+			assert.strictEqual(typeof val, 'undefined');
 		});
 		it('should support "filename" option', async () => {
 			function u() {
 				throw new Error('fail');
 			}
 			let err: Error | undefined;
-			const fn = compile(`${u}`, 'u', [''], {
+			const fn = compile(qjs, `${u}`, 'u', {
 				filename: '/foo/bar/baz.js',
 			});
 			try {
