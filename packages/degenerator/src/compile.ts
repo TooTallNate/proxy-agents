@@ -33,7 +33,6 @@ export function compile<R = unknown, A extends unknown[] = []>(
 				);
 			}
 			const fnHandle = vm.newFunction(name, (...args) => {
-				//console.log('invoke', { name, args });
 				const result = value(
 					...args.map((arg) => quickJSHandleToHost(vm, arg))
 				);
@@ -44,7 +43,6 @@ export function compile<R = unknown, A extends unknown[] = []>(
 		}
 	}
 
-	//console.log(compiled);
 	const fnResult = vm.evalCode(`${compiled};${returnName}`, options.filename);
 	const fn = vm.unwrapResult(fnResult);
 
