@@ -39,7 +39,7 @@ console.log(res);
 API
 ---
 
-### pac(pacFileContents: string | Buffer, options?: PacResolverOptions) → Function
+### pac(qjs: QuickJSWASMModule, pacFileContents: string | Buffer, options?: PacResolverOptions) → Function
 
 Returns an asynchronous `FindProxyForURL()` function based off of the given JS
 string `pacFileContents` PAC proxy file. An optional `options` object may be
@@ -52,6 +52,8 @@ passed in which respects the following options:
  async functions, you must set the `async = true` property on the function
  instance, and the JS code will be able to invoke the function as if it were
  synchronous.
+
+ The `qjs` parameter is a QuickJS module instance as returned from `getQuickJS()` from the `quickjs-emscripten` module.
 
 
 License
