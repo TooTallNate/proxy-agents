@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "build": "tsc",
-    "test": "jest --env node --verbose --bail",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --env node --verbose --bail",
     "lint": "eslint --ext .ts",
     "pack": "node ../../scripts/pack.mjs"
   },
@@ -37,6 +37,7 @@
     "http-proxy-agent": "^7.0.0",
     "https-proxy-agent": "^7.0.0",
     "pac-resolver": "^6.0.1",
+    "quickjs-emscripten": "^0.23.0",
     "socks-proxy-agent": "^8.0.1"
   },
   "devDependencies": {

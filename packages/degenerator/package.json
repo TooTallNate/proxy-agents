@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "build": "tsc",
-    "test": "jest --env node --verbose --bail",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --env node --verbose --bail",
     "lint": "eslint . --ext .ts",
     "pack": "node ../../scripts/pack.mjs"
   },
@@ -26,8 +26,7 @@
   "dependencies": {
     "ast-types": "^0.13.4",
     "escodegen": "^1.14.3",
-    "esprima": "^4.0.1",
-    "vm2": "^3.9.19"
+    "esprima": "^4.0.1"
   },
   "devDependencies": {
     "@types/escodegen": "^0.0.6",
@@ -35,6 +34,7 @@
     "@types/jest": "^29.5.2",
     "@types/node": "^14.18.52",
     "jest": "^29.5.0",
+    "quickjs-emscripten": "^0.23.0",
     "ts-jest": "^29.1.0",
     "tsconfig": "workspace:*",
     "typescript": "^5.1.6"
