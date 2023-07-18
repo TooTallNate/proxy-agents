@@ -1,6 +1,6 @@
 {
   "name": "pac-resolver",
-  "version": "6.0.2",
+  "version": "7.0.0",
   "description": "Generates an asynchronous resolver function from a PAC file",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -8,7 +8,7 @@
     "dist"
   ],
   "dependencies": {
-    "degenerator": "^4.0.4",
+    "degenerator": "^5.0.0",
     "ip": "^1.1.8",
     "netmask": "^2.0.2"
   },

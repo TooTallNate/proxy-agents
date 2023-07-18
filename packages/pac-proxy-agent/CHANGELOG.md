@@ -1,5 +1,16 @@
 # pac-proxy-agent
 
+## 7.0.0
+
+### Major Changes
+
+- f1f3220: Use `quickjs-emscripten` instead of `vm2` to execute PAC file code
+
+### Patch Changes
+
+- Updated dependencies [f1f3220]
+  - pac-resolver@7.0.0
+
 ## 6.0.4
 
 ### Patch Changes
