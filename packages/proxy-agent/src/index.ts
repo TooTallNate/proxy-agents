@@ -36,11 +36,11 @@ export const proxies: {
 	socks4a: [SocksProxyAgent, SocksProxyAgent],
 	socks5: [SocksProxyAgent, SocksProxyAgent],
 	socks5h: [SocksProxyAgent, SocksProxyAgent],
-	'pac-data': [PacProxyAgent, PacProxyAgent],
-	'pac-file': [PacProxyAgent, PacProxyAgent],
-	'pac-ftp': [PacProxyAgent, PacProxyAgent],
-	'pac-http': [PacProxyAgent, PacProxyAgent],
-	'pac-https': [PacProxyAgent, PacProxyAgent],
+	'pac+data': [PacProxyAgent, PacProxyAgent],
+	'pac+file': [PacProxyAgent, PacProxyAgent],
+	'pac+ftp': [PacProxyAgent, PacProxyAgent],
+	'pac+http': [PacProxyAgent, PacProxyAgent],
+	'pac+https': [PacProxyAgent, PacProxyAgent],
 };
 
 function isValidProtocol(v: string): v is ValidProtocol {
