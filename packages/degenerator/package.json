@@ -1,6 +1,6 @@
 {
   "name": "degenerator",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "description": "Compiles sync functions into async generator functions",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -25,12 +25,12 @@
   "license": "MIT",
   "dependencies": {
     "ast-types": "^0.13.4",
-    "escodegen": "^1.14.3",
+    "escodegen": "^2.1.0",
     "esprima": "^4.0.1"
   },
   "devDependencies": {
     "@tootallnate/quickjs-emscripten": "^0.23.0",
-    "@types/escodegen": "^0.0.6",
+    "@types/escodegen": "^0.0.7",
     "@types/esprima": "^4.0.3",
     "@types/jest": "^29.5.2",
     "@types/node": "^14.18.52",
