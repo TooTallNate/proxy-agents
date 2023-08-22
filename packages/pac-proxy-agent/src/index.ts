@@ -6,7 +6,7 @@ import { once } from 'events';
 import createDebug from 'debug';
 import { Readable } from 'stream';
 import { format } from 'url';
-import { Agent, AgentConnectOpts, toBuffer } from 'agent-base';
+import { Agent, AgentConnectOpts, BaseAgentOptions, toBuffer } from 'agent-base';
 import { HttpProxyAgent, HttpProxyAgentOptions } from 'http-proxy-agent';
 import { HttpsProxyAgent, HttpsProxyAgentOptions } from 'https-proxy-agent';
 import { SocksProxyAgent, SocksProxyAgentOptions } from 'socks-proxy-agent';
@@ -34,7 +34,7 @@ type Protocol<T> = T extends `pac+${infer P}:${infer _}`
 	? P
 	: never;
 
-export type PacProxyAgentOptions<T> = http.AgentOptions &
+export type PacProxyAgentOptions<T> = BaseAgentOptions &
 	PacResolverOptions &
 	GetUriOptions<`${Protocol<T>}:`> &
 	HttpProxyAgentOptions<''> &
@@ -238,13 +238,7 @@ export class PacProxyAgent<Uri extends string> extends Agent {
 				// Direct connection to the destination endpoint
 				if (secureEndpoint) {
 					const servername = opts.servername || opts.host;
-					socket = tls.connect({
-						...opts,
-						servername:
-							!servername || net.isIP(servername)
-								? undefined
-								: servername,
-					});
+					socket = this.upgradeSocketToTls(servername, opts);
 				} else {
 					socket = net.connect(opts);
 				}

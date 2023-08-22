@@ -4,7 +4,7 @@ import * as http from 'http';
 import assert from 'assert';
 import createDebug from 'debug';
 import type { OutgoingHttpHeaders } from 'http';
-import { Agent, AgentConnectOpts } from 'agent-base';
+import { Agent, AgentConnectOpts, BaseAgentOptions } from 'agent-base';
 import { parseProxyResponse } from './parse-proxy-response';
 
 const debug = createDebug('https-proxy-agent');
@@ -24,7 +24,7 @@ type ConnectOpts<T> = {
 }[keyof ConnectOptsMap];
 
 export type HttpsProxyAgentOptions<T> = ConnectOpts<T> &
-	http.AgentOptions & {
+	BaseAgentOptions & {
 		headers?: OutgoingHttpHeaders | (() => OutgoingHttpHeaders);
 	};
 
@@ -141,11 +141,11 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 				// this socket connection to a TLS connection.
 				debug('Upgrading socket connection to TLS');
 				const servername = opts.servername || opts.host;
-				return tls.connect({
-					...omit(opts, 'host', 'path', 'port'),
+				return this.upgradeSocketToTls(
+					servername,
+					omit(opts, 'host', 'path', 'port'),
 					socket,
-					servername: net.isIP(servername) ? undefined : servername,
-				});
+				);
 			}
 
 			return socket;
