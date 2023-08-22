@@ -125,8 +125,7 @@
     "proxy": "workspace:*",
     "socksv5": "github:TooTallNate/socksv5#fix/dstSock-close-event",
     "ts-jest": "^29.1.0",
-    "tsconfig": "workspace:*",
-    "typescript": "^5.0.4"
+    "typescript": "^5.1.6"
   },
   "engines": {
     "node": ">= 14"
