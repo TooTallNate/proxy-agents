@@ -32,7 +32,7 @@ describe('SocksProxyAgent', () => {
 		await listen(socksServer, 0, socksServerHost ?? '127.0.0.1');
 		const { port, family, address } = socksServer.address();
 		socksServerUrl = new URL(
-			`socks://${family === 'IPv6' ? `localhost` : address}:${port}`
+			`socks://${family === 'IPv6' ? 'localhost' : address}:${port}`
 		);
 		socksServer.useAuth(socks.auth.None());
 	});
@@ -96,7 +96,7 @@ describe('SocksProxyAgent', () => {
 		});
 	});
 
-	describe('socket options', () => {
+	describe('ipv6 host', () => {
 		beforeAll(() => {
 			socksServerHost = '::1';
 		});
@@ -104,7 +104,7 @@ describe('SocksProxyAgent', () => {
 			socksServerHost = null;
 		});
 
-		it('should connect on ipv6 host', async () => {
+		it('should connect over ipv6 socket', async () => {
 			httpServer.once('request', function (req, res) {
 				res.end(JSON.stringify(req.headers));
 			});
