@@ -20,17 +20,25 @@ describe('SocksProxyAgent', () => {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let socksServer: any;
 	let socksServerUrl: URL;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	let socksServerHost: string | null = null;
 
-	beforeAll(async () => {
+	beforeEach(async () => {
 		// setup SOCKS proxy server
 		// @ts-expect-error no types for `socksv5`
 		socksServer = socks.createServer(function (_info, accept) {
 			accept();
 		});
-		await listen(socksServer);
-		const port = socksServer.address().port;
-		socksServerUrl = new URL(`socks://127.0.0.1:${port}`);
+		await listen(socksServer, 0, socksServerHost ?? '127.0.0.1');
+		const { port, family, address } = socksServer.address();
+		socksServerUrl = new URL(
+			`socks://${family === 'IPv6' ? `localhost` : address}:${port}`
+		);
 		socksServer.useAuth(socks.auth.None());
+	});
+
+	afterEach(() => {
+		socksServer.close();
 	});
 
 	beforeAll(async () => {
@@ -54,7 +62,6 @@ describe('SocksProxyAgent', () => {
 	});
 
 	afterAll(() => {
-		socksServer.close();
 		httpServer.close();
 		httpsServer.close();
 	});
@@ -86,6 +93,48 @@ describe('SocksProxyAgent', () => {
 			}
 			assert(err);
 			assert.equal(err.message, 'Proxy connection timed out');
+		});
+	});
+
+	describe('socket options', () => {
+		beforeAll(() => {
+			socksServerHost = '::1';
+		});
+		afterAll(() => {
+			socksServerHost = null;
+		});
+
+		it('should connect on ipv6 host', async () => {
+			httpServer.once('request', function (req, res) {
+				res.end(JSON.stringify(req.headers));
+			});
+
+			const res = await req(new URL('/foo', httpServerUrl), {
+				agent: new SocksProxyAgent(socksServerUrl, {
+					socketOptions: { family: 6 },
+				}),
+				headers: { foo: 'bar' },
+			});
+			const body = await json(res);
+			assert.equal('bar', body.foo);
+		});
+
+		it('should refuse connection over ipv4 socket', async () => {
+			let err: Error | undefined;
+			try {
+				await req(new URL('/foo', httpServerUrl), {
+					agent: new SocksProxyAgent(socksServerUrl, {
+						socketOptions: { family: 4 },
+					}),
+				});
+			} catch (_err) {
+				err = _err as Error;
+			}
+			assert(err);
+			assert.equal(
+				err.message,
+				`connect ECONNREFUSED 127.0.0.1:${socksServerUrl.port}`
+			);
 		});
 	});
 
