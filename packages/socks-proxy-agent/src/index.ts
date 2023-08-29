@@ -3,8 +3,8 @@ import { Agent, AgentConnectOpts, BaseAgentOptions } from 'agent-base';
 import createDebug from 'debug';
 import * as dns from 'dns';
 import * as net from 'net';
-import * as tls from 'tls';
 import * as http from 'http';
+import * as tls from 'tls';
 
 const debug = createDebug('socks-proxy-agent');
 
@@ -142,7 +142,7 @@ export class SocksProxyAgent extends Agent {
 			timeout: timeout ?? undefined,
 		};
 
-		const cleanup = (tlsSocket?: net.Socket) => {
+		const cleanup = (tlsSocket?: tls.TLSSocket) => {
 			req.destroy();
 			socket.destroy();
 			if (tlsSocket) tlsSocket.destroy();
@@ -163,9 +163,9 @@ export class SocksProxyAgent extends Agent {
 			debug('Upgrading socket connection to TLS');
 			const servername = opts.servername || opts.host;
 			const tlsSocket = this.upgradeSocketToTls(
+				socket,
 				servername,
 				omit(opts, 'host', 'path', 'port'),
-				socket,
 			);
 
 			tlsSocket.once('error', (error) => {

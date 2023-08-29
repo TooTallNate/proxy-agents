@@ -27,11 +27,7 @@ interface InternalState {
 	currentSocket?: Duplex;
 }
 
-export interface TlsUpgradeOpts {
-	cert?: string;
-	key?: string;
-	ca?: string;
-}
+export type TlsUpgradeOpts = Omit<tls.ConnectionOptions, 'path' | 'port' | 'host' | 'socket' | 'servername'>;
 
 export interface BaseAgentOptions extends http.AgentOptions {
 	tlsUpgradeOpts?: TlsUpgradeOpts;
@@ -116,16 +112,16 @@ export abstract class Agent extends http.Agent {
 	}
 
 	upgradeSocketToTls(
+		socket: net.Socket,
 		servername: string | undefined,
 		opts: tls.ConnectionOptions,
-		socket?: net.Socket,
-	): net.Socket {
+	) {
 		const tlsUpgradeOpts = this[INTERNAL].tlsUpgradeOpts ?? {};
 		return tls.connect({
 			...opts,
+			...(tlsUpgradeOpts),
 			socket,
 			servername: !servername || net.isIP(servername) ? undefined : servername,
-			...(tlsUpgradeOpts)
 		});
 	}
 

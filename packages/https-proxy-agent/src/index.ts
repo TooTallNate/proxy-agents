@@ -142,9 +142,9 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 				debug('Upgrading socket connection to TLS');
 				const servername = opts.servername || opts.host;
 				return this.upgradeSocketToTls(
+					socket,
 					servername,
 					omit(opts, 'host', 'path', 'port'),
-					socket,
 				);
 			}
 

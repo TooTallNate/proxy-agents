@@ -1,7 +1,6 @@
 ---
 'https-proxy-agent': minor
 'socks-proxy-agent': minor
-'pac-proxy-agent': minor
 'agent-base': minor
 ---
 
