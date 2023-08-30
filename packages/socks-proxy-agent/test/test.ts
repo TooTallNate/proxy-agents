@@ -20,7 +20,6 @@ describe('SocksProxyAgent', () => {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let socksServer: any;
 	let socksServerUrl: URL;
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let socksServerHost: string | null = null;
 
 	beforeEach(async () => {
