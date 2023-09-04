@@ -1,0 +1,3 @@
+{
+  "buildCommand": "turbo run pack && pnpm run docs"
+}

@@ -49,8 +49,7 @@
     "proxy": "workspace:*",
     "socksv5": "0.0.6",
     "ts-jest": "^29.1.0",
-    "tsconfig": "workspace:*",
-    "typescript": "^5.0.4"
+    "typescript": "^5.1.6"
   },
   "engines": {
     "node": ">= 14"
