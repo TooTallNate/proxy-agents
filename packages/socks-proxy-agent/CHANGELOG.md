@@ -1,5 +1,11 @@
 # socks-proxy-agent
 
+## 8.0.2
+
+### Patch Changes
+
+- 1d39f6c: Fix Electron support by using Node.js native URL object
+
 ## 8.0.1
 
 ### Patch Changes
@@ -19,11 +25,11 @@
 
 In version 5.x, the `SocksProxyAgent` constructor took a single argument of either (A) a `string`, or (B) an object with specific connection
 properties.
-    
+
 Now the constructor takes two _separate_ arguments:
 
-* Argument 1: Either (A) a `string`, or (B) a [WHATWG `URL` object](https://nodejs.org/docs/latest-v14.x/api/url.html#url_the_whatwg_url_api)
-* Argument 2 (optional): An object with standard [`http.Agent`](https://nodejs.org/docs/latest-v14.x/api/url.html#url_the_whatwg_url_api)
+- Argument 1: Either (A) a `string`, or (B) a [WHATWG `URL` object](https://nodejs.org/docs/latest-v14.x/api/url.html#url_the_whatwg_url_api)
+- Argument 2 (optional): An object with standard [`http.Agent`](https://nodejs.org/docs/latest-v14.x/api/url.html#url_the_whatwg_url_api)
   properties.
 
 If you were using an object argument in 7.x, you'll need to change the first argument to match the structure of the `URL` class, and move

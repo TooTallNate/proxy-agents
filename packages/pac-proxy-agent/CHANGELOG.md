@@ -1,5 +1,15 @@
 # pac-proxy-agent
 
+## 7.0.1
+
+### Patch Changes
+
+- 1d39f6c: Fix Electron support by using Node.js native URL object
+- Updated dependencies [1d39f6c]
+- Updated dependencies [e625d10]
+  - socks-proxy-agent@8.0.2
+  - https-proxy-agent@7.0.2
+
 ## 7.0.0
 
 ### Major Changes
