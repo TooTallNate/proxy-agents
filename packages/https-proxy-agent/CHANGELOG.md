@@ -1,5 +1,11 @@
 # https-proxy-agent
 
+## 7.0.2
+
+### Patch Changes
+
+- e625d10: Support SNI for proxy servers
+
 ## 7.0.1
 
 ### Patch Changes
