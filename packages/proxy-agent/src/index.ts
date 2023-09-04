@@ -1,5 +1,6 @@
 import * as http from 'http';
 import * as https from 'https';
+import { URL } from 'url';
 import LRUCache from 'lru-cache';
 import { Agent, AgentConnectOpts } from 'agent-base';
 import createDebug from 'debug';
