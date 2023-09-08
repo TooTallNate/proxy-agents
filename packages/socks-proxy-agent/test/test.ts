@@ -3,6 +3,7 @@ import * as https from 'https';
 import * as http from 'http';
 import * as path from 'path';
 import * as fs from 'fs';
+import { URL } from 'url';
 import dns2 from 'dns2';
 // @ts-expect-error no types
 import socks from 'socksv5';
