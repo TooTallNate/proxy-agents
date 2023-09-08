@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as http from 'http';
 import * as https from 'https';
+import { URL } from 'url';
 import { once } from 'events';
 import assert from 'assert';
 import WebSocket, { WebSocketServer } from 'ws';
