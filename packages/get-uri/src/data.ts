@@ -1,7 +1,7 @@
 import createDebug from 'debug';
 import { Readable } from 'stream';
 import { createHash } from 'crypto';
-import dataUriToBuffer from 'data-uri-to-buffer';
+import { dataUriToBuffer } from 'data-uri-to-buffer';
 import { GetUriProtocol } from './';
 import NotModifiedError from './notmodified';
 
@@ -42,7 +42,7 @@ export const data: GetUriProtocol<DataOptions> = async (
 		throw new NotModifiedError();
 	} else {
 		debug('creating Readable stream from "data:" URI buffer');
-		const buf = dataUriToBuffer(uri);
-		return new DataReadable(hash, buf);
+		const { buffer } = dataUriToBuffer(uri);
+		return new DataReadable(hash, Buffer.from(buffer));
 	}
 };

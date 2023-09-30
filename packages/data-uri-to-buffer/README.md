@@ -1,26 +1,29 @@
 data-uri-to-buffer
 ==================
-### Generate a Buffer instance from a [Data URI][rfc] string
+### Create an ArrayBuffer instance from a [Data URI][rfc] string
 
-This module accepts a ["data" URI][rfc] String of data, and returns a
-node.js `Buffer` instance with the decoded data.
+This module accepts a ["data" URI][rfc] String of data, and returns
+an `ArrayBuffer` instance with the decoded data.
+
+This module is intended to work on a large variety of JavaScript
+runtimes, including Node.js and web browsers.
 
 Example
 -------
 
-``` js
+```typescript
 import { dataUriToBuffer } from 'data-uri-to-buffer';
 
 // plain-text data is supported
 let uri = 'data:,Hello%2C%20World!';
-let decoded = dataUriToBuffer(uri);
-console.log(decoded.toString());
+let parsed = dataUriToBuffer(uri);
+console.log(new TextDecoder().decode(parsed.buffer));
 // 'Hello, World!'
 
 // base64-encoded data is supported
 uri = 'data:text/plain;base64,SGVsbG8sIFdvcmxkIQ%3D%3D';
-decoded = dataUriToBuffer(uri);
-console.log(decoded.toString());
+parsed = dataUriToBuffer(uri);
+console.log(new TextDecoder().decode(parsed.buffer));
 // 'Hello, World!'
 ```
 
@@ -28,21 +31,30 @@ console.log(decoded.toString());
 API
 ---
 
-### dataUriToBuffer(String uri) → Buffer
+```typescript
+export interface ParsedDataURI {
+	type: string;
+	typeFull: string;
+	charset: string;
+	buffer: ArrayBuffer;
+}
+```
 
-The `type` property on the Buffer instance gets set to the main type portion of
+### dataUriToBuffer(uri: string | URL) → ParsedDataURI
+
+The `type` property gets set to the main type portion of
 the "mediatype" portion of the "data" URI, or defaults to `"text/plain"` if not
 specified.
 
-The `typeFull` property on the Buffer instance gets set to the entire
+The `typeFull` property gets set to the entire
 "mediatype" portion of the "data" URI (including all parameters), or defaults
 to `"text/plain;charset=US-ASCII"` if not specified.
 
-The `charset` property on the Buffer instance gets set to the Charset portion of
+The `charset` property gets set to the Charset portion of
 the "mediatype" portion of the "data" URI, or defaults to `"US-ASCII"` if the
 entire type is not specified, or defaults to `""` otherwise.
 
-*Note*: If the only the main type is specified but not the charset, e.g.
+*Note*: If only the main type is specified but not the charset, e.g.
 `"data:text/plain,abc"`, the charset is set to the empty string. The spec only
 defaults to US-ASCII as charset if the entire type is not specified.
 
