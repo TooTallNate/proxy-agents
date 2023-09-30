@@ -1,5 +1,11 @@
 # data-uri-to-buffer
 
+## 6.0.1
+
+### Patch Changes
+
+- 1d146e8: Ensure `<reference types="node" />` is not present in generated types
+
 ## 6.0.0
 
 ### Major Changes
