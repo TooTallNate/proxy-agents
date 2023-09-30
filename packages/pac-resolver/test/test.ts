@@ -2,7 +2,10 @@ import assert from 'assert';
 import { resolve } from 'path';
 import { readFileSync } from 'fs';
 import { createPacResolver } from '../src';
-import { getQuickJS, type QuickJSWASMModule } from '@tootallnate/quickjs-emscripten';
+import {
+	getQuickJS,
+	type QuickJSWASMModule,
+} from '@tootallnate/quickjs-emscripten';
 
 type FindProxyForURLFn = ReturnType<typeof createPacResolver>;
 

@@ -20,7 +20,11 @@ module.exports = {
 				'no-restricted-globals': [
 					'error',
 					// https://github.com/TooTallNate/proxy-agents/pull/242
-					{ name: 'URL', message: 'Use `URL` from the Node.js "url" module instead.' },
+					{
+						name: 'URL',
+						message:
+							'Use `URL` from the Node.js "url" module instead.',
+					},
 				],
 			},
 		},

@@ -91,10 +91,12 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 		let socket: net.Socket;
 		if (proxy.protocol === 'https:') {
 			debug('Creating `tls.Socket`: %o', this.connectOpts);
-			const servername = this.connectOpts.servername || this.connectOpts.host;
+			const servername =
+				this.connectOpts.servername || this.connectOpts.host;
 			socket = tls.connect({
 				...this.connectOpts,
-				servername: servername && net.isIP(servername) ? undefined : servername
+				servername:
+					servername && net.isIP(servername) ? undefined : servername,
 			});
 		} else {
 			debug('Creating `net.Socket`: %o', this.connectOpts);
