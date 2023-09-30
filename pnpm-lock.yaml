@@ -136,7 +136,7 @@ importers:
         specifier: ^5.0.2
         version: 5.0.2
       data-uri-to-buffer:
-        specifier: ^5.0.1
+        specifier: ^6.0.0
         version: link:../data-uri-to-buffer
       debug:
         specifier: ^4.3.4
