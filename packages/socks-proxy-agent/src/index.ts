@@ -1,10 +1,10 @@
 import { SocksClient, SocksProxy, SocksClientOptions } from 'socks';
-import { Agent, AgentConnectOpts } from 'agent-base';
+import { Agent, AgentConnectOpts, BaseAgentOptions } from 'agent-base';
 import createDebug from 'debug';
 import * as dns from 'dns';
 import * as net from 'net';
-import * as tls from 'tls';
 import * as http from 'http';
+import * as tls from 'tls';
 import { URL } from 'url';
 
 const debug = createDebug('socks-proxy-agent');
@@ -76,7 +76,7 @@ export type SocksProxyAgentOptions = Omit<
 	// These come from the parsed URL
 	'ipaddress' | 'host' | 'port' | 'type' | 'userId' | 'password'
 > &
-	http.AgentOptions;
+	BaseAgentOptions;
 
 export class SocksProxyAgent extends Agent {
 	static protocols = [
@@ -163,11 +163,11 @@ export class SocksProxyAgent extends Agent {
 			// this socket connection to a TLS connection.
 			debug('Upgrading socket connection to TLS');
 			const servername = opts.servername || opts.host;
-			const tlsSocket = tls.connect({
-				...omit(opts, 'host', 'path', 'port'),
+			const tlsSocket = this.upgradeSocketToTls(
 				socket,
-				servername: net.isIP(servername) ? undefined : servername,
-			});
+				servername,
+				omit(opts, 'host', 'path', 'port'),
+			);
 
 			tlsSocket.once('error', (error) => {
 				debug('Socket TLS error', error.message);

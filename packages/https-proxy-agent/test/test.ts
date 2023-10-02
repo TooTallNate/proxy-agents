@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as net from 'net';
 import * as http from 'http';
 import * as https from 'https';
+import * as path from 'path';
 import assert from 'assert';
 import { once } from 'events';
 import { listen } from 'async-listen';
@@ -23,6 +24,9 @@ describe('HttpsProxyAgent', () => {
 
 	let sslServer: https.Server;
 	let sslServerUrl: URL;
+
+	let mtlsSslServer: https.Server;
+	let mtlsSslServerUrl: URL;
 
 	let proxy: ProxyServer;
 	let proxyUrl: URL;
@@ -49,6 +53,16 @@ describe('HttpsProxyAgent', () => {
 	});
 
 	beforeAll(async () => {
+		// setup target HTTPS server that requires mTLS
+		mtlsSslServer = https.createServer({
+			...sslOptions,
+			requestCert: true,
+			ca: fs.readFileSync(path.join(__dirname, 'mtls-ca-cert-snakeoil.pem')),
+		});
+		mtlsSslServerUrl = await listen(mtlsSslServer);
+	});
+
+	beforeAll(async () => {
 		// setup SSL HTTP proxy server
 		sslProxy = createProxy(https.createServer(sslOptions));
 		sslProxyUrl = await listen(sslProxy);
@@ -65,6 +79,7 @@ describe('HttpsProxyAgent', () => {
 		proxy.close();
 		sslServer.close();
 		sslProxy.close();
+		mtlsSslServer.close();
 	});
 
 	describe('constructor', () => {
@@ -395,6 +410,30 @@ describe('HttpsProxyAgent', () => {
 				const s2 = res2.socket;
 				assert(s1 === s2);
 				await once(s2, 'free');
+			} finally {
+				agent.destroy();
+			}
+		});
+
+		it('should work with mTLS', async () => {
+			mtlsSslServer.once('request', (req, res) => {
+				if (!(req as any).client.authorized) {
+					res.writeHead(401).end();
+					return;
+				}
+				res.writeHead(200).end();
+			});
+
+			const agent = new HttpsProxyAgent(proxyUrl, { 
+				tlsUpgradeOpts: {
+					cert: fs.readFileSync(path.join(__dirname, 'mtls-cert-snakeoil.crt')).toString('utf-8'),
+					key:  fs.readFileSync(path.join(__dirname, 'mtls-key-snakeoil.key')).toString('utf-8'),
+				},
+			});
+
+			try {
+				const res = await req(mtlsSslServerUrl, { agent, rejectUnauthorized: false });
+				expect(res.statusCode).toEqual(200);
 			} finally {
 				agent.destroy();
 			}

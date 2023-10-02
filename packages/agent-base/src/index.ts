@@ -21,9 +21,16 @@ export type AgentConnectOpts = HttpConnectOpts | HttpsConnectOpts;
 const INTERNAL = Symbol('AgentBaseInternalState');
 
 interface InternalState {
+	tlsUpgradeOpts?: TlsUpgradeOpts;
 	defaultPort?: number;
 	protocol?: string;
 	currentSocket?: Duplex;
+}
+
+export type TlsUpgradeOpts = Omit<tls.ConnectionOptions, 'path' | 'port' | 'host' | 'socket' | 'servername'>;
+
+export interface BaseAgentOptions extends http.AgentOptions {
+	tlsUpgradeOpts?: TlsUpgradeOpts;
 }
 
 export abstract class Agent extends http.Agent {
@@ -33,9 +40,14 @@ export abstract class Agent extends http.Agent {
 	options!: Partial<net.TcpNetConnectOpts & tls.ConnectionOptions>;
 	keepAlive!: boolean;
 
-	constructor(opts?: http.AgentOptions) {
+	constructor(opts?: BaseAgentOptions) {
+		const tlsUpgradeOpts = opts?.tlsUpgradeOpts;
+		delete opts?.tlsUpgradeOpts;
+
 		super(opts);
-		this[INTERNAL] = {};
+		this[INTERNAL] = {
+			tlsUpgradeOpts,
+		};
 	}
 
 	abstract connect(
@@ -97,6 +109,20 @@ export abstract class Agent extends http.Agent {
 				// @ts-expect-error `createSocket()` isn't defined in `@types/node`
 				super.createSocket(req, options, cb);
 			}, cb);
+	}
+
+	upgradeSocketToTls(
+		socket: net.Socket,
+		servername: string | undefined,
+		opts: tls.ConnectionOptions,
+	) {
+		const tlsUpgradeOpts = this[INTERNAL].tlsUpgradeOpts ?? {};
+		return tls.connect({
+			...opts,
+			...(tlsUpgradeOpts),
+			socket,
+			servername: !servername || net.isIP(servername) ? undefined : servername,
+		});
 	}
 
 	createConnection(): Duplex {
