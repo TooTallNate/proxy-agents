@@ -5,7 +5,7 @@ import * as crypto from 'crypto';
 import { once } from 'events';
 import createDebug from 'debug';
 import { Readable } from 'stream';
-import { format } from 'url';
+import { format, URL } from 'url';
 import { Agent, AgentConnectOpts, toBuffer } from 'agent-base';
 import { HttpProxyAgent, HttpProxyAgentOptions } from 'http-proxy-agent';
 import { HttpsProxyAgent, HttpsProxyAgentOptions } from 'https-proxy-agent';

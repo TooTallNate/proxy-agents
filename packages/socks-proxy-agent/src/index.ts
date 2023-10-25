@@ -5,6 +5,7 @@ import * as dns from 'dns';
 import * as net from 'net';
 import * as tls from 'tls';
 import * as http from 'http';
+import { URL } from 'url';
 
 const debug = createDebug('socks-proxy-agent');
 

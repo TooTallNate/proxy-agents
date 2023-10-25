@@ -2,7 +2,10 @@ import fs from 'fs';
 import path from 'path';
 import assert from 'assert';
 import { degenerator, compile } from '../src';
-import { getQuickJS, type QuickJSWASMModule } from '@tootallnate/quickjs-emscripten';
+import {
+	getQuickJS,
+	type QuickJSWASMModule,
+} from '@tootallnate/quickjs-emscripten';
 
 describe('degenerator()', () => {
 	it('should support "async" output functions', () => {
