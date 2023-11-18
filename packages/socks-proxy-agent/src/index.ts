@@ -1,4 +1,9 @@
-import { SocksClient, SocksProxy, SocksClientOptions } from 'socks';
+import {
+	SocksClient,
+	SocksProxy,
+	SocksClientOptions,
+	SocksClientChainOptions,
+} from 'socks';
 import { Agent, AgentConnectOpts } from 'agent-base';
 import createDebug from 'debug';
 import * as dns from 'dns';
@@ -87,19 +92,36 @@ export class SocksProxyAgent extends Agent {
 		'socks5h',
 	] as const;
 
-	readonly shouldLookup: boolean;
-	readonly proxy: SocksProxy;
+	readonly shouldLookup!: boolean;
+	readonly proxies: SocksProxy[];
 	timeout: number | null;
 
-	constructor(uri: string | URL, opts?: SocksProxyAgentOptions) {
+	constructor(
+		uri: string | URL | string[] | URL[],
+		opts?: SocksProxyAgentOptions
+	) {
 		super(opts);
 
-		const url = typeof uri === 'string' ? new URL(uri) : uri;
-		const { proxy, lookup } = parseSocksURL(url);
+		const uriList = Array.isArray(uri) ? uri : [uri];
 
-		this.shouldLookup = lookup;
-		this.proxy = proxy;
+		if (uriList.length === 0) {
+			throw new Error('At least one proxy server URI must be specified.');
+		}
+
+		this.proxies = [];
+		for (const [i, uri] of uriList.entries()) {
+			const { proxy, lookup } = parseSocksURL(new URL(uri.toString()));
+			this.proxies.push(proxy);
+			if (i === 0) {
+				this.shouldLookup = lookup;
+			}
+		}
+
 		this.timeout = opts?.timeout ?? null;
+	}
+
+	get proxy(): SocksProxy {
+		return this.proxies[0];
 	}
 
 	/**
@@ -110,7 +132,7 @@ export class SocksProxyAgent extends Agent {
 		req: http.ClientRequest,
 		opts: AgentConnectOpts
 	): Promise<net.Socket> {
-		const { shouldLookup, proxy, timeout } = this;
+		const { shouldLookup, proxies, timeout } = this;
 
 		if (!opts.host) {
 			throw new Error('No `host` defined!');
@@ -133,25 +155,46 @@ export class SocksProxyAgent extends Agent {
 			});
 		}
 
-		const socksOpts: SocksClientOptions = {
-			proxy,
-			destination: {
-				host,
-				port: typeof port === 'number' ? port : parseInt(port, 10),
-			},
-			command: 'connect',
-			timeout: timeout ?? undefined,
-		};
-
+		let socket: net.Socket;
 		const cleanup = (tlsSocket?: tls.TLSSocket) => {
 			req.destroy();
 			socket.destroy();
 			if (tlsSocket) tlsSocket.destroy();
 		};
 
-		debug('Creating socks proxy connection: %o', socksOpts);
-		const { socket } = await SocksClient.createConnection(socksOpts);
-		debug('Successfully created socks proxy connection');
+		if (proxies.length === 1) {
+			const socksOpts: SocksClientOptions = {
+				proxy: proxies[0],
+				destination: {
+					host,
+					port: typeof port === 'number' ? port : parseInt(port, 10),
+				},
+				command: 'connect',
+				timeout: timeout ?? undefined,
+			};
+
+			debug('Creating socks proxy connection: %o', socksOpts);
+			const connection = await SocksClient.createConnection(socksOpts);
+			socket = connection.socket;
+			debug('Successfully created socks proxy connection');
+		} else {
+			const socksOpts: SocksClientChainOptions = {
+				proxies: proxies,
+				destination: {
+					host,
+					port: typeof port === 'number' ? port : parseInt(port, 10),
+				},
+				command: 'connect',
+				timeout: timeout ?? undefined,
+			};
+
+			debug('Creating chained socks proxy connection: %o', socksOpts);
+			const connection = await SocksClient.createConnectionChain(
+				socksOpts
+			);
+			socket = connection.socket;
+			debug('Successfully created chained socks proxy connection');
+		}
 
 		if (timeout !== null) {
 			socket.setTimeout(timeout);

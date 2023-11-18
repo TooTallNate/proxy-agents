@@ -107,6 +107,41 @@ describe('SocksProxyAgent', () => {
 			const body = await json(res);
 			assert.equal('bar', body.foo);
 		});
+
+		it('should work against an HTTP endpoint with multiple SOCKS proxies', async () => {
+			const secondSocksServer = socks.createServer(function (
+				// @ts-expect-error no types for `socksv5`
+				_info,
+				// @ts-expect-error no types for `socksv5`
+				accept
+			) {
+				accept();
+			});
+			await listen(secondSocksServer);
+			const port = secondSocksServer.address().port;
+			const secondSocksServerUrl = new URL(`socks://127.0.0.1:${port}`);
+			secondSocksServer.useAuth(socks.auth.None());
+
+			httpServer.once('request', function (req, res) {
+				assert.equal('/foo', req.url);
+				res.statusCode = 404;
+				res.end(JSON.stringify(req.headers));
+			});
+
+			const res = await req(new URL('/foo', httpServerUrl), {
+				agent: new SocksProxyAgent([
+					socksServerUrl,
+					secondSocksServerUrl,
+				]),
+				headers: { foo: 'bar' },
+			});
+			assert.equal(404, res.statusCode);
+
+			const body = await json(res);
+			assert.equal('bar', body.foo);
+
+			secondSocksServer.close();
+		});
 	});
 
 	describe('"https" module', () => {
