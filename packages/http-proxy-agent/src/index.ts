@@ -48,13 +48,13 @@ export class HttpProxyAgent<Uri extends string> extends Agent {
 
 	constructor(
 		proxy: {
-			uri: Uri | URL;
+			url: Uri | URL;
 		},
 		opts?: HttpProxyAgentOptions<Uri>
 	) {
 		super(opts);
 		this.proxy =
-			typeof proxy.uri === 'string' ? new URL(proxy.uri) : proxy.uri;
+			typeof proxy.url === 'string' ? new URL(proxy.url) : proxy.url;
 		this.proxyHeaders = opts?.headers ?? {};
 		debug('Creating new HttpProxyAgent instance: %o', this.proxy.href);
 

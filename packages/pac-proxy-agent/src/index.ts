@@ -265,9 +265,9 @@ export class PacProxyAgent<Uri extends string> extends Agent {
 					type === 'HTTPS' ? 'https' : 'http'
 				}://${target}`;
 				if (secureEndpoint) {
-					agent = new HttpsProxyAgent(proxyURL, this.opts);
+					agent = new HttpsProxyAgent({ url: proxyURL }, this.opts);
 				} else {
-					agent = new HttpProxyAgent(proxyURL, this.opts);
+					agent = new HttpProxyAgent({ url: proxyURL }, this.opts);
 				}
 			}
 
