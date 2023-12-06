@@ -95,10 +95,13 @@ export class SocksProxyAgent extends Agent {
 	readonly shouldLookup!: boolean;
 	readonly proxies: SocksProxy[];
 	timeout: number | null;
+	rejectUnauthorized = true;
 
 	constructor(
 		uri: string | URL | string[] | URL[],
-		opts?: SocksProxyAgentOptions
+		opts?: SocksProxyAgentOptions & {
+			rejectUnauthorized?: boolean
+		}
 	) {
 		super(opts);
 
@@ -118,6 +121,7 @@ export class SocksProxyAgent extends Agent {
 		}
 
 		this.timeout = opts?.timeout ?? null;
+		this.rejectUnauthorized = opts?.rejectUnauthorized ?? true;
 	}
 
 	get proxy(): SocksProxy {
@@ -208,6 +212,7 @@ export class SocksProxyAgent extends Agent {
 			const servername = opts.servername || opts.host;
 			const tlsSocket = tls.connect({
 				...omit(opts, 'host', 'path', 'port'),
+				rejectUnauthorized: this.rejectUnauthorized,
 				socket,
 				servername: net.isIP(servername) ? undefined : servername,
 			});
