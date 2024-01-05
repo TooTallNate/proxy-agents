@@ -2,6 +2,18 @@ import assert from 'assert';
 import { dataUriToBuffer } from '../src';
 
 describe('data-uri-to-buffer', function () {
+	const useNativeDecodingInTest = () => {
+		delete (globalThis as Record<string, unknown>).__useCustomDecodeInTests;
+	};
+
+	beforeEach(() => {
+		(globalThis as Record<string, unknown>).__useCustomDecodeInTests = true;
+	});
+
+	afterEach(() => {
+		useNativeDecodingInTest();
+	});
+
 	it('should decode bare-bones Data URIs', function () {
 		const uri = 'data:,Hello%2C%20World!';
 
@@ -13,6 +25,16 @@ describe('data-uri-to-buffer', function () {
 	});
 
 	it('should decode bare-bones "base64" Data URIs', function () {
+		const uri = 'data:text/plain;base64,SGVsbG8sIFdvcmxkIQ%3D%3D';
+
+		const parsed = dataUriToBuffer(uri);
+		assert.equal('text/plain', parsed.type);
+		assert.equal('Hello, World!', Buffer.from(parsed.buffer).toString());
+	});
+
+	it('should decode bare-bones "base64" Data URIs using native path', function () {
+		useNativeDecodingInTest();
+
 		const uri = 'data:text/plain;base64,SGVsbG8sIFdvcmxkIQ%3D%3D';
 
 		const parsed = dataUriToBuffer(uri);

@@ -5,7 +5,21 @@ export interface ParsedDataURI {
 	buffer: ArrayBuffer;
 }
 
+declare const __useCustomDecodeInTests: boolean;
+
 function base64ToArrayBuffer(base64: string) {
+	// fast path for Node.js:
+	if (typeof Buffer === 'function' && typeof __useCustomDecodeInTests === 'undefined') {
+		const nodeBuf = Buffer.from(base64, 'base64');
+		if (nodeBuf.byteLength === nodeBuf.buffer.byteLength) {
+			return nodeBuf.buffer; // large strings may get their own memory allocation
+		}
+		const buffer = new ArrayBuffer(nodeBuf.byteLength);
+		const view = new Uint8Array(buffer);
+		view.set(nodeBuf);
+		return buffer;
+	}
+
 	const chars =
 		'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
