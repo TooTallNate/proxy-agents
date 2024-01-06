@@ -17,7 +17,7 @@ function base64ToArrayBuffer(base64: string) {
 }
 
 function stringToBuffer(str: string): ArrayBuffer {
-	return nodeBuffertoArrayBuffer(Buffer.from(str));
+	return nodeBuffertoArrayBuffer(Buffer.from(str, 'ascii'));
 }
 
 /**
