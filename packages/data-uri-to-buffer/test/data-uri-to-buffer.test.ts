@@ -1,6 +1,6 @@
 import assert from 'assert';
 import { dataUriToBuffer as baseline } from '../src/index';
-import { dataUriToBuffer as node } from '../src/index';
+import { dataUriToBuffer as node } from '../src/node';
 
 describe('node', () => doTest(node));
 describe('baseline', () => doTest(baseline));
