@@ -1,25 +1,8 @@
-export interface ParsedDataURI {
-	type: string;
-	typeFull: string;
-	charset: string;
-	buffer: ArrayBuffer;
-}
+import { makeDataUriToBuffer } from './common';
 
-declare const __useCustomDecodeInTests: boolean;
+export type { ParsedDataURI } from  './common';
 
 function base64ToArrayBuffer(base64: string) {
-	// fast path for Node.js:
-	if (typeof Buffer === 'function' && typeof __useCustomDecodeInTests === 'undefined') {
-		const nodeBuf = Buffer.from(base64, 'base64');
-		if (nodeBuf.byteLength === nodeBuf.buffer.byteLength) {
-			return nodeBuf.buffer; // large strings may get their own memory allocation
-		}
-		const buffer = new ArrayBuffer(nodeBuf.byteLength);
-		const view = new Uint8Array(buffer);
-		view.set(nodeBuf);
-		return buffer;
-	}
-
 	const chars =
 		'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
@@ -72,55 +55,4 @@ function stringToBuffer(str: string): ArrayBuffer {
  *
  * @param {String} uri Data URI to turn into a Buffer instance
  */
-export function dataUriToBuffer(uri: string | URL): ParsedDataURI {
-	uri = String(uri);
-
-	if (!/^data:/i.test(uri)) {
-		throw new TypeError(
-			'`uri` does not appear to be a Data URI (must begin with "data:")'
-		);
-	}
-
-	// strip newlines
-	uri = uri.replace(/\r?\n/g, '');
-
-	// split the URI up into the "metadata" and the "data" portions
-	const firstComma = uri.indexOf(',');
-	if (firstComma === -1 || firstComma <= 4) {
-		throw new TypeError('malformed data: URI');
-	}
-
-	// remove the "data:" scheme and parse the metadata
-	const meta = uri.substring(5, firstComma).split(';');
-
-	let charset = '';
-	let base64 = false;
-	const type = meta[0] || 'text/plain';
-	let typeFull = type;
-	for (let i = 1; i < meta.length; i++) {
-		if (meta[i] === 'base64') {
-			base64 = true;
-		} else if (meta[i]) {
-			typeFull += `;${meta[i]}`;
-			if (meta[i].indexOf('charset=') === 0) {
-				charset = meta[i].substring(8);
-			}
-		}
-	}
-	// defaults to US-ASCII only if type is not provided
-	if (!meta[0] && !charset.length) {
-		typeFull += ';charset=US-ASCII';
-		charset = 'US-ASCII';
-	}
-
-	// get the encoded data portion and decode URI-encoded chars
-	const data = unescape(uri.substring(firstComma + 1));
-	const buffer = base64 ? base64ToArrayBuffer(data) : stringToBuffer(data);
-
-	return {
-		type,
-		typeFull,
-		charset,
-		buffer,
-	};
-}
+export const dataUriToBuffer = makeDataUriToBuffer({ stringToBuffer, base64ToArrayBuffer });
