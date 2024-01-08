@@ -367,6 +367,7 @@ async function onconnect(
 			res = null;
 		}
 
+		socket.on('end', () => target.destroy());
 		socket.pipe(target);
 		target.pipe(socket);
 	}
