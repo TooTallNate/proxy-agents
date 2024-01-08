@@ -1,7 +1,11 @@
 import assert from 'assert';
-import { dataUriToBuffer } from '../src';
+import { dataUriToBuffer as baseline } from '../src/index';
+import { dataUriToBuffer as node } from '../src/node';
 
-describe('data-uri-to-buffer', function () {
+describe('node', () => doTest(node));
+describe('baseline', () => doTest(baseline));
+
+function doTest(dataUriToBuffer: typeof baseline) {
 	it('should decode bare-bones Data URIs', function () {
 		const uri = 'data:,Hello%2C%20World!';
 
@@ -187,4 +191,4 @@ describe('data-uri-to-buffer', function () {
 		assert.equal('UTF-8', parsed.charset);
 		assert.equal('abc', Buffer.from(parsed.buffer).toString());
 	});
-});
+}
