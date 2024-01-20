@@ -3,8 +3,9 @@ import * as tls from 'tls';
 import * as http from 'http';
 import createDebug from 'debug';
 import { once } from 'events';
-import type { OutgoingHttpHeaders } from 'http';
 import { Agent, AgentConnectOpts } from 'agent-base';
+import { URL } from 'node:url';
+import type { OutgoingHttpHeaders } from 'http';
 
 const debug = createDebug('http-proxy-agent');
 

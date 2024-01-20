@@ -1,5 +1,35 @@
 # proxy-agent
 
+## 6.3.1
+
+### Patch Changes
+
+- 1d39f6c: Fix Electron support by using Node.js native URL object
+- Updated dependencies [1d39f6c]
+- Updated dependencies [e625d10]
+  - socks-proxy-agent@8.0.2
+  - pac-proxy-agent@7.0.1
+  - https-proxy-agent@7.0.2
+
+## 6.3.0
+
+### Minor Changes
+
+- f1f3220: Use QuickJS version of `pac-proxy-agent`
+
+### Patch Changes
+
+- Updated dependencies [f1f3220]
+  - pac-proxy-agent@7.0.0
+
+## 6.2.2
+
+### Patch Changes
+
+- 999dd9d: Fix `pac+` prefixed protocol URIs
+- Updated dependencies [999dd9d]
+  - pac-proxy-agent@6.0.4
+
 ## 6.2.1
 
 ### Patch Changes

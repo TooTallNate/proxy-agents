@@ -16,12 +16,14 @@ import myIpAddress from './myIpAddress';
 import shExpMatch from './shExpMatch';
 import timeRange from './timeRange';
 import weekdayRange from './weekdayRange';
+import type { QuickJSWASMModule } from '@tootallnate/quickjs-emscripten';
 
 /**
  * Returns an asynchronous `FindProxyForURL()` function
  * from the given JS string (from a PAC file).
  */
 export function createPacResolver(
+	qjs: QuickJSWASMModule,
 	_str: string | Buffer,
 	_opts: PacResolverOptions = {}
 ) {
@@ -33,22 +35,23 @@ export function createPacResolver(
 		..._opts.sandbox,
 	};
 
-	const opts: PacResolverOptions = {
-		filename: 'proxy.pac',
-		..._opts,
-		sandbox: context,
-	};
-
 	// Construct the array of async function names to add `await` calls to.
 	const names = Object.keys(context).filter((k) =>
 		isAsyncFunction(context[k])
 	);
 
+	const opts: PacResolverOptions = {
+		filename: 'proxy.pac',
+		names,
+		..._opts,
+		sandbox: context,
+	};
+
 	// Compile the JS `FindProxyForURL()` function into an async function.
 	const resolver = compile<string, [url: string, host: string]>(
+		qjs,
 		str,
 		'FindProxyForURL',
-		names,
 		opts
 	);
 
@@ -167,13 +170,6 @@ export const sandbox = Object.freeze({
 	timeRange,
 	weekdayRange,
 });
-
-function toCallback<T>(
-	promise: Promise<T>,
-	callback: (err: Error | null, result?: T) => void
-): void {
-	promise.then((rtn) => callback(null, rtn), callback);
-}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function isAsyncFunction(v: any): boolean {

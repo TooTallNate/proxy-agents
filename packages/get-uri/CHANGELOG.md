@@ -1,5 +1,12 @@
 # get-uri
 
+## 6.0.2
+
+### Patch Changes
+
+- Updated dependencies [52b458f]
+  - data-uri-to-buffer@6.0.0
+
 ## 6.0.1
 
 ### Patch Changes

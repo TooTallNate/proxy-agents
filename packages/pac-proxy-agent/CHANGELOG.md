@@ -1,5 +1,32 @@
 # pac-proxy-agent
 
+## 7.0.1
+
+### Patch Changes
+
+- 1d39f6c: Fix Electron support by using Node.js native URL object
+- Updated dependencies [1d39f6c]
+- Updated dependencies [e625d10]
+  - socks-proxy-agent@8.0.2
+  - https-proxy-agent@7.0.2
+
+## 7.0.0
+
+### Major Changes
+
+- f1f3220: Use `quickjs-emscripten` instead of `vm2` to execute PAC file code
+
+### Patch Changes
+
+- Updated dependencies [f1f3220]
+  - pac-resolver@7.0.0
+
+## 6.0.4
+
+### Patch Changes
+
+- 999dd9d: Fix `pac+` prefixed protocol URIs
+
 ## 6.0.3
 
 ### Patch Changes
