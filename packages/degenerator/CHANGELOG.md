@@ -1,5 +1,29 @@
 # degenerator
 
+## 5.0.1
+
+### Patch Changes
+
+- a7d4fe5: Update escodegen dependency
+
+## 5.0.0
+
+### Major Changes
+
+- f1f3220: Use `quickjs-emscripten` instead of `vm2` to execute PAC file code
+
+## 4.0.4
+
+### Patch Changes
+
+- 7008a93: Update dependencies to fix ReDoS vulnerability
+
+## 4.0.3
+
+### Patch Changes
+
+- 8e92eb8: Update `vm2` dependency to v3.9.19
+
 ## 4.0.2
 
 ### Patch Changes

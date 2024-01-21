@@ -3,9 +3,10 @@ import * as tls from 'tls';
 import * as http from 'http';
 import assert from 'assert';
 import createDebug from 'debug';
-import type { OutgoingHttpHeaders } from 'http';
 import { Agent, AgentConnectOpts } from 'agent-base';
+import { URL } from 'node:url';
 import { parseProxyResponse } from './parse-proxy-response';
+import type { OutgoingHttpHeaders } from 'http';
 
 const debug = createDebug('https-proxy-agent');
 
@@ -91,7 +92,13 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 		let socket: net.Socket;
 		if (proxy.protocol === 'https:') {
 			debug('Creating `tls.Socket`: %o', this.connectOpts);
-			socket = tls.connect(this.connectOpts);
+			const servername =
+				this.connectOpts.servername || this.connectOpts.host;
+			socket = tls.connect({
+				...this.connectOpts,
+				servername:
+					servername && net.isIP(servername) ? undefined : servername,
+			});
 		} else {
 			debug('Creating `net.Socket`: %o', this.connectOpts);
 			socket = net.connect(this.connectOpts);

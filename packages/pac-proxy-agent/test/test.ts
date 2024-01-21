@@ -2,6 +2,7 @@ import assert from 'assert';
 import * as fs from 'fs';
 import * as http from 'http';
 import * as https from 'https';
+import { URL } from 'url';
 // @ts-expect-error no types
 import socks from 'socksv5';
 import { listen } from 'async-listen';
@@ -280,7 +281,7 @@ describe('PacProxyAgent', () => {
 				return 'HTTPS localhost:PORT;';
 			}
 
-			const uri = `data:,${encodeURIComponent(
+			const uri = `pac+data:,${encodeURIComponent(
 				FindProxyForURL.toString().replace(
 					'PORT',
 					proxyHttpsServerUrl.port

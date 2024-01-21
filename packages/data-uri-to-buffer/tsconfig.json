@@ -2,6 +2,7 @@
   "extends": "tsconfig/base.json",
   "compilerOptions": {
     "outDir": "dist",
+    "lib": ["DOM"]
   },
   "include": ["src"],
   "exclude": ["node_modules"]

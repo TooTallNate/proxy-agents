@@ -30,7 +30,6 @@ args.option(
 //	String
 //);
 
-//const flags = args.parse(process.argv, { name: pkg.name });
 const flags = args.parse(process.argv);
 const { port, authenticate } = flags;
 

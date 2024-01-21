@@ -1,5 +1,17 @@
 # https-proxy-agent
 
+## 7.0.2
+
+### Patch Changes
+
+- e625d10: Support SNI for proxy servers
+
+## 7.0.1
+
+### Patch Changes
+
+- 23fe1e3: Correct the header parsing logic to stop before the response content to avoid generating an exception.
+
 ## 7.0.0
 
 ### Major Changes
@@ -77,13 +89,7 @@ Updated 6.x usage:
 
 ```ts
 const agent = new HttpsProxyAgent(
-  {
-    protocol: 'https:',
-    hostname: 'myproxy.mydomain.com'
-    port: '1234',
-    username: 'proxyUser',
-    password: 'proxyPass'
-  },
+  'https://proxyUser:proxyPass@myproxy.mydomain.com:1234',
   {
     timeout: 1000,
     headers: { 'trace', 'foo' }
