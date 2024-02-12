@@ -1,5 +1,11 @@
 # data-uri-to-buffer
 
+## 6.0.2
+
+### Patch Changes
+
+- c881a18: Use native Buffer decoding in Node.js
+
 ## 6.0.1
 
 ### Patch Changes

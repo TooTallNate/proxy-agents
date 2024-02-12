@@ -1,5 +1,11 @@
 # pac-resolver
 
+## 7.0.1
+
+### Patch Changes
+
+- a954da3: fix [GHSA-78xj-cgh5-2h22](https://github.com/advisories/GHSA-78xj-cgh5-2h22) vulnerability
+
 ## 7.0.0
 
 ### Major Changes
