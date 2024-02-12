@@ -44,7 +44,7 @@ function myFn() {
 }
 ```
 
-Now we can compile this into an asyncronous function, implement the
+Now we can compile this into an asynchronous function, implement the
 async `get()` function, and finally evaluate it into a real JavaScript function
 instance with the `vm` module:
 
