@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as http from 'http';
 import * as https from 'https';
 import { URL } from 'url';
+import { promisify } from 'util';
 import { once } from 'events';
 import assert from 'assert';
 import WebSocket, { WebSocketServer } from 'ws';
@@ -274,6 +275,33 @@ describe('ProxyAgent', () => {
 				getProxyForUrl: (u) => {
 					gotCall = true;
 					urlParameter = u;
+					return httpsProxyServerUrl.href;
+				},
+			});
+			const requestUrl = new URL('/test', httpsServerUrl);
+			const res = await req(requestUrl, {
+				agent,
+				rejectUnauthorized: false,
+			});
+			const body = await json(res);
+			assert(httpsServerUrl.host === body.host);
+			assert(gotCall);
+			assert(requestUrl.href === urlParameter);
+		});
+
+		it('should call provided function with asynchronous getProxyForUrl option', async () => {
+			let gotCall = false;
+			let urlParameter = '';
+			httpsServer.once('request', function (req, res) {
+				res.end(JSON.stringify(req.headers));
+			});
+
+			const agent = new ProxyAgent({
+				rejectUnauthorized: false,
+				getProxyForUrl: async(u) => {
+					gotCall = true;
+					urlParameter = u;
+					await promisify(setTimeout)(1);
 					return httpsProxyServerUrl.href;
 				},
 			});
