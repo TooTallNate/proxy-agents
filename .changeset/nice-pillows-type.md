@@ -2,4 +2,4 @@
 'proxy-agent': minor
 ---
 
-Allow getProxyForUrl to return a promise
+Allow `getProxyForUrl()` option to return a Promise
