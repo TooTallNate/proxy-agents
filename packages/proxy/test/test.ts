@@ -203,4 +203,27 @@ describe('proxy', () => {
 			assert(0 == data.indexOf('HTTP/1.1 407'));
 		});
 	});
+
+	it('should close both connections when client disconnects', async () => {
+		const proxySocketPromise = new Promise<net.Socket>(resolve => proxy.on("connection", socket => resolve(socket)))
+		const targetRequestPromise = new Promise<net.Socket>(resolve => server.on("connection", resolve))
+		
+		const clientSocket = net.connect({ port: +proxyUrl.port });
+		await once(clientSocket, 'connect');
+		{
+			clientSocket.write('CONNECT ' + serverUrl.host + ' HTTP/1.1\r\n\r\n');
+			clientSocket.setEncoding('utf8');
+			const [data] = await once(clientSocket, 'data');
+			assert(0 == data.indexOf('HTTP/1.1 200 Connection established\r\n'));
+		}
+		const serverSocket = await proxySocketPromise;
+		const targetRequest = await targetRequestPromise
+		await Promise.all([
+			new Promise(resolve => serverSocket.on("end", resolve)),
+			new Promise(resolve => targetRequest.on("close", resolve)),
+			clientSocket.end()
+		])
+		expect(targetRequest.readyState).toEqual("closed")
+		expect(serverSocket.readyState).toEqual("closed")
+	});
 });
