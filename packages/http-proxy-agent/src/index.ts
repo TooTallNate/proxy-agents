@@ -47,9 +47,15 @@ export class HttpProxyAgent<Uri extends string> extends Agent {
 	proxyHeaders: OutgoingHttpHeaders | (() => OutgoingHttpHeaders);
 	connectOpts: net.TcpNetConnectOpts & tls.ConnectionOptions;
 
-	constructor(proxy: Uri | URL, opts?: HttpProxyAgentOptions<Uri>) {
+	constructor(
+		proxy: {
+			url: Uri | URL;
+		},
+		opts?: HttpProxyAgentOptions<Uri>
+	) {
 		super(opts);
-		this.proxy = typeof proxy === 'string' ? new URL(proxy) : proxy;
+		this.proxy =
+			typeof proxy.url === 'string' ? new URL(proxy.url) : proxy.url;
 		this.proxyHeaders = opts?.headers ?? {};
 		debug('Creating new HttpProxyAgent instance: %o', this.proxy.href);
 
