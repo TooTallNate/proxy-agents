@@ -1,5 +1,17 @@
 # proxy-agent
 
+## 6.4.0
+
+### Minor Changes
+
+- e7e0e56: Allow `getProxyForUrl()` option to return a Promise
+
+### Patch Changes
+
+- Updated dependencies [c3c405e]
+  - http-proxy-agent@7.0.1
+  - https-proxy-agent@7.0.3
+
 ## 6.3.1
 
 ### Patch Changes

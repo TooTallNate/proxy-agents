@@ -1,5 +1,13 @@
 # get-uri
 
+## 6.0.3
+
+### Patch Changes
+
+- c854e4c: Update `fs-extra` to v11
+- Updated dependencies [c881a18]
+  - data-uri-to-buffer@6.0.2
+
 ## 6.0.2
 
 ### Patch Changes

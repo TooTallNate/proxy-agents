@@ -1,5 +1,17 @@
 # https-proxy-agent
 
+## 7.0.4
+
+### Patch Changes
+
+- b88ab46: Import `url` instead of `node:url` 🤷‍♂️
+
+## 7.0.3
+
+### Patch Changes
+
+- c3c405e: Add missing `URL` type import
+
 ## 7.0.2
 
 ### Patch Changes
