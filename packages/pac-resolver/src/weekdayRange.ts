@@ -7,7 +7,7 @@ const weekdays: Weekday[] = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
  * Only the first parameter is mandatory. Either the second, the third, or both
  * may be left out.
  *
- * If only one parameter is present, the function yeilds a true value on the
+ * If only one parameter is present, the function yields a true value on the
  * weekday that the parameter represents. If the string "GMT" is specified as
  * a second parameter, times are taken to be in GMT, otherwise in local timezone.
  *
