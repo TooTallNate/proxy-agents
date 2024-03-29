@@ -78,12 +78,12 @@ export abstract class Agent extends http.Agent {
 	}
 
 	// In order to support async signatures in `connect()` and Node's native
-	// connection pooling in http.Agent, the array of sockets for each origin has
-	// to be updated syncronously. This is so the length of the array is accurate
+	// connection pooling in `http.Agent`, the array of sockets for each origin has
+	// to be updated synchronously. This is so the length of the array is accurate
 	// when `addRequest()` is next called. We achieve this by creating a fake socket
-	// and adding it to this.sockets and incrementing totalSocketCount.
+	// and adding it to `sockets[origin]` and incrementing `totalSocketCount`.
 	private incrementSockets(name: string) {
-		// If maxSockets and maxTotalSockets are both Infinity then there is no need
+		// If `maxSockets` and `maxTotalSockets` are both Infinity then there is no need
 		// to create a fake socket because Node.js native connection pooling will
 		// never be invoked.
 		if (this.maxSockets === Infinity && this.maxTotalSockets === Infinity) {
