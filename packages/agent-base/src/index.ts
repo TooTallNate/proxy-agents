@@ -1,6 +1,7 @@
 import * as net from 'net';
 import * as tls from 'tls';
 import * as http from 'http';
+import { Agent as HttpsAgent } from 'https';
 import type { Duplex } from 'stream';
 
 export * from './helpers';
@@ -78,19 +79,21 @@ export abstract class Agent extends http.Agent {
 	}
 
 	// In order to support async signatures in `connect()` and Node's native
-	// connection pooling in `http.Agent`, the array of sockets for each origin has
-	// to be updated synchronously. This is so the length of the array is accurate
-	// when `addRequest()` is next called. We achieve this by creating a fake socket
-	// and adding it to `sockets[origin]` and incrementing `totalSocketCount`.
+	// connection pooling in `http.Agent`, the array of sockets for each origin
+	// has to be updated synchronously. This is so the length of the array is
+	// accurate when `addRequest()` is next called. We achieve this by creating a
+	// fake socket and adding it to `sockets[origin]` and incrementing
+	// `totalSocketCount`.
 	private incrementSockets(name: string) {
-		// If `maxSockets` and `maxTotalSockets` are both Infinity then there is no need
-		// to create a fake socket because Node.js native connection pooling will
-		// never be invoked.
+		// If `maxSockets` and `maxTotalSockets` are both Infinity then there is no
+		// need to create a fake socket because Node.js native connection pooling
+		// will never be invoked.
 		if (this.maxSockets === Infinity && this.maxTotalSockets === Infinity) {
 			return null;
 		}
-		// All instances of `sockets` are expected TypeScript errors. The alternative is to
-		// add it as a private property of this class but that will break TypeScript subclassing.
+		// All instances of `sockets` are expected TypeScript errors. The
+		// alternative is to add it as a private property of this class but that
+		// will break TypeScript subclassing.
 		if (!this.sockets[name]) {
 			// @ts-expect-error `sockets` is readonly in `@types/node`
 			this.sockets[name] = [];
@@ -119,18 +122,27 @@ export abstract class Agent extends http.Agent {
 		}
 	}
 
+	// In order to properly update the socket pool, we need to call `getName()` on
+	// the core `https.Agent` if it is a secureEndpoint.
+	private getName({ secureEndpoint, ...options }: AgentConnectOpts) {
+		return secureEndpoint
+			? // @ts-expect-error `getName()` isn't defined in `@types/node`
+			  HttpsAgent.prototype.getName.call(this, options)
+			: // @ts-expect-error `getName()` isn't defined in `@types/node`
+			  super.getName(options);
+	}
+
 	createSocket(
 		req: http.ClientRequest,
 		options: AgentConnectOpts,
 		cb: (err: Error | null, s?: Duplex) => void
 	) {
-		// @ts-expect-error `getName()` isn't defined in `@types/node`
-		const name = this.getName(options);
-		const fakeSocket = this.incrementSockets(name);
 		const connectOpts = {
 			...options,
 			secureEndpoint: this.isSecureEndpoint(options),
 		};
+		const name = this.getName(connectOpts);
+		const fakeSocket = this.incrementSockets(name);
 		Promise.resolve()
 			.then(() => this.connect(req, connectOpts))
 			.then(
