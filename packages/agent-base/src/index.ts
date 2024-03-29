@@ -77,26 +77,81 @@ export abstract class Agent extends http.Agent {
 			);
 	}
 
+	// In order to support async signatures in `connect()` and Node's native
+	// connection pooling in http.Agent, the array of sockets for each origin has
+	// to be updated syncronously. This is so the length of the array is accurate
+	// when `addRequest()` is next called. We achieve this by creating a fake socket
+	// and adding it to this.sockets and incrementing totalSocketCount.
+	private incrementSockets(name: string) {
+		// If maxSockets and maxTotalSockets are both Infinity then there is no need
+		// to create a fake socket because Node.js native connection pooling will
+		// never be invoked.
+		if (this.maxSockets === Infinity && this.maxTotalSockets === Infinity) {
+			return null;
+		}
+		if (!this.sockets[name]) {
+			// All instances of `sockets` are expected TypeScript errors. The alternative is to
+			// add it as a private property of this class but that will break TypeScript subclassing.
+			// @ts-expect-error `sockets` is readonly in `@types/node` but we need to write to it
+			this.sockets[name] = [];
+		}
+		const fakeSocket = new net.Socket({ writable: false });
+		// @ts-expect-error
+		this.sockets[name].push(fakeSocket);
+		// @ts-expect-error `totalSocketCount` isn't defined in `@types/node`
+		this.totalSocketCount++;
+		return fakeSocket;
+	}
+
+	private decrementSockets(name: string, socket: null | net.Socket) {
+		if (!this.sockets[name] || socket === null) {
+			return;
+		}
+		// @ts-expect-error
+		const index = this.sockets[name].indexOf(socket);
+		if (index !== -1) {
+			// @ts-expect-error
+			this.sockets[name].splice(index, 1);
+			// @ts-expect-error
+			this.totalSocketCount--;
+			// @ts-expect-error
+			if (this.sockets[name].length === 0) {
+				// @ts-expect-error
+				delete this.sockets[name];
+			}
+		}
+	}
+
 	createSocket(
 		req: http.ClientRequest,
 		options: AgentConnectOpts,
 		cb: (err: Error | null, s?: Duplex) => void
 	) {
+		// @ts-expect-error `getName()` isn't defined in `@types/node`
+		const name = this.getName(options);
+		const fakeSocket = this.incrementSockets(name);
 		const connectOpts = {
 			...options,
 			secureEndpoint: this.isSecureEndpoint(options),
 		};
 		Promise.resolve()
 			.then(() => this.connect(req, connectOpts))
-			.then((socket) => {
-				if (socket instanceof http.Agent) {
-					// @ts-expect-error `addRequest()` isn't defined in `@types/node`
-					return socket.addRequest(req, connectOpts);
+			.then(
+				(socket) => {
+					this.decrementSockets(name, fakeSocket);
+					if (socket instanceof http.Agent) {
+						// @ts-expect-error `addRequest()` isn't defined in `@types/node`
+						return socket.addRequest(req, connectOpts);
+					}
+					this[INTERNAL].currentSocket = socket;
+					// @ts-expect-error `createSocket()` isn't defined in `@types/node`
+					super.createSocket(req, options, cb);
+				},
+				(err) => {
+					this.decrementSockets(name, fakeSocket);
+					cb(err);
 				}
-				this[INTERNAL].currentSocket = socket;
-				// @ts-expect-error `createSocket()` isn't defined in `@types/node`
-				super.createSocket(req, options, cb);
-			}, cb);
+			);
 	}
 
 	createConnection(): Duplex {

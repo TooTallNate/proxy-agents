@@ -310,6 +310,55 @@ describe('Agent (TypeScript)', () => {
 		});
 	});
 
+	it('should support `keepAlive: true` with `maxSockets`', async () => {
+		let reqCount = 0;
+		let connectCount = 0;
+
+		class MyAgent extends Agent {
+			async connect(_req: http.ClientRequest, opts: AgentConnectOpts) {
+				connectCount++;
+				assert(opts.secureEndpoint === false);
+				await sleep(10);
+				return net.connect(opts);
+			}
+		}
+		const agent = new MyAgent({ keepAlive: true, maxSockets: 1 });
+
+		const server = http.createServer(async (req, res) => {
+			expect(req.headers.connection).toEqual('keep-alive');
+			reqCount++;
+			await sleep(10);
+			res.end();
+		});
+		const addr = await listen(server);
+
+		try {
+			const resPromise = req(new URL('/foo', addr), { agent });
+			const res2Promise = req(new URL('/another', addr), { agent });
+
+			const res = await resPromise;
+			expect(reqCount).toEqual(1);
+			expect(connectCount).toEqual(1);
+			expect(res.headers.connection).toEqual('keep-alive');
+
+			res.resume();
+			const s1 = res.socket;
+			await once(s1, 'free');
+
+			const res2 = await res2Promise;
+			expect(reqCount).toEqual(2);
+			expect(connectCount).toEqual(1);
+			expect(res2.headers.connection).toEqual('keep-alive');
+			assert(res2.socket === s1);
+
+			res2.resume();
+			await once(res2.socket, 'free');
+		} finally {
+			agent.destroy();
+			server.close();
+		}
+	});
+
 	describe('"https" module', () => {
 		it('should work for basic HTTPS requests', async () => {
 			let gotReq = false;
