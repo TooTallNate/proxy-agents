@@ -89,15 +89,14 @@ export abstract class Agent extends http.Agent {
 		if (this.maxSockets === Infinity && this.maxTotalSockets === Infinity) {
 			return null;
 		}
+		// All instances of `sockets` are expected TypeScript errors. The alternative is to
+		// add it as a private property of this class but that will break TypeScript subclassing.
 		if (!this.sockets[name]) {
-			// All instances of `sockets` are expected TypeScript errors. The alternative is to
-			// add it as a private property of this class but that will break TypeScript subclassing.
-			// @ts-expect-error `sockets` is readonly in `@types/node` but we need to write to it
+			// @ts-expect-error `sockets` is readonly in `@types/node`
 			this.sockets[name] = [];
 		}
 		const fakeSocket = new net.Socket({ writable: false });
-		// @ts-expect-error
-		this.sockets[name].push(fakeSocket);
+		(this.sockets[name] as net.Socket[]).push(fakeSocket);
 		// @ts-expect-error `totalSocketCount` isn't defined in `@types/node`
 		this.totalSocketCount++;
 		return fakeSocket;
@@ -107,16 +106,14 @@ export abstract class Agent extends http.Agent {
 		if (!this.sockets[name] || socket === null) {
 			return;
 		}
-		// @ts-expect-error
-		const index = this.sockets[name].indexOf(socket);
+		const sockets = this.sockets[name] as net.Socket[];
+		const index = sockets.indexOf(socket);
 		if (index !== -1) {
-			// @ts-expect-error
-			this.sockets[name].splice(index, 1);
-			// @ts-expect-error
+			sockets.splice(index, 1);
+			// @ts-expect-error  `totalSocketCount` isn't defined in `@types/node`
 			this.totalSocketCount--;
-			// @ts-expect-error
-			if (this.sockets[name].length === 0) {
-				// @ts-expect-error
+			if (sockets.length === 0) {
+				// @ts-expect-error `sockets` is readonly in `@types/node`
 				delete this.sockets[name];
 			}
 		}
