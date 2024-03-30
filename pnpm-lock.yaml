@@ -467,7 +467,7 @@ importers:
   packages/socks-proxy-agent:
     dependencies:
       agent-base:
-        specifier: ^7.0.2
+        specifier: ^7.1.1
         version: link:../agent-base
       debug:
         specifier: ^4.3.4
