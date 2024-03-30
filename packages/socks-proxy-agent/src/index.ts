@@ -71,11 +71,15 @@ function parseSocksURL(url: URL): { lookup: boolean; proxy: SocksProxy } {
 	return { lookup, proxy };
 }
 
+type SocksSocketOptions = Omit<net.TcpNetConnectOpts, 'port' | 'host'>;
+
 export type SocksProxyAgentOptions = Omit<
 	SocksProxy,
 	// These come from the parsed URL
 	'ipaddress' | 'host' | 'port' | 'type' | 'userId' | 'password'
-> &
+> & {
+	socketOptions?: SocksSocketOptions;
+} &
 	http.AgentOptions;
 
 export class SocksProxyAgent extends Agent {
@@ -90,6 +94,7 @@ export class SocksProxyAgent extends Agent {
 	readonly shouldLookup: boolean;
 	readonly proxy: SocksProxy;
 	timeout: number | null;
+	socketOptions: SocksSocketOptions | null;
 
 	constructor(uri: string | URL, opts?: SocksProxyAgentOptions) {
 		super(opts);
@@ -100,6 +105,7 @@ export class SocksProxyAgent extends Agent {
 		this.shouldLookup = lookup;
 		this.proxy = proxy;
 		this.timeout = opts?.timeout ?? null;
+		this.socketOptions = opts?.socketOptions ?? null;
 	}
 
 	/**
@@ -141,6 +147,9 @@ export class SocksProxyAgent extends Agent {
 			},
 			command: 'connect',
 			timeout: timeout ?? undefined,
+			// @ts-expect-error the type supplied by socks for socket_options is wider
+			// than necessary since socks will always override the host and port
+			socket_options: this.socketOptions ?? undefined,
 		};
 
 		const cleanup = (tlsSocket?: tls.TLSSocket) => {
