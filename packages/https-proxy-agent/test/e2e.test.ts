@@ -61,7 +61,7 @@ describe('HttpsProxyAgent', () => {
 			}
 		);
 		console.log(
-			`Using NordVPN HTTPS proxy server: ${server.name} (${server.hostname})`
+			`Using NordVPN "proxy_ssl" server: ${server.name} (${server.hostname})`
 		);
 	});
 
@@ -74,8 +74,6 @@ describe('HttpsProxyAgent', () => {
 			throw new Error('`NORDVPN_PASSWORD` env var is not defined');
 		}
 
-		const realIp = await getRealIP();
-
 		const username = encodeURIComponent(NORDVPN_USERNAME);
 		const password = encodeURIComponent(NORDVPN_PASSWORD);
 
@@ -85,7 +83,10 @@ describe('HttpsProxyAgent', () => {
 			`https://${username}:${password}@${server.hostname}:89`
 		);
 
-		const res = await req('https://dump.n8.io', { agent });
+		const [res, realIp] = await Promise.all([
+			req('https://dump.n8.io', { agent }),
+			getRealIP(),
+		]);
 		const body = await json(res);
 		expect(body.request.headers['x-real-ip']).not.toEqual(realIp);
 		expect(body.request.headers['x-vercel-ip-country']).toEqual(
