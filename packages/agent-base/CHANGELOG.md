@@ -1,5 +1,11 @@
 # agent-base
 
+## 7.1.1
+
+### Patch Changes
+
+- e62863c: Synchronously update internal sockets length so `http.Agent` pooling is used
+
 ## 7.1.0
 
 ### Minor Changes

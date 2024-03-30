@@ -1,5 +1,13 @@
 # socks-proxy-agent
 
+## 8.0.3
+
+### Patch Changes
+
+- ada656d: Pass `socket_options` to `SocksClient`
+- Updated dependencies [e62863c]
+  - agent-base@7.1.1
+
 ## 8.0.2
 
 ### Patch Changes
