@@ -7,6 +7,7 @@
   "files": [
     "dist"
   ],
+  "bin": "./dist/bin/proxy.js",
   "scripts": {
     "build": "tsc",
     "test": "jest --env node --verbose --bail",
