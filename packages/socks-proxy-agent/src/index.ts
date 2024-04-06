@@ -175,7 +175,7 @@ export class SocksProxyAgent extends Agent {
 			const tlsSocket = tls.connect({
 				...omit(opts, 'host', 'path', 'port'),
 				socket,
-				servername: net.isIP(servername) ? undefined : servername,
+				servername,
 			});
 
 			tlsSocket.once('error', (error) => {
