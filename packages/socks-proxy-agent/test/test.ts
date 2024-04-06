@@ -144,6 +144,77 @@ describe('SocksProxyAgent', () => {
 			const body = await json(res);
 			assert.equal('bar', body.foo);
 		});
+
+		it('should work with username/password auth', async () => {
+			let authWasCalled = false;
+			socksServer._auths.pop();
+			socksServer.useAuth(
+				socks.auth.UserPassword(
+					(
+						user: string,
+						password: string,
+						cb: (valid: boolean) => void
+					) => {
+						authWasCalled = true;
+						cb(user === 'nodejs' && password === 'rules!');
+					}
+				)
+			);
+
+			socksServerUrl.username = 'nodejs'
+			socksServerUrl.password = 'rules!'
+			console.log(socksServerUrl.href)
+
+			httpServer.once('request', function (req, res) {
+				assert.equal('/foo', req.url);
+				res.statusCode = 404;
+				res.end(JSON.stringify(req.headers));
+			});
+
+			const res = await req(new URL('/foo', httpServerUrl), {
+				agent: new SocksProxyAgent(socksServerUrl),
+				headers: { foo: 'bar' },
+			});
+			assert(authWasCalled);
+			assert.equal(404, res.statusCode);
+
+			const body = await json(res);
+			assert.equal('bar', body.foo);
+
+		});
+
+		it('should emit "error" event if username/password auth fails', async () => {
+			let authWasCalled = false;
+			socksServer._auths.pop();
+			socksServer.useAuth(
+				socks.auth.UserPassword(
+					(
+						user: string,
+						password: string,
+						cb: (valid: boolean) => void
+					) => {
+						authWasCalled = true;
+						cb(user === 'nodejs' && password === 'rules!');
+					}
+				)
+			);
+
+			socksServerUrl.username = 'nodejs'
+			socksServerUrl.password = 'bad'
+
+			let err: Error | undefined;
+			try {
+				await req(new URL('/foo', httpServerUrl), {
+					agent: new SocksProxyAgent(socksServerUrl),
+					headers: { foo: 'bar' },
+				});
+			} catch (_err) {
+				err = _err as Error;
+			}
+			assert(authWasCalled);
+			assert(err);
+			assert.equal(err.message, `Socks5 Authentication failed`);
+		});
 	});
 
 	describe('"https" module', () => {
@@ -154,12 +225,10 @@ describe('SocksProxyAgent', () => {
 				res.end(JSON.stringify(req.headers));
 			});
 
-			const agent = new SocksProxyAgent(socksServerUrl);
-
 			const res = await req(
 				`https://127.0.0.1:${httpsServerUrl.port}/foo`,
 				{
-					agent,
+					agent: new SocksProxyAgent(socksServerUrl),
 					rejectUnauthorized: false,
 					headers: { foo: 'bar' },
 				}
