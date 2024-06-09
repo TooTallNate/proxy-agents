@@ -109,7 +109,7 @@
   "dependencies": {
     "agent-base": "^7.1.1",
     "debug": "^4.3.4",
-    "socks": "^2.7.1"
+    "socks": "^2.8.3"
   },
   "devDependencies": {
     "@types/async-retry": "^1.4.5",
