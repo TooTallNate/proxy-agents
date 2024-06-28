@@ -1,5 +1,12 @@
 # socks-proxy-agent
 
+## 8.0.4
+
+### Patch Changes
+
+- fdeed27: resolve vulnerability in IP package
+- 5908e84: Remove `net.isIP()` check for TLS `servername`
+
 ## 8.0.3
 
 ### Patch Changes

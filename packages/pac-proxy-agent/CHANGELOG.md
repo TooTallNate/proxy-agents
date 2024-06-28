@@ -1,5 +1,16 @@
 # pac-proxy-agent
 
+## 7.0.2
+
+### Patch Changes
+
+- fdeed27: resolve vulnerability in IP package
+- 5908e84: Remove `net.isIP()` check for TLS `servername`
+- Updated dependencies [fdeed27]
+- Updated dependencies [5908e84]
+  - socks-proxy-agent@8.0.4
+  - https-proxy-agent@7.0.5
+
 ## 7.0.1
 
 ### Patch Changes
