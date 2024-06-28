@@ -41,7 +41,7 @@
     "ts-jest": "^29.1.0",
     "tsconfig": "workspace:*",
     "typescript": "^5.0.4",
-    "ws": "^3.3.3"
+    "ws": "^5.2.4"
   },
   "engines": {
     "node": ">= 14"
