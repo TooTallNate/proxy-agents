@@ -1,5 +1,11 @@
 # https-proxy-agent
 
+## 7.0.5
+
+### Patch Changes
+
+- 5908e84: Remove `net.isIP()` check for TLS `servername`
+
 ## 7.0.4
 
 ### Patch Changes

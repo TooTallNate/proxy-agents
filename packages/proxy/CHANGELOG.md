@@ -1,5 +1,11 @@
 # proxy
 
+## 2.2.0
+
+### Minor Changes
+
+- 28104d2: Add bin for CLI
+
 ## 2.1.1
 
 ### Patch Changes
