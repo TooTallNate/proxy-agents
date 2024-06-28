@@ -1,6 +1,7 @@
 {
   "private": true,
   "name": "proxy-agent-monorepo",
+  "packageManager": "pnpm@7.32.2",
   "scripts": {
     "build": "turbo run build",
     "lint": "turbo run lint",
