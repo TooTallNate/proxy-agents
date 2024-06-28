@@ -1,5 +1,9 @@
 lockfileVersion: '6.0'
 
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
 importers:
 
   .:
@@ -9,10 +13,10 @@ importers:
         version: 2.26.2
       '@typescript-eslint/eslint-plugin':
         specifier: ^5.59.1
-        version: 5.60.1(@typescript-eslint/parser@5.60.1)(eslint@7.32.0)
+        version: 5.60.1(@typescript-eslint/parser@5.60.1)(eslint@7.32.0)(typescript@5.1.6)
       '@typescript-eslint/parser':
         specifier: ^5.59.1
-        version: 5.60.1(eslint@7.32.0)
+        version: 5.60.1(eslint@7.32.0)(typescript@5.1.6)
       eslint:
         specifier: ^7.32.0
         version: 7.32.0
@@ -58,7 +62,7 @@ importers:
         version: 29.5.0(@types/node@14.18.45)
       ts-jest:
         specifier: ^29.1.0
-        version: 29.1.0(jest@29.5.0)(typescript@5.0.4)
+        version: 29.1.0(@babel/core@7.21.4)(jest@29.5.0)(typescript@5.0.4)
       tsconfig:
         specifier: workspace:*
         version: link:../tsconfig
@@ -82,7 +86,7 @@ importers:
         version: 29.5.0(@types/node@14.18.45)
       ts-jest:
         specifier: ^29.1.0
-        version: 29.1.0(jest@29.5.0)(typescript@5.0.4)
+        version: 29.1.0(@babel/core@7.22.5)(jest@29.5.0)(typescript@5.0.4)
       tsconfig:
         specifier: workspace:*
         version: link:../tsconfig
@@ -122,7 +126,7 @@ importers:
         version: 29.5.0(@types/node@14.18.52)
       ts-jest:
         specifier: ^29.1.0
-        version: 29.1.0(jest@29.5.0)(typescript@5.1.6)
+        version: 29.1.0(@babel/core@7.22.5)(jest@29.5.0)(typescript@5.1.6)
       tsconfig:
         specifier: workspace:*
         version: link:../tsconfig
@@ -174,7 +178,7 @@ importers:
         version: 1.2.2
       ts-jest:
         specifier: ^29.1.0
-        version: 29.1.0(jest@29.5.0)(typescript@5.0.4)
+        version: 29.1.0(@babel/core@7.22.5)(jest@29.5.0)(typescript@5.0.4)
       tsconfig:
         specifier: workspace:*
         version: link:../tsconfig
@@ -211,7 +215,7 @@ importers:
         version: link:../proxy
       ts-jest:
         specifier: ^29.1.0
-        version: 29.1.0(jest@29.5.0)(typescript@5.0.4)
+        version: 29.1.0(@babel/core@7.22.5)(jest@29.5.0)(typescript@5.0.4)
       tsconfig:
         specifier: workspace:*
         version: link:../tsconfig
@@ -254,7 +258,7 @@ importers:
         version: link:../proxy
       ts-jest:
         specifier: ^29.1.0
-        version: 29.1.0(jest@29.5.0)(typescript@5.0.4)
+        version: 29.1.0(@babel/core@7.22.5)(jest@29.5.0)(typescript@5.0.4)
       tsconfig:
         specifier: workspace:*
         version: link:../tsconfig
@@ -283,7 +287,7 @@ importers:
         specifier: ^7.0.2
         version: link:../https-proxy-agent
       pac-resolver:
-        specifier: ^7.0.0
+        specifier: ^7.0.1
         version: link:../pac-resolver
       socks-proxy-agent:
         specifier: ^8.0.2
@@ -312,7 +316,7 @@ importers:
         version: 0.0.6
       ts-jest:
         specifier: ^29.1.0
-        version: 29.1.0(jest@29.5.0)(typescript@5.0.4)
+        version: 29.1.0(@babel/core@7.22.5)(jest@29.5.0)(typescript@5.0.4)
       tsconfig:
         specifier: workspace:*
         version: link:../tsconfig
@@ -346,7 +350,7 @@ importers:
         version: 29.5.0(@types/node@14.18.52)
       ts-jest:
         specifier: ^29.1.0
-        version: 29.1.0(jest@29.5.0)(typescript@5.1.6)
+        version: 29.1.0(@babel/core@7.22.5)(jest@29.5.0)(typescript@5.1.6)
       tsconfig:
         specifier: workspace:*
         version: link:../tsconfig
@@ -386,7 +390,7 @@ importers:
         version: 29.5.0(@types/node@14.18.45)
       ts-jest:
         specifier: ^29.1.0
-        version: 29.1.0(jest@29.5.0)(typescript@5.0.4)
+        version: 29.1.0(@babel/core@7.22.5)(jest@29.5.0)(typescript@5.0.4)
       tsconfig:
         specifier: workspace:*
         version: link:../tsconfig
@@ -453,7 +457,7 @@ importers:
         version: github.com/TooTallNate/socksv5/d937368b28e929396166d77a06d387a4a902bd51
       ts-jest:
         specifier: ^29.1.0
-        version: 29.1.0(jest@29.5.0)(typescript@5.0.4)
+        version: 29.1.0(@babel/core@7.22.5)(jest@29.5.0)(typescript@5.0.4)
       tsconfig:
         specifier: workspace:*
         version: link:../tsconfig
@@ -473,8 +477,8 @@ importers:
         specifier: ^4.3.4
         version: 4.3.4
       socks:
-        specifier: ^2.7.1
-        version: 2.7.1
+        specifier: ^2.8.3
+        version: 2.8.3
     devDependencies:
       '@types/async-retry':
         specifier: ^1.4.5
@@ -514,7 +518,7 @@ importers:
         version: github.com/TooTallNate/socksv5/d937368b28e929396166d77a06d387a4a902bd51
       ts-jest:
         specifier: ^29.1.0
-        version: 29.1.0(jest@29.5.0)(typescript@5.0.4)
+        version: 29.1.0(@babel/core@7.22.5)(jest@29.5.0)(typescript@5.0.4)
       tsconfig:
         specifier: workspace:*
         version: link:../tsconfig
@@ -1983,7 +1987,7 @@ packages:
       '@types/yargs-parser': 21.0.0
     dev: true
 
-  /@typescript-eslint/eslint-plugin@5.60.1(@typescript-eslint/parser@5.60.1)(eslint@7.32.0):
+  /@typescript-eslint/eslint-plugin@5.60.1(@typescript-eslint/parser@5.60.1)(eslint@7.32.0)(typescript@5.1.6):
     resolution: {integrity: sha512-KSWsVvsJsLJv3c4e73y/Bzt7OpqMCADUO846bHcuWYSYM19bldbAeDv7dYyV0jwkbMfJ2XdlzwjhXtuD7OY6bw==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     peerDependencies:
@@ -1995,22 +1999,23 @@ packages:
         optional: true
     dependencies:
       '@eslint-community/regexpp': 4.5.1
-      '@typescript-eslint/parser': 5.60.1(eslint@7.32.0)
+      '@typescript-eslint/parser': 5.60.1(eslint@7.32.0)(typescript@5.1.6)
       '@typescript-eslint/scope-manager': 5.60.1
-      '@typescript-eslint/type-utils': 5.60.1(eslint@7.32.0)
-      '@typescript-eslint/utils': 5.60.1(eslint@7.32.0)
+      '@typescript-eslint/type-utils': 5.60.1(eslint@7.32.0)(typescript@5.1.6)
+      '@typescript-eslint/utils': 5.60.1(eslint@7.32.0)(typescript@5.1.6)
       debug: 4.3.4
       eslint: 7.32.0
       grapheme-splitter: 1.0.4
       ignore: 5.2.4
       natural-compare-lite: 1.4.0
       semver: 7.5.3
-      tsutils: 3.21.0
+      tsutils: 3.21.0(typescript@5.1.6)
+      typescript: 5.1.6
     transitivePeerDependencies:
       - supports-color
     dev: true
 
-  /@typescript-eslint/parser@5.60.1(eslint@7.32.0):
+  /@typescript-eslint/parser@5.60.1(eslint@7.32.0)(typescript@5.1.6):
     resolution: {integrity: sha512-pHWlc3alg2oSMGwsU/Is8hbm3XFbcrb6P5wIxcQW9NsYBfnrubl/GhVVD/Jm/t8HXhA2WncoIRfBtnCgRGV96Q==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     peerDependencies:
@@ -2022,9 +2027,10 @@ packages:
     dependencies:
       '@typescript-eslint/scope-manager': 5.60.1
       '@typescript-eslint/types': 5.60.1
-      '@typescript-eslint/typescript-estree': 5.60.1
+      '@typescript-eslint/typescript-estree': 5.60.1(typescript@5.1.6)
       debug: 4.3.4
       eslint: 7.32.0
+      typescript: 5.1.6
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -2037,7 +2043,7 @@ packages:
       '@typescript-eslint/visitor-keys': 5.60.1
     dev: true
 
-  /@typescript-eslint/type-utils@5.60.1(eslint@7.32.0):
+  /@typescript-eslint/type-utils@5.60.1(eslint@7.32.0)(typescript@5.1.6):
     resolution: {integrity: sha512-vN6UztYqIu05nu7JqwQGzQKUJctzs3/Hg7E2Yx8rz9J+4LgtIDFWjjl1gm3pycH0P3mHAcEUBd23LVgfrsTR8A==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     peerDependencies:
@@ -2047,11 +2053,12 @@ packages:
       typescript:
         optional: true
     dependencies:
-      '@typescript-eslint/typescript-estree': 5.60.1
-      '@typescript-eslint/utils': 5.60.1(eslint@7.32.0)
+      '@typescript-eslint/typescript-estree': 5.60.1(typescript@5.1.6)
+      '@typescript-eslint/utils': 5.60.1(eslint@7.32.0)(typescript@5.1.6)
       debug: 4.3.4
       eslint: 7.32.0
-      tsutils: 3.21.0
+      tsutils: 3.21.0(typescript@5.1.6)
+      typescript: 5.1.6
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -2061,7 +2068,7 @@ packages:
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     dev: true
 
-  /@typescript-eslint/typescript-estree@5.60.1:
+  /@typescript-eslint/typescript-estree@5.60.1(typescript@5.1.6):
     resolution: {integrity: sha512-hkX70J9+2M2ZT6fhti5Q2FoU9zb+GeZK2SLP1WZlvUDqdMbEKhexZODD1WodNRyO8eS+4nScvT0dts8IdaBzfw==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     peerDependencies:
@@ -2076,12 +2083,13 @@ packages:
       globby: 11.1.0
       is-glob: 4.0.3
       semver: 7.5.3
-      tsutils: 3.21.0
+      tsutils: 3.21.0(typescript@5.1.6)
+      typescript: 5.1.6
     transitivePeerDependencies:
       - supports-color
     dev: true
 
-  /@typescript-eslint/utils@5.60.1(eslint@7.32.0):
+  /@typescript-eslint/utils@5.60.1(eslint@7.32.0)(typescript@5.1.6):
     resolution: {integrity: sha512-tiJ7FFdFQOWssFa3gqb94Ilexyw0JVxj6vBzaSpfN/8IhoKkDuSAenUKvsSHw2A/TMpJb26izIszTXaqygkvpQ==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     peerDependencies:
@@ -2092,7 +2100,7 @@ packages:
       '@types/semver': 7.5.0
       '@typescript-eslint/scope-manager': 5.60.1
       '@typescript-eslint/types': 5.60.1
-      '@typescript-eslint/typescript-estree': 5.60.1
+      '@typescript-eslint/typescript-estree': 5.60.1(typescript@5.1.6)
       eslint: 7.32.0
       eslint-scope: 5.1.1
       semver: 7.5.3
@@ -3519,8 +3527,12 @@ packages:
       side-channel: 1.0.4
     dev: true
 
-  /ip@2.0.0:
-    resolution: {integrity: sha512-WKa+XuLG1A1R0UWhl2+1XQSi+fZWMsYKffMZTTYsiZaUD8k2yDAj5atimTUD2TZkyCkNEeYE5NhFZmupOGtjYQ==}
+  /ip-address@9.0.5:
+    resolution: {integrity: sha512-zHtQzGojZXTwZTHQqra+ETKd4Sn3vgi7uBmlPoXVWZqYvuKmtI0l/VZTjqGmJY9x88GGOaZ9+G9ES8hC4T4X8g==}
+    engines: {node: '>= 12'}
+    dependencies:
+      jsbn: 1.1.0
+      sprintf-js: 1.1.3
     dev: false
 
   /ipv6@3.1.3:
@@ -4278,6 +4290,10 @@ packages:
       argparse: 1.0.10
       esprima: 4.0.1
     dev: true
+
+  /jsbn@1.1.0:
+    resolution: {integrity: sha512-4bYVV3aAMtDTTu4+xsDYa6sy9GyJ69/amsu9sYF2zqjiEoZA5xJi3BrfX3uY+/IekIu7MwdObdbDWpoZdBv3/A==}
+    dev: false
 
   /jsesc@2.5.2:
     resolution: {integrity: sha512-OYu7XEzjkCQ3C5Ps3QIZsQfNpqoJyZZA99wd9aWd05NCtC5pWOkShK2mkL6HXQR6/Cy2lbNdPlZBpuQHXE63gA==}
@@ -5121,11 +5137,11 @@ packages:
       yargs: 15.4.1
     dev: true
 
-  /socks@2.7.1:
-    resolution: {integrity: sha512-7maUZy1N7uo6+WVEX6psASxtNlKaNVMlGQKkG/63nEDdLOWNbiUMoLK7X4uYoLhQstau72mLgfEWcXcwsaHbYQ==}
-    engines: {node: '>= 10.13.0', npm: '>= 3.0.0'}
+  /socks@2.8.3:
+    resolution: {integrity: sha512-l5x7VUUWbjVFbafGLxPWkYsHIhEvmF85tbIeFZWc8ZPtoMyybuEhL7Jye/ooC4/d48FgOjSJXgsF/AJPYCW8Zw==}
+    engines: {node: '>= 10.0.0', npm: '>= 3.0.0'}
     dependencies:
-      ip: 2.0.0
+      ip-address: 9.0.5
       smart-buffer: 4.2.0
     dev: false
 
@@ -5182,6 +5198,10 @@ packages:
   /sprintf-js@1.0.3:
     resolution: {integrity: sha512-D9cPgkvLlV3t3IzL0D0YLvGA9Ahk4PcvVwUbN0dSGr1aP0Nrt4AEnTUbuGvquEC0mA64Gqt1fzirlRs5ibXx8g==}
     dev: true
+
+  /sprintf-js@1.1.3:
+    resolution: {integrity: sha512-Oo+0REFV59/rz3gfJNKQiBlwfHaSESl1pcGyABQsnnIfWOFt6JNj5gCog2U6MLZ//IGYD+nA8nI+mTShREReaA==}
+    dev: false
 
   /sprintf@0.1.5:
     resolution: {integrity: sha512-4X5KsuXFQ7f+d7Y+bi4qSb6eI+YoifDTGr0MQJXRoYO7BO7evfRCjds6kk3z7l5CiJYxgDN1x5Er4WiyCt+zTQ==}
@@ -5403,7 +5423,7 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
-  /ts-jest@29.1.0(jest@29.5.0)(typescript@5.0.4):
+  /ts-jest@29.1.0(@babel/core@7.21.4)(jest@29.5.0)(typescript@5.0.4):
     resolution: {integrity: sha512-ZhNr7Z4PcYa+JjMl62ir+zPiNJfXJN6E8hSLnaUKhOgqcn8vb3e537cpkd0FuAfRK3sR1LSqM1MOhliXNgOFPA==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
     hasBin: true
@@ -5424,6 +5444,7 @@ packages:
       esbuild:
         optional: true
     dependencies:
+      '@babel/core': 7.21.4
       bs-logger: 0.2.6
       fast-json-stable-stringify: 2.1.0
       jest: 29.5.0(@types/node@14.18.45)
@@ -5436,7 +5457,7 @@ packages:
       yargs-parser: 21.1.1
     dev: true
 
-  /ts-jest@29.1.0(jest@29.5.0)(typescript@5.1.6):
+  /ts-jest@29.1.0(@babel/core@7.22.5)(jest@29.5.0)(typescript@5.0.4):
     resolution: {integrity: sha512-ZhNr7Z4PcYa+JjMl62ir+zPiNJfXJN6E8hSLnaUKhOgqcn8vb3e537cpkd0FuAfRK3sR1LSqM1MOhliXNgOFPA==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
     hasBin: true
@@ -5457,6 +5478,41 @@ packages:
       esbuild:
         optional: true
     dependencies:
+      '@babel/core': 7.22.5
+      bs-logger: 0.2.6
+      fast-json-stable-stringify: 2.1.0
+      jest: 29.5.0(@types/node@14.18.45)
+      jest-util: 29.5.0
+      json5: 2.2.3
+      lodash.memoize: 4.1.2
+      make-error: 1.3.6
+      semver: 7.5.0
+      typescript: 5.0.4
+      yargs-parser: 21.1.1
+    dev: true
+
+  /ts-jest@29.1.0(@babel/core@7.22.5)(jest@29.5.0)(typescript@5.1.6):
+    resolution: {integrity: sha512-ZhNr7Z4PcYa+JjMl62ir+zPiNJfXJN6E8hSLnaUKhOgqcn8vb3e537cpkd0FuAfRK3sR1LSqM1MOhliXNgOFPA==}
+    engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
+    hasBin: true
+    peerDependencies:
+      '@babel/core': '>=7.0.0-beta.0 <8'
+      '@jest/types': ^29.0.0
+      babel-jest: ^29.0.0
+      esbuild: '*'
+      jest: ^29.0.0
+      typescript: '>=4.3 <6'
+    peerDependenciesMeta:
+      '@babel/core':
+        optional: true
+      '@jest/types':
+        optional: true
+      babel-jest:
+        optional: true
+      esbuild:
+        optional: true
+    dependencies:
+      '@babel/core': 7.22.5
       bs-logger: 0.2.6
       fast-json-stable-stringify: 2.1.0
       jest: 29.5.0(@types/node@14.18.52)
@@ -5477,13 +5533,14 @@ packages:
     resolution: {integrity: sha512-7At1WUettjcSRHXCyYtTselblcHl9PJFFVKiCAy/bY97+BPZXSQ2wbq0P9s8tK2G7dFQfNnlJnPAiArVBVBsfA==}
     dev: false
 
-  /tsutils@3.21.0:
+  /tsutils@3.21.0(typescript@5.1.6):
     resolution: {integrity: sha512-mHKK3iUXL+3UF6xL5k0PEhKRUBKPBCv/+RkEOpjRWxxx27KKRBmmA60A9pgOUvMi8GKhRMPEmjBRPzs2W7O1OA==}
     engines: {node: '>= 6'}
     peerDependencies:
       typescript: '>=2.8.0 || >= 3.2.0-dev || >= 3.3.0-dev || >= 3.4.0-dev || >= 3.5.0-dev || >= 3.6.0-dev || >= 3.6.0-beta || >= 3.7.0-dev || >= 3.7.0-beta'
     dependencies:
       tslib: 1.14.1
+      typescript: 5.1.6
     dev: true
 
   /tty-table@4.2.1:
@@ -5937,7 +5994,3 @@ packages:
     dev: true
     bundledDependencies:
       - ipv6
-
-settings:
-  autoInstallPeers: true
-  excludeLinksFromLockfile: false
