@@ -266,15 +266,17 @@ describe('ProxyAgent', () => {
 		it('should call provided function with getProxyForUrl option', async () => {
 			let gotCall = false;
 			let urlParameter = '';
+			let reqParameter: http.ClientRequest | undefined;
 			httpsServer.once('request', function (req, res) {
 				res.end(JSON.stringify(req.headers));
 			});
 
 			const agent = new ProxyAgent({
 				rejectUnauthorized: false,
-				getProxyForUrl: (u) => {
+				getProxyForUrl: (u, r) => {
 					gotCall = true;
 					urlParameter = u;
+					reqParameter = r;
 					return httpsProxyServerUrl.href;
 				},
 			});
@@ -287,6 +289,7 @@ describe('ProxyAgent', () => {
 			assert(httpsServerUrl.host === body.host);
 			assert(gotCall);
 			assert(requestUrl.href === urlParameter);
+			assert(reqParameter?.constructor.name === 'ClientRequest');
 		});
 
 		it('should call provided function with asynchronous getProxyForUrl option', async () => {
@@ -298,7 +301,7 @@ describe('ProxyAgent', () => {
 
 			const agent = new ProxyAgent({
 				rejectUnauthorized: false,
-				getProxyForUrl: async(u) => {
+				getProxyForUrl: async (u) => {
 					gotCall = true;
 					urlParameter = u;
 					await promisify(setTimeout)(1);
