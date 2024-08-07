@@ -36,7 +36,7 @@
     "debug": "^4.3.4",
     "http-proxy-agent": "^7.0.1",
     "https-proxy-agent": "^7.0.5",
-    "lru-cache": "^7.14.1",
+    "lru-cache": "^11.0.0",
     "pac-proxy-agent": "^7.0.2",
     "proxy-from-env": "^1.1.0",
     "socks-proxy-agent": "^8.0.4"
