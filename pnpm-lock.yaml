@@ -359,9 +359,6 @@ importers:
       args:
         specifier: ^5.0.3
         version: 5.0.3
-      basic-auth-parser:
-        specifier: 0.0.2-1
-        version: 0.0.2-1
       debug:
         specifier: ^4.3.4
         version: 4.3.4
@@ -2375,10 +2372,6 @@ packages:
   /balanced-match@1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
     dev: true
-
-  /basic-auth-parser@0.0.2-1:
-    resolution: {integrity: sha512-GFj8iVxo9onSU6BnnQvVwqvxh60UcSHJEDnIk3z4B6iOjsKSmqe+ibW0Rsz7YO7IE1HG3D3tqCNIidP46SZVdQ==}
-    dev: false
 
   /basic-ftp@5.0.2:
     resolution: {integrity: sha512-NgkBwqp7rkhIUBaxLwL601lvUuBUvShJocrLYdiyTsH1WeP/wofMdooZ4p6hz+4hqiU59PBOj0EkaqELwFJLuQ==}
