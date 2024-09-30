@@ -43,7 +43,7 @@
     "async-listen": "^3.0.0",
     "ftpd": "https://files-jg1s1zt9l.n8.io/ftpd-v0.2.14.tgz",
     "jest": "^29.5.0",
-    "st": "^1.2.2",
+    "st": "^3.0.0",
     "ts-jest": "^29.1.0",
     "tsconfig": "workspace:*",
     "typescript": "^5.0.4"
