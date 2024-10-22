@@ -1,7 +1,7 @@
 import * as http from 'http';
 import * as https from 'https';
 import { URL } from 'url';
-import LRUCache from 'lru-cache';
+import { LRUCache } from 'lru-cache';
 import { Agent, AgentConnectOpts } from 'agent-base';
 import createDebug from 'debug';
 import { getProxyForUrl as envGetProxyForUrl } from 'proxy-from-env';
@@ -83,7 +83,7 @@ export class ProxyAgent extends Agent {
 	/**
 	 * Cache for `Agent` instances.
 	 */
-	cache = new LRUCache<string, Agent>({ max: 20 });
+	cache = new LRUCache<string, Agent>({ max: 20, dispose: agent => agent.destroy() });
 
 	connectOpts?: ProxyAgentOptions;
 	httpAgent: http.Agent;
