@@ -3,7 +3,7 @@ import st from 'st';
 import path from 'path';
 import http from 'http';
 import { listen } from 'async-listen';
-import { readFile } from 'fs-extra';
+import { readFile } from 'fs/promises';
 import { getUri } from '../src';
 import { toBuffer } from './util';
 

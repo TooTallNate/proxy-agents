@@ -1,7 +1,7 @@
 import { basename, join } from 'path';
 import { FtpServer } from 'ftpd';
 import { getUri } from '../src';
-import { readFile } from 'fs-extra';
+import { readFile } from 'fs/promises';
 import { toBuffer } from './util';
 
 describe('get-uri', () => {
