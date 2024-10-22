@@ -96,7 +96,8 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 				this.connectOpts.servername || this.connectOpts.host;
 			socket = tls.connect({
 				...this.connectOpts,
-				servername,
+				servername:
+					servername && net.isIP(servername) ? undefined : servername,
 			});
 		} else {
 			debug('Creating `net.Socket`: %o', this.connectOpts);
@@ -150,7 +151,7 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 				return tls.connect({
 					...omit(opts, 'host', 'path', 'port'),
 					socket,
-					servername,
+					servername: net.isIP(servername) ? undefined : servername,
 				});
 			}
 
