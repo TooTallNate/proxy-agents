@@ -180,6 +180,7 @@ export class PacProxyAgent<Uri extends string> extends Agent {
 		opts: AgentConnectOpts
 	): Promise<http.Agent | net.Socket> {
 		const { secureEndpoint } = opts;
+		const isWebSocket = req.getHeader('upgrade') === 'websocket';
 
 		// First, get a generated `FindProxyForURL()` function,
 		// either cached or retrieved from the source
@@ -261,7 +262,7 @@ export class PacProxyAgent<Uri extends string> extends Agent {
 				const proxyURL = `${
 					type === 'HTTPS' ? 'https' : 'http'
 				}://${target}`;
-				if (secureEndpoint) {
+				if (secureEndpoint || isWebSocket) {
 					agent = new HttpsProxyAgent(proxyURL, this.opts);
 				} else {
 					agent = new HttpProxyAgent(proxyURL, this.opts);
