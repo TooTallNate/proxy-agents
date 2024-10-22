@@ -92,8 +92,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/TooTallNate/proxy-agents.git",
-    "directory": "packages/socks-proxy-agent"
+    "url": "https://github.com/TooTallNate/proxy-agents/tree/main/packages/socks-proxy-agent"
   },
   "keywords": [
     "agent",
