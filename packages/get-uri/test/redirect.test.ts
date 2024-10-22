@@ -4,7 +4,8 @@ import path from 'path';
 import http from 'http';
 import https from 'https';
 import { listen } from 'async-listen';
-import { readFile, readFileSync } from 'fs-extra';
+import { readFile } from 'fs/promises';
+import { readFileSync } from 'fs';
 import { getUri } from '../src';
 import { toBuffer } from './util';
 

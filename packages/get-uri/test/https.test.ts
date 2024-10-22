@@ -1,4 +1,5 @@
-import { readFile, readFileSync } from 'fs-extra';
+import { readFile } from 'fs/promises';
+import { readFileSync } from 'fs';
 // @ts-expect-error no `@types/st`
 import st from 'st';
 import path from 'path';

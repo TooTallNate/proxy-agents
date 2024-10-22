@@ -1,7 +1,6 @@
 import { Readable } from 'stream';
 import createDebug from 'debug';
-import { Stats, createReadStream } from 'fs';
-import { fstat, open } from 'fs-extra';
+import { Stats, createReadStream, promises as fsPromises } from 'fs';
 import { GetUriProtocol } from './';
 import NotFoundError from './notfound';
 import NotModifiedError from './notmodified';
@@ -42,11 +41,12 @@ export const file: GetUriProtocol<FileOptions> = async (
 
 		// `open()` first to get a file descriptor and ensure that the file
 		// exists.
-		const fd = await open(filepath, flags, mode);
+		const fdHandle = await fsPromises.open(filepath, flags, mode);
+		// extract the numeric file descriptor
+		const fd = fdHandle.fd;
 
-		// Now `fstat()` to check the `mtime` and store the stat object for
-		// the cache.
-		const stat = await fstat(fd);
+		// store the stat object for the cache.
+		const stat = await fdHandle.stat();
 
 		// if a `cache` was provided, check if the file has not been modified
 		if (cache && cache.stat && stat && isNotModified(cache.stat, stat)) {
@@ -55,8 +55,7 @@ export const file: GetUriProtocol<FileOptions> = async (
 
 		// `fs.ReadStream` takes care of calling `fs.close()` on the
 		// fd after it's done reading
-		// @ts-expect-error `@types/node` doesn't allow `null` as file path :/
-		const rs = createReadStream(null, {
+		const rs = createReadStream(filepath, {
 			autoClose: true,
 			...opts,
 			fd,

@@ -1,6 +1,6 @@
 import { join } from 'path';
 import { pathToFileURL } from 'url';
-import { readFile } from 'fs-extra';
+import { readFile } from 'fs/promises';
 import { getUri } from '../src';
 import { toBuffer } from './util';
 
