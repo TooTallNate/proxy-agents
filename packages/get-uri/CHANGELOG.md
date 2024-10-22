@@ -1,5 +1,11 @@
 # get-uri
 
+## 6.0.4
+
+### Patch Changes
+
+- 7dc2681: Removed `fs-extra` dependency and implemented its features using native Node.js functionality.
+
 ## 6.0.3
 
 ### Patch Changes
