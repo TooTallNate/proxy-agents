@@ -5,7 +5,7 @@ import * as crypto from 'crypto';
 import { once } from 'events';
 import createDebug from 'debug';
 import { Readable } from 'stream';
-import { format, URL } from 'url';
+import { URL } from 'url';
 import { Agent, AgentConnectOpts, toBuffer } from 'agent-base';
 import { HttpProxyAgent, HttpProxyAgentOptions } from 'http-proxy-agent';
 import { HttpsProxyAgent, HttpsProxyAgentOptions } from 'https-proxy-agent';
@@ -103,7 +103,7 @@ export class PacProxyAgent<Uri extends string> extends Agent {
 	 *
 	 * @api private
 	 */
-	private getResolver(): Promise<FindProxyForURL> {
+	private async getResolver(): Promise<FindProxyForURL> {
 		if (!this.resolverPromise) {
 			this.resolverPromise = this.loadResolver();
 			this.resolverPromise.then(
@@ -195,23 +195,14 @@ export class PacProxyAgent<Uri extends string> extends Agent {
 			path = path.substring(0, firstQuestion);
 		}
 
-		const urlOpts = {
-			...opts,
-			protocol: secureEndpoint ? 'https:' : 'http:',
-			pathname: path,
-			search,
+		const protocol = secureEndpoint ? 'https:' : 'http:';
+		const url = new URL(`${protocol}//${opts.host}`);
+		const port = defaultPort === opts.port ? null : String(opts.port);
+		url.port = port || url.port;
+		url.pathname = path;
+		url.search = search || url.search;
 
-			// need to use `hostname` instead of `host` otherwise `port` is ignored
-			hostname: opts.host,
-			host: null,
-			href: null,
-
-			// set `port` to null when it is the protocol default port (80 / 443)
-			port: defaultPort === opts.port ? null : opts.port,
-		};
-		const url = format(urlOpts);
-
-		debug('url: %o', url);
+		debug('url: %o', url.toString());
 		let result = await resolver(url);
 
 		// Default to "DIRECT" if a falsey value was returned (or nothing)
