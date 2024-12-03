@@ -103,7 +103,7 @@ export class PacProxyAgent<Uri extends string> extends Agent {
 	 *
 	 * @api private
 	 */
-	private async getResolver(): Promise<FindProxyForURL> {
+	private getResolver(): Promise<FindProxyForURL> {
 		if (!this.resolverPromise) {
 			this.resolverPromise = this.loadResolver();
 			this.resolverPromise.then(
