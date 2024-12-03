@@ -20,5 +20,6 @@
     "eslint-config-turbo": "^1.9.3",
     "prettier": "^2.8.8",
     "turbo": "^1.10.8"
-  }
+  },
+  "lk/whats-up-with-pr-ci": 1
 }
