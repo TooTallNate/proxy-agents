@@ -179,6 +179,10 @@ export class PacProxyAgent<Uri extends string> extends Agent {
 		req: http.ClientRequest,
 		opts: AgentConnectOpts
 	): Promise<http.Agent | net.Socket> {
+		if (!opts.host) {
+			throw new Error('Host cannot be empty');
+		}
+
 		const { secureEndpoint } = opts;
 
 		// First, get a generated `FindProxyForURL()` function,
@@ -195,8 +199,18 @@ export class PacProxyAgent<Uri extends string> extends Agent {
 			path = path.substring(0, firstQuestion);
 		}
 
+		const formatHost = (host: string) => {
+			if (
+				host.includes(':') &&
+				!(host.startsWith('[') && host.endsWith(']'))
+			) {
+				return `[${host}]`;
+			}
+			return host;
+		};
+
 		const protocol = secureEndpoint ? 'https:' : 'http:';
-		const url = new URL(`${protocol}//${opts.host}`);
+		const url = new URL(`${protocol}//${formatHost(opts.host)}`);
 		const port = defaultPort === opts.port ? null : String(opts.port);
 		url.port = port || url.port;
 		url.pathname = path;
