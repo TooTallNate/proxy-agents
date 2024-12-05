@@ -5,47 +5,57 @@ import LRUCache from 'lru-cache';
 import { Agent, AgentConnectOpts } from 'agent-base';
 import createDebug from 'debug';
 import { getProxyForUrl as envGetProxyForUrl } from 'proxy-from-env';
-import { PacProxyAgent, PacProxyAgentOptions } from 'pac-proxy-agent';
-import { HttpProxyAgent, HttpProxyAgentOptions } from 'http-proxy-agent';
-import { HttpsProxyAgent, HttpsProxyAgentOptions } from 'https-proxy-agent';
-import { SocksProxyAgent, SocksProxyAgentOptions } from 'socks-proxy-agent';
+import type { PacProxyAgent, PacProxyAgentOptions } from 'pac-proxy-agent';
+import type { HttpProxyAgent, HttpProxyAgentOptions } from 'http-proxy-agent';
+import type { HttpsProxyAgent, HttpsProxyAgentOptions } from 'https-proxy-agent';
+import type { SocksProxyAgent, SocksProxyAgentOptions } from 'socks-proxy-agent';
 
 const debug = createDebug('proxy-agent');
 
-const PROTOCOLS = [
-	...HttpProxyAgent.protocols,
-	...SocksProxyAgent.protocols,
-	...PacProxyAgent.protocols,
-] as const;
+type ValidProtocol =
+	| (typeof HttpProxyAgent.protocols)[number]
+	| (typeof HttpsProxyAgent.protocols)[number]
+  | (typeof SocksProxyAgent.protocols)[number]
+  | (typeof PacProxyAgent.protocols)[number];
 
-type ValidProtocol = (typeof PROTOCOLS)[number];
-
-type AgentConstructor = new (...args: never[]) => Agent;
+type AgentConstructor = new (proxy: string, proxyAgentOptions?: ProxyAgentOptions) => Agent;
 
 type GetProxyForUrlCallback = (url: string) => string | Promise<string>;
+
+/**
+ * Shorthands for built-in supported types.
+ * Lazily loaded since some of these imports can be quite expensive
+ * (in particular, pac-proxy-agent).
+ */
+const wellKnownAgents = {
+	http: async () => (await import('http-proxy-agent')).HttpProxyAgent,
+	https: async () => (await import('https-proxy-agent')).HttpsProxyAgent,
+	socks: async () => (await import('socks-proxy-agent')).SocksProxyAgent,
+	pac: async () => (await import('pac-proxy-agent')).PacProxyAgent,
+} as const;
 
 /**
  * Supported proxy types.
  */
 export const proxies: {
-	[P in ValidProtocol]: [AgentConstructor, AgentConstructor];
+	[P in ValidProtocol]: [() => Promise<AgentConstructor>, () => Promise<AgentConstructor>];
 } = {
-	http: [HttpProxyAgent, HttpsProxyAgent],
-	https: [HttpProxyAgent, HttpsProxyAgent],
-	socks: [SocksProxyAgent, SocksProxyAgent],
-	socks4: [SocksProxyAgent, SocksProxyAgent],
-	socks4a: [SocksProxyAgent, SocksProxyAgent],
-	socks5: [SocksProxyAgent, SocksProxyAgent],
-	socks5h: [SocksProxyAgent, SocksProxyAgent],
-	'pac+data': [PacProxyAgent, PacProxyAgent],
-	'pac+file': [PacProxyAgent, PacProxyAgent],
-	'pac+ftp': [PacProxyAgent, PacProxyAgent],
-	'pac+http': [PacProxyAgent, PacProxyAgent],
-	'pac+https': [PacProxyAgent, PacProxyAgent],
+	http: [wellKnownAgents.http, wellKnownAgents.https],
+	https: [wellKnownAgents.http, wellKnownAgents.https],
+	socks: [wellKnownAgents.socks, wellKnownAgents.socks],
+	socks4: [wellKnownAgents.socks, wellKnownAgents.socks],
+	socks4a: [wellKnownAgents.socks, wellKnownAgents.socks],
+	socks5: [wellKnownAgents.socks, wellKnownAgents.socks],
+	socks5h: [wellKnownAgents.socks, wellKnownAgents.socks],
+	'pac+data': [wellKnownAgents.pac, wellKnownAgents.pac],
+	'pac+file': [wellKnownAgents.pac, wellKnownAgents.pac],
+	'pac+ftp': [wellKnownAgents.pac, wellKnownAgents.pac],
+	'pac+http': [wellKnownAgents.pac, wellKnownAgents.pac],
+	'pac+https': [wellKnownAgents.pac, wellKnownAgents.pac],
 };
 
 function isValidProtocol(v: string): v is ValidProtocol {
-	return (PROTOCOLS as readonly string[]).includes(v);
+	return Object.keys(proxies).includes(v);
 }
 
 export type ProxyAgentOptions = HttpProxyAgentOptions<''> &
@@ -138,8 +148,7 @@ export class ProxyAgent extends Agent {
 				throw new Error(`Unsupported protocol for proxy URL: ${proxy}`);
 			}
 			const ctor =
-				proxies[proxyProto][secureEndpoint || isWebSocket ? 1 : 0];
-			// @ts-expect-error meh…
+				await proxies[proxyProto][secureEndpoint || isWebSocket ? 1 : 0]();
 			agent = new ctor(proxy, this.connectOpts);
 			this.cache.set(cacheKey, agent);
 		} else {
