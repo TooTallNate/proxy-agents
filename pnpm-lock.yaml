@@ -273,7 +273,7 @@ importers:
         version: 4.3.4
       get-uri:
         specifier: ^6.0.1
-        version: link:../get-uri
+        version: 6.0.4
       http-proxy-agent:
         specifier: ^7.0.0
         version: link:../http-proxy-agent
@@ -408,7 +408,7 @@ importers:
         version: link:../https-proxy-agent
       lru-cache:
         specifier: ^7.14.1
-        version: 7.14.1
+        version: 7.18.3
       pac-proxy-agent:
         specifier: ^7.0.2
         version: link:../pac-proxy-agent
@@ -2687,6 +2687,11 @@ packages:
     engines: {node: '>=0.4.0'}
     dev: true
 
+  /data-uri-to-buffer@6.0.2:
+    resolution: {integrity: sha512-7hvf7/GW8e86rW0ptuwS3OcBGDjIi6SZva7hCyWC0yYry2cOPmLIjXAUHI6DK2HsnwJd9ifmt57i8eV2n4YNpw==}
+    engines: {node: '>= 14'}
+    dev: false
+
   /dateformat@1.0.7-1.2.3:
     resolution: {integrity: sha512-rzAoghPcnojOgYhvqb9ZYR5Ws9hDM2SGB6xLSUX9pEAKYnbxyexHZypDLgx3+SF3SR+at6waVRCxKDm6q2Z6+g==}
     dev: true
@@ -3304,6 +3309,17 @@ packages:
       call-bind: 1.0.2
       get-intrinsic: 1.2.1
     dev: true
+
+  /get-uri@6.0.4:
+    resolution: {integrity: sha512-E1b1lFFLvLgak2whF2xDBcOy6NLVGZBqqjJjsIhvopKfWWEi64pLVTWWehV8KlLerZkfNTA95sTe2OdJKm1OzQ==}
+    engines: {node: '>= 14'}
+    dependencies:
+      basic-ftp: 5.0.2
+      data-uri-to-buffer: 6.0.2
+      debug: 4.3.4
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
 
   /glob-parent@5.1.2:
     resolution: {integrity: sha512-AOIgSQCepiJYwP3ARnGx+5VnTu2HBYdzbGP45eLw1vr3zB3vZLeyed1sC9hnbcOc9/SrMyM5RPQrkGz4aS9Zow==}
@@ -4414,8 +4430,8 @@ packages:
       yallist: 4.0.0
     dev: true
 
-  /lru-cache@7.14.1:
-    resolution: {integrity: sha512-ysxwsnTKdAx96aTRdhDOCQfDgbHnt8SK0KY8SEjO0wHinhWOFTESbjVCMPbU1uGXg/ch4lifqx0wfjOawU2+WA==}
+  /lru-cache@7.18.3:
+    resolution: {integrity: sha512-jumlc0BIUrS3qJGgIkWZsyfAM7NCWiBcCDhnd+3NNM5KbBmLTgHVfWBcg6W+rLUsIpzpERPsvwUP7CckAQSOoA==}
     engines: {node: '>=12'}
     dev: false
 
