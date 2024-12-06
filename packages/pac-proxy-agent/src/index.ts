@@ -24,6 +24,23 @@ import { getQuickJS } from '@tootallnate/quickjs-emscripten';
 
 const debug = createDebug('pac-proxy-agent');
 
+const setServernameFromNonIpHost = <
+	T extends { host?: string; servername?: string }
+>(
+	options: T
+) => {
+	if (
+		options.servername === undefined &&
+		options.host &&
+		!net.isIP(options.host)
+	) {
+		return {
+			...options,
+			servername: options.host,
+		};
+	}
+	return options;
+};
 type Protocols = keyof typeof gProtocols;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -238,11 +255,7 @@ export class PacProxyAgent<Uri extends string> extends Agent {
 			if (type === 'DIRECT') {
 				// Direct connection to the destination endpoint
 				if (secureEndpoint) {
-					const servername = opts.servername || opts.host;
-					socket = tls.connect({
-						...opts,
-						servername,
-					});
+					socket = tls.connect(setServernameFromNonIpHost(opts));
 				} else {
 					socket = net.connect(opts);
 				}
