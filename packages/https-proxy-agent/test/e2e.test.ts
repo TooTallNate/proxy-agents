@@ -9,8 +9,7 @@ interface NordVPNServer {
 	locations: {
 		country: {
 			code: string;
-		}
-
+		};
 	}[];
 	technologies: {
 		identifier: string;

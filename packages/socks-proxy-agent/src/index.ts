@@ -79,8 +79,7 @@ export type SocksProxyAgentOptions = Omit<
 	'ipaddress' | 'host' | 'port' | 'type' | 'userId' | 'password'
 > & {
 	socketOptions?: SocksSocketOptions;
-} &
-	http.AgentOptions;
+} & http.AgentOptions;
 
 export class SocksProxyAgent extends Agent {
 	static protocols = [
