@@ -1,6 +1,6 @@
 import { makeDataUriToBuffer } from './common';
 
-export type { ParsedDataURI } from  './common';
+export type { ParsedDataURI } from './common';
 
 function nodeBuffertoArrayBuffer(nodeBuf: Buffer) {
 	if (nodeBuf.byteLength === nodeBuf.buffer.byteLength) {
@@ -25,4 +25,7 @@ function stringToBuffer(str: string): ArrayBuffer {
  *
  * @param {String} uri Data URI to turn into a Buffer instance
  */
-export const dataUriToBuffer = makeDataUriToBuffer({ stringToBuffer, base64ToArrayBuffer });
+export const dataUriToBuffer = makeDataUriToBuffer({
+	stringToBuffer,
+	base64ToArrayBuffer,
+});

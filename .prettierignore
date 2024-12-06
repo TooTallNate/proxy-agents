@@ -1,2 +1,5 @@
 packages/*/dist
 packages/degenerator/test/*.js
+*.md
+*.pac
+pnpm-lock.yaml

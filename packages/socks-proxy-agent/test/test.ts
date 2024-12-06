@@ -108,7 +108,9 @@ describe('SocksProxyAgent', () => {
 			httpServer.once('request', (req, res) => res.end());
 
 			const res = await req(new URL('/foo', httpServerUrl), {
-				agent: new SocksProxyAgent(socksServerUrl, { socketOptions: { family: 6 } }),
+				agent: new SocksProxyAgent(socksServerUrl, {
+					socketOptions: { family: 6 },
+				}),
 			});
 			assert(res);
 		});
@@ -117,13 +119,18 @@ describe('SocksProxyAgent', () => {
 			let err: Error | undefined;
 			try {
 				await req(new URL('/foo', httpServerUrl), {
-					agent: new SocksProxyAgent(socksServerUrl, { socketOptions: { family: 4 } }),
+					agent: new SocksProxyAgent(socksServerUrl, {
+						socketOptions: { family: 4 },
+					}),
 				});
 			} catch (_err) {
 				err = _err as Error;
 			}
 			assert(err);
-			assert.equal(err.message, `connect ECONNREFUSED 127.0.0.1:${socksServerUrl.port}`);
+			assert.equal(
+				err.message,
+				`connect ECONNREFUSED 127.0.0.1:${socksServerUrl.port}`
+			);
 		});
 	});
 
@@ -161,9 +168,9 @@ describe('SocksProxyAgent', () => {
 				)
 			);
 
-			socksServerUrl.username = 'nodejs'
-			socksServerUrl.password = 'rules!'
-			console.log(socksServerUrl.href)
+			socksServerUrl.username = 'nodejs';
+			socksServerUrl.password = 'rules!';
+			console.log(socksServerUrl.href);
 
 			httpServer.once('request', function (req, res) {
 				assert.equal('/foo', req.url);
@@ -180,7 +187,6 @@ describe('SocksProxyAgent', () => {
 
 			const body = await json(res);
 			assert.equal('bar', body.foo);
-
 		});
 
 		it('should emit "error" event if username/password auth fails', async () => {
@@ -199,8 +205,8 @@ describe('SocksProxyAgent', () => {
 				)
 			);
 
-			socksServerUrl.username = 'nodejs'
-			socksServerUrl.password = 'bad'
+			socksServerUrl.username = 'nodejs';
+			socksServerUrl.password = 'bad';
 
 			let err: Error | undefined;
 			try {

@@ -7,28 +7,35 @@ export const ip = {
 		// Default to `ipv4`
 		const family = normalizeFamily();
 
-		const all = Object.values(interfaces).map((addrs = []) => {
-			const addresses = addrs.filter((details) => {
-				const detailsFamily = normalizeFamily(details.family);
-				if (detailsFamily !== family || ip.isLoopback(details.address)) {
-					return false;
-				}
-				return true;
+		const all = Object.values(interfaces)
+			.map((addrs = []) => {
+				const addresses = addrs.filter((details) => {
+					const detailsFamily = normalizeFamily(details.family);
+					if (
+						detailsFamily !== family ||
+						ip.isLoopback(details.address)
+					) {
+						return false;
+					}
+					return true;
+				});
 
-			});
+				return addresses.length ? addresses[0].address : undefined;
+			})
+			.filter(Boolean);
 
-			return addresses.length ? addresses[0].address : undefined;
-		}).filter(Boolean);
-
-		return !all.length ? ip.loopback(family) : all[0] as string;
+		return !all.length ? ip.loopback(family) : (all[0] as string);
 	},
 
 	isLoopback(addr: string): boolean {
-		return /^(::f{4}:)?127\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})/
-			.test(addr)
-			|| /^fe80::1$/.test(addr)
-			|| /^::1$/.test(addr)
-			|| /^::$/.test(addr);
+		return (
+			/^(::f{4}:)?127\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})/.test(
+				addr
+			) ||
+			/^fe80::1$/.test(addr) ||
+			/^::1$/.test(addr) ||
+			/^::$/.test(addr)
+		);
 	},
 
 	loopback(family: IpFamily): string {
@@ -40,8 +47,7 @@ export const ip = {
 		}
 
 		return family === 'ipv4' ? '127.0.0.1' : 'fe80::1';
-	}
-
+	},
 };
 
 function normalizeFamily(family?: unknown): IpFamily {
@@ -51,7 +57,7 @@ function normalizeFamily(family?: unknown): IpFamily {
 	if (family === 6) {
 		return 'ipv6';
 	}
-	return family ? (family as string).toLowerCase() as IpFamily : 'ipv4';
+	return family ? ((family as string).toLowerCase() as IpFamily) : 'ipv4';
 }
 
-type IpFamily = 'ipv4' | 'ipv6'
+type IpFamily = 'ipv4' | 'ipv6';

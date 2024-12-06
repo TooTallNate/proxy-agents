@@ -71,6 +71,29 @@ jobs:
 
       - name: Run Lint
         run: pnpm lint
+        id: lint
+        continue-on-error: true
+
+      - name: Run Format
+        run: pnpm format:check
+        id: format
+        continue-on-error: true
+
+      - name: Check Results
+        run: |
+          declare -A OUTCOMES=(
+            [lint]="${{ steps.lint.outcome }}"
+            [format]="${{ steps.format.outcome }}"
+          )
+          STATUS=0
+          for STEP in "${!OUTCOMES[@]}"; do
+            OUTCOME="${OUTCOMES[$STEP]}"
+            echo "$STEP: $OUTCOME"
+            if [ "$OUTCOME" != "success" ]; then
+              STATUS=1
+            fi
+          done
+          exit $STATUS
 
   e2e:
     name: E2E

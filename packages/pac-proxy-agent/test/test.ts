@@ -188,7 +188,10 @@ describe('PacProxyAgent', () => {
 			)}`;
 			const agent = new PacProxyAgent(uri);
 
-			const res = await req(new URL('/test', httpServerUrl), { agent, headers: { upgrade: 'websocket' } });
+			const res = await req(new URL('/test', httpServerUrl), {
+				agent,
+				headers: { upgrade: 'websocket' },
+			});
 			const data = await json(res);
 			assert.equal(httpServerUrl.host, data.host);
 			assert(!('via' in data)); // Used CONNECT rather than plain HTTP proxy

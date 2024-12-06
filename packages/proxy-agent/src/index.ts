@@ -7,18 +7,27 @@ import createDebug from 'debug';
 import { getProxyForUrl as envGetProxyForUrl } from 'proxy-from-env';
 import type { PacProxyAgent, PacProxyAgentOptions } from 'pac-proxy-agent';
 import type { HttpProxyAgent, HttpProxyAgentOptions } from 'http-proxy-agent';
-import type { HttpsProxyAgent, HttpsProxyAgentOptions } from 'https-proxy-agent';
-import type { SocksProxyAgent, SocksProxyAgentOptions } from 'socks-proxy-agent';
+import type {
+	HttpsProxyAgent,
+	HttpsProxyAgentOptions,
+} from 'https-proxy-agent';
+import type {
+	SocksProxyAgent,
+	SocksProxyAgentOptions,
+} from 'socks-proxy-agent';
 
 const debug = createDebug('proxy-agent');
 
 type ValidProtocol =
 	| (typeof HttpProxyAgent.protocols)[number]
 	| (typeof HttpsProxyAgent.protocols)[number]
-  | (typeof SocksProxyAgent.protocols)[number]
-  | (typeof PacProxyAgent.protocols)[number];
+	| (typeof SocksProxyAgent.protocols)[number]
+	| (typeof PacProxyAgent.protocols)[number];
 
-type AgentConstructor = new (proxy: string, proxyAgentOptions?: ProxyAgentOptions) => Agent;
+type AgentConstructor = new (
+	proxy: string,
+	proxyAgentOptions?: ProxyAgentOptions
+) => Agent;
 
 type GetProxyForUrlCallback = (
 	url: string,
@@ -41,7 +50,10 @@ const wellKnownAgents = {
  * Supported proxy types.
  */
 export const proxies: {
-	[P in ValidProtocol]: [() => Promise<AgentConstructor>, () => Promise<AgentConstructor>];
+	[P in ValidProtocol]: [
+		() => Promise<AgentConstructor>,
+		() => Promise<AgentConstructor>
+	];
 } = {
 	http: [wellKnownAgents.http, wellKnownAgents.https],
 	https: [wellKnownAgents.http, wellKnownAgents.https],
@@ -150,8 +162,9 @@ export class ProxyAgent extends Agent {
 			if (!isValidProtocol(proxyProto)) {
 				throw new Error(`Unsupported protocol for proxy URL: ${proxy}`);
 			}
-			const ctor =
-				await proxies[proxyProto][secureEndpoint || isWebSocket ? 1 : 0]();
+			const ctor = await proxies[proxyProto][
+				secureEndpoint || isWebSocket ? 1 : 0
+			]();
 			agent = new ctor(proxy, this.connectOpts);
 			this.cache.set(cacheKey, agent);
 		} else {
