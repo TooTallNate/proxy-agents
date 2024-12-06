@@ -190,33 +190,16 @@ export class PacProxyAgent<Uri extends string> extends Agent {
 		const resolver = await this.getResolver();
 
 		// Calculate the `url` parameter
-		const defaultPort = secureEndpoint ? 443 : 80;
-		let path = req.path;
-		let search: string | null = null;
-		const firstQuestion = path.indexOf('?');
-		if (firstQuestion !== -1) {
-			search = path.substring(firstQuestion);
-			path = path.substring(0, firstQuestion);
-		}
-
-		const formatHost = (host: string) => {
-			if (
-				host.includes(':') &&
-				!(host.startsWith('[') && host.endsWith(']'))
-			) {
-				return `[${host}]`;
-			}
-			return host;
-		};
-
 		const protocol = secureEndpoint ? 'https:' : 'http:';
-		const url = new URL(`${protocol}//${formatHost(opts.host)}`);
-		const port = defaultPort === opts.port ? null : String(opts.port);
-		url.port = port || url.port;
-		url.pathname = path;
-		url.search = search || url.search;
+		const host =
+			opts.host && net.isIPv6(opts.host) ? `[${opts.host}]` : opts.host;
+		const defaultPort = secureEndpoint ? 443 : 80;
+		const url = Object.assign(
+			new URL(req.path, `${protocol}//${host}`),
+			defaultPort ? undefined : { port: opts.port }
+		);
 
-		debug('url: %o', url.toString());
+		debug('url: %s', url);
 		let result = await resolver(url);
 
 		// Default to "DIRECT" if a falsey value was returned (or nothing)
