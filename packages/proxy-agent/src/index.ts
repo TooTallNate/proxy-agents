@@ -20,7 +20,10 @@ type ValidProtocol =
 
 type AgentConstructor = new (proxy: string, proxyAgentOptions?: ProxyAgentOptions) => Agent;
 
-type GetProxyForUrlCallback = (url: string) => string | Promise<string>;
+type GetProxyForUrlCallback = (
+	url: string,
+	req: http.ClientRequest
+) => string | Promise<string>;
 
 /**
  * Shorthands for built-in supported types.
@@ -128,7 +131,7 @@ export class ProxyAgent extends Agent {
 			: 'http:';
 		const host = req.getHeader('host');
 		const url = new URL(req.path, `${protocol}//${host}`).href;
-		const proxy = await this.getProxyForUrl(url);
+		const proxy = await this.getProxyForUrl(url, req);
 
 		if (!proxy) {
 			debug('Proxy not enabled for URL: %o', url);
