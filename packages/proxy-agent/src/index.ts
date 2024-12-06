@@ -72,7 +72,7 @@ export type ProxyAgentOptions = HttpProxyAgentOptions<''> &
 		 * Defaults to standard proxy environment variables,
 		 * see https://www.npmjs.com/package/proxy-from-env for details
 		 */
-		getProxyForUrl: GetProxyForUrlCallback;
+		getProxyForUrl?: GetProxyForUrlCallback;
 	};
 
 /**
@@ -93,7 +93,7 @@ export class ProxyAgent extends Agent {
 	httpsAgent: http.Agent;
 	getProxyForUrl: GetProxyForUrlCallback;
 
-	constructor(opts: ProxyAgentOptions) {
+	constructor(opts?: ProxyAgentOptions) {
 		super(opts);
 		debug('Creating new ProxyAgent instance: %o', opts);
 		this.connectOpts = opts;
