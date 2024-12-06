@@ -7,9 +7,9 @@ import createDebug from 'debug';
 import { Readable } from 'stream';
 import { URL } from 'url';
 import { Agent, AgentConnectOpts, toBuffer } from 'agent-base';
-import { HttpProxyAgent, HttpProxyAgentOptions } from 'http-proxy-agent';
-import { HttpsProxyAgent, HttpsProxyAgentOptions } from 'https-proxy-agent';
-import { SocksProxyAgent, SocksProxyAgentOptions } from 'socks-proxy-agent';
+import type { HttpProxyAgentOptions } from 'http-proxy-agent';
+import type { HttpsProxyAgentOptions } from 'https-proxy-agent';
+import type { SocksProxyAgentOptions } from 'socks-proxy-agent';
 import {
 	getUri,
 	protocols as gProtocols,
@@ -41,6 +41,7 @@ const setServernameFromNonIpHost = <
 	}
 	return options;
 };
+
 type Protocols = keyof typeof gProtocols;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -245,9 +246,11 @@ export class PacProxyAgent<Uri extends string> extends Agent {
 				}
 			} else if (type === 'SOCKS' || type === 'SOCKS5') {
 				// Use a SOCKSv5h proxy
+				const { SocksProxyAgent } = await import('socks-proxy-agent');
 				agent = new SocksProxyAgent(`socks://${target}`, this.opts);
 			} else if (type === 'SOCKS4') {
 				// Use a SOCKSv4a proxy
+				const { SocksProxyAgent } = await import('socks-proxy-agent');
 				agent = new SocksProxyAgent(`socks4a://${target}`, this.opts);
 			} else if (
 				type === 'PROXY' ||
@@ -260,8 +263,12 @@ export class PacProxyAgent<Uri extends string> extends Agent {
 					type === 'HTTPS' ? 'https' : 'http'
 				}://${target}`;
 				if (secureEndpoint || isWebSocket) {
+					const { HttpsProxyAgent } = await import(
+						'https-proxy-agent'
+					);
 					agent = new HttpsProxyAgent(proxyURL, this.opts);
 				} else {
+					const { HttpProxyAgent } = await import('http-proxy-agent');
 					agent = new HttpProxyAgent(proxyURL, this.opts);
 				}
 			}
