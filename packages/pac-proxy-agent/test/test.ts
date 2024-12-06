@@ -174,6 +174,27 @@ describe('PacProxyAgent', () => {
 			assert('via' in data);
 		});
 
+		it('should work over an HTTP proxy for WebSockets', async () => {
+			httpServer.once('request', function (req, res) {
+				res.end(JSON.stringify(req.headers));
+			});
+
+			function FindProxyForURL() {
+				return 'PROXY localhost:PORT;';
+			}
+
+			const uri = `data:,${encodeURIComponent(
+				FindProxyForURL.toString().replace('PORT', proxyServerUrl.port)
+			)}`;
+			const agent = new PacProxyAgent(uri);
+
+			const res = await req(new URL('/test', httpServerUrl), { agent, headers: { upgrade: 'websocket' } });
+			const data = await json(res);
+			assert.equal(httpServerUrl.host, data.host);
+			assert(!('via' in data)); // Used CONNECT rather than plain HTTP proxy
+			assert.equal(data.upgrade, 'websocket');
+		});
+
 		it('should work over a SOCKS proxy', async () => {
 			httpServer.once('request', function (req, res) {
 				res.end(JSON.stringify(req.headers));
