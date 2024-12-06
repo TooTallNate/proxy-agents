@@ -10,6 +10,24 @@ import type { OutgoingHttpHeaders } from 'http';
 
 const debug = createDebug('https-proxy-agent');
 
+const setServernameFromNonIpHost = <
+	T extends { host?: string; servername?: string }
+>(
+	options: T
+) => {
+	if (
+		options.servername === undefined &&
+		options.host &&
+		!net.isIP(options.host)
+	) {
+		return {
+			...options,
+			servername: options.host,
+		};
+	}
+	return options;
+};
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 type Protocol<T> = T extends `${infer Protocol}:${infer _}` ? Protocol : never;
 
@@ -92,12 +110,7 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 		let socket: net.Socket;
 		if (proxy.protocol === 'https:') {
 			debug('Creating `tls.Socket`: %o', this.connectOpts);
-			const servername =
-				this.connectOpts.servername || this.connectOpts.host;
-			socket = tls.connect({
-				...this.connectOpts,
-				servername,
-			});
+			socket = tls.connect(setServernameFromNonIpHost(this.connectOpts));
 		} else {
 			debug('Creating `net.Socket`: %o', this.connectOpts);
 			socket = net.connect(this.connectOpts);
@@ -146,11 +159,14 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 				// The proxy is connecting to a TLS server, so upgrade
 				// this socket connection to a TLS connection.
 				debug('Upgrading socket connection to TLS');
-				const servername = opts.servername || opts.host;
 				return tls.connect({
-					...omit(opts, 'host', 'path', 'port'),
+					...omit(
+						setServernameFromNonIpHost(opts),
+						'host',
+						'path',
+						'port'
+					),
 					socket,
-					servername,
 				});
 			}
 
