@@ -2,23 +2,13 @@ import { spawn } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import subset from 'semver/ranges/subset.js';
 import { relative, join } from 'node:path';
+import assert from 'node:assert';
 
 /**
  * An object containing validation checks for package properties.
  *
- * @constant
- * @type {Object}
  * @property {Object} engines - Validation check for the "engines" property.
- * @property {string} engines.wanted - The desired version range for Node.js engines.
- * @property {string} engines.title - The title describing the engines check.
- * @property {Function} engines.getValue - Function to get the Node.js engine version from the package.
- * @property {Function} engines.isOK - Function to check if the Node.js engine version is acceptable.
- *
  * @property {Object} licenses - Validation check for the "license" property.
- * @property {string[]} licenses.wanted - The list of acceptable licenses.
- * @property {string} licenses.title - The title describing the license check.
- * @property {Function} licenses.getValue - Function to get the license from the package.
- * @property {Function} licenses.isOK - Function to check if the license is acceptable.
  */
 const CHECKS = {
 	engines: {
@@ -57,14 +47,12 @@ const CHECKS = {
 };
 
 /**
- * Asynchronously retrieves a sorted list of production dependencies for the current project.
+ * Retrieves a sorted list of production dependencies for the current project.
  *
  * This function uses `pnpm` to list all production dependencies recursively and then processes
  * the output to create an array of dependency objects. Each object contains the path to the
  * package.json file, the relative path from the current working directory, and the parsed
  * package.json content.
- *
- * @constant {Promise<Array<{path: string, relPath: string, pkg: Object}>>>} DEPS - A promise that resolves to an array of dependency objects.
  *
  * Each dependency object has the following properties:
  * - `path` {string}: The absolute path to the package.json file.
@@ -109,29 +97,53 @@ const DEPS = await (async () => {
 		.sort((a, b) => a.pkg.name.localeCompare(b.pkg.name, 'en'));
 })();
 
-let notOk = 0;
+const main = (key) => {
+	let checksNotOk = 0;
 
-for (const check of Object.hasOwn(CHECKS, process.argv[2])
-	? [CHECKS[process.argv[2]]]
-	: Object.values(CHECKS)) {
-	let checkNotOk = 0;
-	console.group(check.title);
-	for (const { pkg, relPath } of DEPS) {
-		if (check.isOK(check.getValue(pkg))) continue;
-		checkNotOk++;
-		console.group(`${pkg.name}@${pkg.version}`);
-		console.log(`found: "${check.getValue(pkg)}"`);
-		console.log(relPath);
+	assert(
+		!key || Object.hasOwn(CHECKS, key),
+		new TypeError('arg must be a valid check', {
+			cause: { found: key, wanted: Object.keys(CHECKS) },
+		})
+	);
+
+	const checks = Object.hasOwn(CHECKS, key)
+		? [CHECKS[key]]
+		: Object.values(CHECKS);
+
+	for (const check of checks) {
+		let depsNotOk = 0;
+		console.group(check.title);
+
+		for (const { pkg, relPath } of DEPS) {
+			if (check.isOK(check.getValue(pkg))) continue;
+			depsNotOk++;
+			console.group(`${pkg.name}@${pkg.version}`);
+			console.log(`found: "${check.getValue(pkg)}"`);
+			console.log(relPath);
+			console.groupEnd();
+		}
+
+		if (depsNotOk) {
+			checksNotOk += 1;
+			console.log(`not ok (${depsNotOk} failed of ${DEPS.length} deps)`);
+		} else {
+			console.log(`ok (${DEPS.length} dependencies checked)`);
+		}
+
 		console.groupEnd();
 	}
-	notOk += checkNotOk;
-	console.log(
-		checkNotOk
-			? `not ok (${checkNotOk} problems in ${DEPS.length} deps)`
-			: `ok (${DEPS.length} dependencies checked)`
-	);
-	console.groupEnd();
-}
 
-process.exitCode = notOk ? 1 : 0;
-console.log(`\n${notOk ? 'not ' : ''}ok`);
+	console.log('');
+
+	if (checksNotOk) {
+		process.exitCode = 1;
+		console.log(
+			`not ok (${checksNotOk} failed of ${checks.length} checks)`
+		);
+	} else {
+		console.log(`ok`);
+	}
+};
+
+main(process.argv[2]);
