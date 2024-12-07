@@ -1,6 +1,6 @@
 {
   "name": "proxy-agent",
-  "version": "6.4.0",
+  "version": "6.5.0",
   "description": "Maps proxy protocols to `http.Agent` implementations",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -32,14 +32,14 @@
   "author": "Nathan Rajlich <nathan@tootallnate.net> (http://n8.io/)",
   "license": "MIT",
   "dependencies": {
-    "agent-base": "^7.0.2",
+    "agent-base": "^7.1.2",
     "debug": "^4.3.4",
     "http-proxy-agent": "^7.0.1",
-    "https-proxy-agent": "^7.0.5",
+    "https-proxy-agent": "^7.0.6",
     "lru-cache": "^7.14.1",
-    "pac-proxy-agent": "^7.0.2",
+    "pac-proxy-agent": "^7.1.0",
     "proxy-from-env": "^1.1.0",
-    "socks-proxy-agent": "^8.0.4"
+    "socks-proxy-agent": "^8.0.5"
   },
   "devDependencies": {
     "@types/agent-base": "^4.2.0",

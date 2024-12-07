@@ -1,5 +1,25 @@
 # proxy-agent
 
+## 6.5.0
+
+### Minor Changes
+
+- 85b10b3: Lazily load agents in proxy-agent
+- 96b771b: Include ClientRequest in getProxyForUrl parameters for additional flexibility
+
+### Patch Changes
+
+- ad68f63: Dispose of Agent instances in cache correctly
+- Updated dependencies [38760db]
+- Updated dependencies [77c3599]
+- Updated dependencies [913a49a]
+- Updated dependencies [1699a09]
+- Updated dependencies [e90e2b2]
+  - pac-proxy-agent@7.1.0
+  - https-proxy-agent@7.0.6
+  - socks-proxy-agent@8.0.5
+  - agent-base@7.1.2
+
 ## 6.4.0
 
 ### Minor Changes
