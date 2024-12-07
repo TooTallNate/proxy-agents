@@ -219,7 +219,7 @@ importers:
   packages/https-proxy-agent:
     dependencies:
       agent-base:
-        specifier: ^7.0.2
+        specifier: ^7.1.2
         version: link:../agent-base
       debug:
         specifier: '4'
@@ -265,7 +265,7 @@ importers:
         specifier: ^0.23.0
         version: 0.23.0
       agent-base:
-        specifier: ^7.0.2
+        specifier: ^7.1.2
         version: link:../agent-base
       debug:
         specifier: ^4.3.4
@@ -277,13 +277,13 @@ importers:
         specifier: ^7.0.0
         version: link:../http-proxy-agent
       https-proxy-agent:
-        specifier: ^7.0.5
+        specifier: ^7.0.6
         version: link:../https-proxy-agent
       pac-resolver:
         specifier: ^7.0.1
         version: link:../pac-resolver
       socks-proxy-agent:
-        specifier: ^8.0.4
+        specifier: ^8.0.5
         version: link:../socks-proxy-agent
     devDependencies:
       '@types/debug':
@@ -394,7 +394,7 @@ importers:
   packages/proxy-agent:
     dependencies:
       agent-base:
-        specifier: ^7.0.2
+        specifier: ^7.1.2
         version: link:../agent-base
       debug:
         specifier: ^4.3.4
@@ -403,19 +403,19 @@ importers:
         specifier: ^7.0.1
         version: link:../http-proxy-agent
       https-proxy-agent:
-        specifier: ^7.0.5
+        specifier: ^7.0.6
         version: link:../https-proxy-agent
       lru-cache:
         specifier: ^7.14.1
         version: 7.18.3
       pac-proxy-agent:
-        specifier: ^7.0.2
+        specifier: ^7.1.0
         version: link:../pac-proxy-agent
       proxy-from-env:
         specifier: ^1.1.0
         version: 1.1.0
       socks-proxy-agent:
-        specifier: ^8.0.4
+        specifier: ^8.0.5
         version: link:../socks-proxy-agent
     devDependencies:
       '@types/agent-base':
@@ -464,7 +464,7 @@ importers:
   packages/socks-proxy-agent:
     dependencies:
       agent-base:
-        specifier: ^7.1.1
+        specifier: ^7.1.2
         version: link:../agent-base
       debug:
         specifier: ^4.3.4

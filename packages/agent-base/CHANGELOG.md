@@ -1,5 +1,11 @@
 # agent-base
 
+## 7.1.2
+
+### Patch Changes
+
+- 1699a09: Handle exceptions caused by Agent.addRequest()
+
 ## 7.1.1
 
 ### Patch Changes

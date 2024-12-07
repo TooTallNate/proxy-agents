@@ -1,5 +1,22 @@
 # pac-proxy-agent
 
+## 7.1.0
+
+### Minor Changes
+
+- 38760db: Lazily load agents inside pac-proxy-agent
+
+### Patch Changes
+
+- 77c3599: use WHATWG URL class to construct url parameter
+- 913a49a: Only overwrite servername in tls connect when host is not an IP address
+- e90e2b2: Properly forward WebSocket requests via PAC agents that resolve to HTTP proxies
+- Updated dependencies [913a49a]
+- Updated dependencies [1699a09]
+  - https-proxy-agent@7.0.6
+  - socks-proxy-agent@8.0.5
+  - agent-base@7.1.2
+
 ## 7.0.2
 
 ### Patch Changes
