@@ -109,40 +109,29 @@ const DEPS = await (async () => {
 		.sort((a, b) => a.pkg.name.localeCompare(b.pkg.name, 'en'));
 })();
 
-const problems = (
-	Object.hasOwn(CHECKS, process.argv[2])
-		? [CHECKS[process.argv[2]]]
-		: Object.values(CHECKS)
-)
-	.map((check) => {
-		const problems = DEPS.filter(
-			(dep) => !check.isOK(check.getValue(dep.pkg))
-		);
-		if (!problems.length) return null;
-		return { deps: problems, problem: check };
-	})
-	.filter((v) => v !== null);
+let notOk = 0;
 
-if (problems.length) {
-	for (const { deps, problem } of problems) {
-		console.group(problem.title);
-		for (const { pkg, relPath } of deps) {
-			console.group(`${pkg.name}@${pkg.version}`);
-			console.log(`found: "${problem.getValue(pkg)}"`);
-			console.log(relPath);
-			console.groupEnd();
-		}
+for (const check of Object.hasOwn(CHECKS, process.argv[2])
+	? [CHECKS[process.argv[2]]]
+	: Object.values(CHECKS)) {
+	let checkNotOk = 0;
+	console.group(check.title);
+	for (const { pkg, relPath } of DEPS) {
+		if (check.isOK(check.getValue(pkg))) continue;
+		checkNotOk++;
+		console.group(`${pkg.name}@${pkg.version}`);
+		console.log(`found: "${check.getValue(pkg)}"`);
+		console.log(relPath);
 		console.groupEnd();
-		console.log('');
 	}
-	console.log('not ok');
-	process.exit(1);
-}
-
-for (const { pkg, relPath } of DEPS) {
-	console.group(`${pkg.name}@${pkg.version}`);
-	console.log(relPath);
+	notOk += checkNotOk;
+	console.log(
+		checkNotOk
+			? `not ok (${checkNotOk} problems in ${DEPS.length} deps)`
+			: `ok (${DEPS.length} dependencies checked)`
+	);
 	console.groupEnd();
 }
-console.log('');
-console.log('ok');
+
+process.exitCode = notOk ? 1 : 0;
+console.log(`\n${notOk ? 'not ' : ''}ok`);
