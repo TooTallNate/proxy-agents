@@ -79,9 +79,14 @@ jobs:
         id: format
         continue-on-error: true
 
-      - name: Run Engines
-        run: node scripts/engines.mjs
+      - name: Run Engines Check
+        run: node scripts/check-deps.mjs engines
         id: engines
+        continue-on-error: true
+
+      - name: Run Licenses Check
+        run: node scripts/check-deps.mjs licenses
+        id: licenses
         continue-on-error: true
 
       - name: Check Results
@@ -90,6 +95,7 @@ jobs:
             [lint]="${{ steps.lint.outcome }}"
             [format]="${{ steps.format.outcome }}"
             [engines]="${{ steps.engines.outcome }}"
+            [licenses]="${{ steps.licenses.outcome }}"
           )
           STATUS=0
           for STEP in "${!OUTCOMES[@]}"; do
