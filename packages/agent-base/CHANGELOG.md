@@ -1,5 +1,11 @@
 # agent-base
 
+## 7.1.3
+
+### Patch Changes
+
+- 12bbc08: Remove unused `debug` dependency.
+
 ## 7.1.2
 
 ### Patch Changes
