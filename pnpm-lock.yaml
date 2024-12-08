@@ -33,10 +33,6 @@ importers:
         version: 1.10.8
 
   packages/agent-base:
-    dependencies:
-      debug:
-        specifier: ^4.3.4
-        version: 4.3.4
     devDependencies:
       '@types/debug':
         specifier: ^4.1.7
