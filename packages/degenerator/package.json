@@ -16,8 +16,7 @@
   "author": "Nathan Rajlich <nathan@tootallnate.net> (http://n8.io/)",
   "repository": {
     "type": "git",
-    "url": "https://github.com/TooTallNate/proxy-agents.git",
-    "directory": "packages/degenerator"
+    "url": "https://github.com/TooTallNate/proxy-agents/tree/main/packages/degenerator"
   },
   "engines": {
     "node": ">= 14"
