@@ -1,5 +1,11 @@
 # pac-proxy-agent
 
+## 7.2.0
+
+### Minor Changes
+
+- 9d462b8: Expose `PacProxyAgent.getResolver()` publicly
+
 ## 7.1.0
 
 ### Minor Changes
