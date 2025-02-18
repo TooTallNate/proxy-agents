@@ -136,14 +136,16 @@ describe('PacProxyAgent', () => {
 				return 'PROXY http-proxy.example.org:443;';
 			}
 
-			const uri = `data:,${encodeURIComponent(FindProxyForURL.toString())}`;
+			const uri = `data:,${encodeURIComponent(
+				FindProxyForURL.toString()
+			)}`;
 			const agent = new PacProxyAgent(uri);
 
 			const resolver = await agent.getResolver();
-			const proxy = await resolver("https://example.com/test")
-			assert.equal(proxy, "PROXY http-proxy.example.org:443;")
+			const proxy = await resolver('https://example.com/test');
+			assert.equal(proxy, 'PROXY http-proxy.example.org:443;');
 		});
-	})
+	});
 
 	describe('"http" module', () => {
 		it('should work over an HTTP proxy', async () => {
