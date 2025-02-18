@@ -118,10 +118,8 @@ export class PacProxyAgent<Uri extends string> extends Agent {
 	/**
 	 * Loads the PAC proxy file from the source if necessary, and returns
 	 * a generated `FindProxyForURL()` resolver function to use.
-	 *
-	 * @api private
 	 */
-	private getResolver(): Promise<FindProxyForURL> {
+	getResolver(): Promise<FindProxyForURL> {
 		if (!this.resolverPromise) {
 			this.resolverPromise = this.loadResolver();
 			this.resolverPromise.then(
