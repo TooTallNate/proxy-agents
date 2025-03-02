@@ -191,7 +191,6 @@ export class SocksProxyAgent extends Agent {
 			const tlsSocket = tls.connect({
 				...omit(
 					setServernameFromNonIpHost(opts),
-					'host',
 					'path',
 					'port'
 				),
