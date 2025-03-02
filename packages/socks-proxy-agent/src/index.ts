@@ -189,12 +189,7 @@ export class SocksProxyAgent extends Agent {
 			// this socket connection to a TLS connection.
 			debug('Upgrading socket connection to TLS');
 			const tlsSocket = tls.connect({
-				...omit(
-					setServernameFromNonIpHost(opts),
-					'host',
-					'path',
-					'port'
-				),
+				...omit(setServernameFromNonIpHost(opts), 'path', 'port'),
 				socket,
 			});
 
