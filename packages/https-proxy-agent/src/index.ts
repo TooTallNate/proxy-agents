@@ -7,8 +7,6 @@ import { URL } from 'url';
 import { parseProxyResponse } from './parse-proxy-response';
 import type { OutgoingHttpHeaders } from 'http';
 import * as assert from 'assert';
-
-const PROXY_CONNECTION_TIMEOUT = 5000;
 const debug = createDebug('https-proxy-agent');
 
 const setServernameFromNonIpHost = <
@@ -102,10 +100,12 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 		opts: AgentConnectOpts
 	): Promise<net.Socket> {
 		return new Promise((resolve, reject) => {
-			setTimeout(() => {
-				socket?.destroy();
-				reject(new Error('Proxy connection timeout'));
-			}, PROXY_CONNECTION_TIMEOUT);
+			if (opts.timeout) {
+				setTimeout(() => {
+					socket?.destroy();
+					reject(new Error('Proxy connection timeout'));
+				}, opts.timeout);
+			}
 
 			const { proxy } = this;
 			// Create a socket connection to the proxy server.
