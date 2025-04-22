@@ -155,6 +155,8 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 				payload += `${name}: ${headers[name]}\r\n`;
 			}
 
+			socket.write(`${payload}\r\n`);
+
 			parseProxyResponse(socket)
 				.then(({ connect, buffered }) => {
 					req.emit('proxyConnect', connect);
@@ -214,8 +216,6 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 					resolve(fakeSocket);
 				})
 				.catch(reject);
-
-			socket.write(`${payload}\r\n`);
 		});
 	}
 }
