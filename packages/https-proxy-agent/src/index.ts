@@ -100,11 +100,11 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 		opts: AgentConnectOpts
 	): Promise<net.Socket> {
 		return new Promise((resolve, reject) => {
-			if (opts.timeout) {
+			if (this.connectOpts?.timeout) {
 				setTimeout(() => {
 					socket?.destroy();
 					reject(new Error('Proxy connection timeout'));
-				}, opts.timeout);
+				}, this.connectOpts.timeout);
 			}
 
 			const { proxy } = this;

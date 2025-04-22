@@ -1,5 +1,5 @@
 {
-  "name": "https-proxy-agent",
+  "name": "@black-widow/https-proxy-agent",
   "version": "7.0.6",
   "description": "An HTTP(s) proxy `http.Agent` implementation for HTTPS",
   "main": "./dist/index.js",
