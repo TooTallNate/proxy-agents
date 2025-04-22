@@ -169,7 +169,7 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 							// The proxy is connecting to a TLS server, so upgrade
 							// this socket connection to a TLS connection.
 							debug('Upgrading socket connection to TLS');
-							resolve(
+							return resolve(
 								tls.connect({
 									...omit(
 										setServernameFromNonIpHost(opts),
@@ -182,7 +182,7 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 							);
 						}
 
-						resolve(socket);
+						return resolve(socket);
 					}
 
 					// Some other status code that's not 200... need to re-play the HTTP
@@ -213,7 +213,7 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 						s.push(null);
 					});
 
-					resolve(fakeSocket);
+					return resolve(fakeSocket);
 				})
 				.catch(reject);
 		});
