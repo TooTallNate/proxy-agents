@@ -100,8 +100,9 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 		opts: AgentConnectOpts
 	): Promise<net.Socket> {
 		return new Promise((resolve, reject) => {
+			let connectionTimeout: NodeJS.Timeout | undefined;
 			if (this.connectOpts?.timeout) {
-				setTimeout(() => {
+				connectionTimeout = setTimeout(() => {
 					socket?.destroy();
 					reject(new Error('Proxy connection timeout'));
 				}, this.connectOpts.timeout);
@@ -161,8 +162,11 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 				.then(({ connect, buffered }) => {
 					req.emit('proxyConnect', connect);
 					this.emit('proxyConnect', connect, req);
+					
+					clearTimeout(connectionTimeout);
 
 					if (connect.statusCode === 200) {
+
 						req.once('socket', resume);
 
 						if (opts.secureEndpoint) {
