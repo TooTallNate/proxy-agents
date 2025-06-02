@@ -6,8 +6,8 @@ import assert from 'assert';
 import { once } from 'events';
 import { listen } from 'async-listen';
 import { json, req } from 'agent-base';
-import { createProxy, ProxyServer } from 'proxy';
-import { HttpsProxyAgent } from '../src';
+import { createProxy, type ProxyServer } from 'proxy';
+import { HttpsProxyAgent } from '../src/index.js';
 
 const sslOptions = {
 	key: fs.readFileSync(`${__dirname}/ssl-cert-snakeoil.key`),

@@ -13,8 +13,8 @@
   "pipeline": {
     "build": {
       "dependsOn": ["^build"],
-      "inputs": ["src/**"],
-      "outputs": ["dist/**"]
+      "inputs": ["src/**", "package.json"],
+      "outputs": ["dist/**", ".tshy/**", "tshy-build/**"]
     },
     "test": {
       "dependsOn": ["build"]

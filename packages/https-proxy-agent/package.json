@@ -1,14 +1,41 @@
 {
   "name": "https-proxy-agent",
+  "type": "module",
   "version": "7.0.6",
   "description": "An HTTP(s) proxy `http.Agent` implementation for HTTPS",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/commonjs/index.js",
+  "types": "./dist/commonjs/index.d.ts",
+  "module": "./dist/esm/index.js",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": {
+        "@proxy-agents/source": "./src/index.ts",
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/index.d.ts",
+        "default": "./dist/commonjs/index.js"
+      }
+    }
+  },
   "files": [
     "dist"
   ],
+  "tshy": {
+    "project": "./tsconfig.build.json",
+    "exports": {
+      "./package.json": "./package.json",
+      ".": "./src/index.ts"
+    },
+    "sourceDialects": [
+      "@proxy-agents/source"
+    ]
+  },
   "scripts": {
-    "build": "tsc",
+    "prepare": "pnpm turbo build",
+    "build": "tshy",
     "test": "jest --env node --verbose --bail test/test.ts",
     "test-e2e": "jest --env node --verbose --bail test/e2e.test.ts",
     "lint": "eslint --ext .ts",
@@ -32,6 +59,7 @@
     "debug": "4"
   },
   "devDependencies": {
+    "@total-typescript/tsconfig": "^1.0.4",
     "@types/async-retry": "^1.4.5",
     "@types/debug": "4",
     "@types/jest": "^29.5.1",
@@ -41,7 +69,7 @@
     "jest": "^29.5.0",
     "proxy": "workspace:*",
     "ts-jest": "^29.1.0",
-    "tsconfig": "workspace:*",
+    "tshy": "^3.0.2",
     "typescript": "^5.0.4"
   },
   "engines": {
