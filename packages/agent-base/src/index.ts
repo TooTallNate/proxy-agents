@@ -124,7 +124,7 @@ export abstract class Agent extends http.Agent {
 
 	// In order to properly update the socket pool, we need to call `getName()` on
 	// the core `https.Agent` if it is a secureEndpoint.
-	getName(options: AgentConnectOpts): string {
+	getName(options: AgentGetNameOptions): string {
 		const secureEndpoint =
 			typeof options.secureEndpoint === 'boolean'
 				? options.secureEndpoint
