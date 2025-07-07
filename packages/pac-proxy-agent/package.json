@@ -15,8 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/TooTallNate/proxy-agents.git",
-    "directory": "packages/pac-proxy-agent"
+    "url": "https://github.com/TooTallNate/proxy-agents/tree/main/packages/pac-proxy-agent"
   },
   "keywords": [
     "pac",

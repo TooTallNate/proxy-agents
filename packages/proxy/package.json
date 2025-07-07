@@ -30,8 +30,7 @@
   "author": "Nathan Rajlich <nathan@tootallnate.net> (http://n8.io/)",
   "repository": {
     "type": "git",
-    "url": "https://github.com/TooTallNate/proxy-agents.git",
-    "directory": "packages/proxy"
+    "url": "https://github.com/TooTallNate/proxy-agents/tree/main/packages/proxy"
   },
   "license": "MIT",
   "dependencies": {
