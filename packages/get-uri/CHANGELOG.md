@@ -1,5 +1,11 @@
 # get-uri
 
+## 6.0.5
+
+### Patch Changes
+
+- 0e7dccc: Close the file descriptor handle when there is a cache hit for `file:` protocol
+
 ## 6.0.4
 
 ### Patch Changes

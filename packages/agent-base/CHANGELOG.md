@@ -1,5 +1,11 @@
 # agent-base
 
+## 7.1.4
+
+### Patch Changes
+
+- a6fe3fd: Fix compatibility with `@types/node@20.19.2`.
+
 ## 7.1.3
 
 ### Patch Changes
