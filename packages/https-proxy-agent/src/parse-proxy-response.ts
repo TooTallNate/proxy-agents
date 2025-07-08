@@ -1,5 +1,5 @@
 import createDebug from 'debug';
-import { IncomingHttpHeaders } from 'http';
+import { type IncomingHttpHeaders } from 'http';
 import { Readable } from 'stream';
 
 const debug = createDebug('https-proxy-agent:parse-proxy-response');
@@ -75,7 +75,7 @@ export function parseProxyResponse(
 				);
 			}
 			const firstLineParts = firstLine.split(' ');
-			const statusCode = +firstLineParts[1];
+			const statusCode = +firstLineParts[1]!;
 			const statusText = firstLineParts.slice(2).join(' ');
 			const headers: IncomingHttpHeaders = {};
 			for (const header of headerParts) {

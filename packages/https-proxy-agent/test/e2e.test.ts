@@ -1,6 +1,6 @@
 import retry from 'async-retry';
 import { req, json } from 'agent-base';
-import { HttpsProxyAgent } from '../src';
+import { HttpsProxyAgent } from '../src/index.js';
 
 interface NordVPNServer {
 	name: string;
@@ -48,7 +48,7 @@ describe('HttpsProxyAgent', () => {
 						'Could not find `https` proxy server from NordVPN'
 					);
 				}
-				return servers[Math.floor(Math.random() * servers.length)];
+				return servers[Math.floor(Math.random() * servers.length)]!;
 			},
 			{
 				retries: 5,
@@ -89,7 +89,7 @@ describe('HttpsProxyAgent', () => {
 		const body = await json(res);
 		expect(body.request.headers['x-real-ip']).not.toEqual(realIp);
 		expect(body.request.headers['x-vercel-ip-country']).toEqual(
-			server.locations[0].country.code
+			server.locations[0]!.country.code
 		);
 	});
 });

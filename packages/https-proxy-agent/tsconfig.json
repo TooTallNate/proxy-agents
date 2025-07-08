@@ -1,7 +1,8 @@
 {
-  "extends": "tsconfig/base.json",
+  "extends": "@total-typescript/tsconfig/tsc/no-dom/library",
   "compilerOptions": {
-    "outDir": "dist"
+    "outDir": "dist",
+    "customConditions": ["@proxy-agents/source"]
   },
   "include": ["src"],
   "exclude": ["node_modules"]

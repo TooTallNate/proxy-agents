@@ -3,9 +3,9 @@ import * as tls from 'tls';
 import * as http from 'http';
 import assert from 'assert';
 import createDebug from 'debug';
-import { Agent, AgentConnectOpts } from 'agent-base';
+import { Agent, type AgentConnectOpts } from 'agent-base';
 import { URL } from 'url';
-import { parseProxyResponse } from './parse-proxy-response';
+import { parseProxyResponse } from './parse-proxy-response.js';
 import type { OutgoingHttpHeaders } from 'http';
 
 const debug = createDebug('https-proxy-agent');
