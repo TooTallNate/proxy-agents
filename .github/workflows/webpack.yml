@@ -1,4 +1,4 @@
-name: NodeJS with Webpack
+ggo: NodeJS with Webpack
 
 on:
   push:
