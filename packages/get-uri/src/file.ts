@@ -50,6 +50,7 @@ export const file: GetUriProtocol<FileOptions> = async (
 
 		// if a `cache` was provided, check if the file has not been modified
 		if (cache && cache.stat && stat && isNotModified(cache.stat, stat)) {
+			await fdHandle.close();
 			throw new NotModifiedError();
 		}
 
