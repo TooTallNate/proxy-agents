@@ -408,8 +408,8 @@ importers:
         specifier: ^7.1.0
         version: link:../pac-proxy-agent
       proxy-from-env:
-        specifier: ^1.1.0
-        version: 1.1.0
+        specifier: ^2.0.0
+        version: 2.0.0
       socks-proxy-agent:
         specifier: ^8.0.5
         version: link:../socks-proxy-agent
@@ -4801,8 +4801,8 @@ packages:
       sisteransi: 1.0.5
     dev: true
 
-  /proxy-from-env@1.1.0:
-    resolution: {integrity: sha512-D+zkORCbA9f1tdWRK0RaCR3GPv50cMxcrz4X8k5LTSUD1Dkw47mKJEZQNunItRTkWwgtaUSo1RVFRIG9ZXiFYg==}
+  /proxy-from-env@2.0.0:
+    resolution: {integrity: sha512-h2lD3OfRraP3R51rNFKIE8nX+qoLr1mE74X91YhVxtDbt+OD6ntoNZv56+JgI4RCdtwQ5eexsOk1KdOQDfvPCQ==}
     dev: false
 
   /pseudomap@1.0.2:
