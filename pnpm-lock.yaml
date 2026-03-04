@@ -132,8 +132,8 @@ importers:
   packages/get-uri:
     dependencies:
       basic-ftp:
-        specifier: ^5.0.2
-        version: 5.0.2
+        specifier: ^5.2.0
+        version: 5.2.0
       data-uri-to-buffer:
         specifier: ^6.0.2
         version: link:../data-uri-to-buffer
@@ -157,8 +157,8 @@ importers:
         specifier: ^3.0.0
         version: 3.0.0
       ftpd:
-        specifier: https://files-jg1s1zt9l.n8.io/ftpd-v0.2.14.tgz
-        version: '@files-jg1s1zt9l.n8.io/ftpd-v0.2.14.tgz'
+        specifier: ^0.2.14
+        version: 0.2.14
       jest:
         specifier: ^29.5.0
         version: 29.5.0(@types/node@14.18.45)
@@ -2371,8 +2371,8 @@ packages:
     resolution: {integrity: sha512-GFj8iVxo9onSU6BnnQvVwqvxh60UcSHJEDnIk3z4B6iOjsKSmqe+ibW0Rsz7YO7IE1HG3D3tqCNIidP46SZVdQ==}
     dev: false
 
-  /basic-ftp@5.0.2:
-    resolution: {integrity: sha512-NgkBwqp7rkhIUBaxLwL601lvUuBUvShJocrLYdiyTsH1WeP/wofMdooZ4p6hz+4hqiU59PBOj0EkaqELwFJLuQ==}
+  /basic-ftp@5.2.0:
+    resolution: {integrity: sha512-VoMINM2rqJwJgfdHq6RiUudKt2BV+FY5ZFezP/ypmwayk68+NzzAQy4XXLlqsGD4MCzq3DrmNFD/uUmBJuGoXw==}
     engines: {node: '>=10.0.0'}
     dev: false
 
@@ -3237,6 +3237,14 @@ packages:
     dev: true
     optional: true
 
+  /ftpd@0.2.14:
+    resolution: {integrity: sha512-Cc1caIwlTY+P4OUGdLT9pkhOsosQoUqltu/enqu7VIw1zTCc7K6eC6/lor58YzDpdGolBpLce0s/hvj+s9GCXQ==}
+    engines: {node: '>=0.10.0'}
+    dependencies:
+      dateformat: 1.0.7-1.2.3
+      stat-mode: 0.2.2
+    dev: true
+
   /function-bind@1.1.1:
     resolution: {integrity: sha512-yIovAzMX49sF8Yl58fSCWJ5svSLuaibPxXQJFLmBObTuCr0Mf1KiPopGM9NiFjiYBCbfaa2Fh6breQ6ANVTI0A==}
     dev: true
@@ -3306,6 +3314,7 @@ packages:
   /glob@10.3.1:
     resolution: {integrity: sha512-9BKYcEeIs7QwlCYs+Y3GBvqAMISufUS0i2ELd11zpZjxI5V9iyRj0HgzB5/cLf2NY4vcYBTYzJ7GIui7j/4DOw==}
     engines: {node: '>=16 || 14 >=14.17'}
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
     hasBin: true
     dependencies:
       foreground-child: 3.1.1
@@ -3317,7 +3326,7 @@ packages:
 
   /glob@7.2.3:
     resolution: {integrity: sha512-nFR0zLpU2YCaRxwoCJvL6UvCH2JFyFVIvwTLsIf21AuHlMskA1hhTdk+LlYJtOlYt9v6dvszD2BGRqBL+iQK9Q==}
-    deprecated: Glob versions prior to v9 are no longer supported
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
     dependencies:
       fs.realpath: 1.0.0
       inflight: 1.0.6
@@ -5863,16 +5872,6 @@ packages:
   /yocto-queue@0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
-    dev: true
-
-  '@files-jg1s1zt9l.n8.io/ftpd-v0.2.14.tgz':
-    resolution: {tarball: https://files-jg1s1zt9l.n8.io/ftpd-v0.2.14.tgz}
-    name: ftpd
-    version: 0.2.14
-    engines: {node: '>=0.10.0'}
-    dependencies:
-      dateformat: 1.0.7-1.2.3
-      stat-mode: 0.2.2
     dev: true
 
   github.com/TooTallNate/socksv5/d937368b28e929396166d77a06d387a4a902bd51:
