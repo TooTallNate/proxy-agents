@@ -50,7 +50,7 @@
     "typescript": "catalog:"
   },
   "dependencies": {
-    "basic-ftp": "^5.0.2",
+    "basic-ftp": "^5.2.0",
     "data-uri-to-buffer": "workspace:*",
     "debug": "catalog:"
   },
