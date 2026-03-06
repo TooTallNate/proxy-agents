@@ -17,9 +17,9 @@
     "netmask": "^2.0.2"
   },
   "devDependencies": {
-    "@tootallnate/quickjs-emscripten": "catalog:",
     "@types/netmask": "^1.0.30",
     "@types/node": "catalog:",
+    "quickjs-wasi": "catalog:",
     "tsconfig": "workspace:*",
     "typescript": "catalog:"
   },

@@ -20,7 +20,7 @@ import {
 	FindProxyForURL,
 	PacResolverOptions,
 } from 'pac-resolver';
-import { getQuickJS } from '@tootallnate/quickjs-emscripten';
+import { QuickJS } from 'quickjs-wasi';
 
 const debug = createDebug('pac-proxy-agent');
 
@@ -134,7 +134,7 @@ export class PacProxyAgent<Uri extends string> extends Agent {
 		try {
 			// (Re)load the contents of the PAC file URI
 			const [qjs, code] = await Promise.all([
-				getQuickJS(),
+				QuickJS.create(),
 				this.loadPacFile(),
 			]);
 

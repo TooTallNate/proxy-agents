@@ -1,11 +1,7 @@
 import { types } from 'util';
 import { degenerator } from './degenerator.js';
 import type { Context } from 'vm';
-import type {
-	QuickJSContext,
-	QuickJSHandle,
-	QuickJSWASMModule,
-} from '@tootallnate/quickjs-emscripten';
+import type { QuickJS, JSValueHandle } from 'quickjs-wasi';
 import type { DegeneratorNames } from './degenerator.js';
 
 export interface CompileOptions {
@@ -15,14 +11,12 @@ export interface CompileOptions {
 }
 
 export function compile<R = unknown, A extends unknown[] = []>(
-	qjs: QuickJSWASMModule,
+	vm: QuickJS,
 	code: string,
 	returnName: string,
 	options: CompileOptions = {}
 ): (...args: A) => Promise<R> {
 	const compiled = degenerator(code, options.names ?? []);
-
-	const vm = qjs.newContext();
 
 	// Add functions to global
 	if (options.sandbox) {
@@ -32,11 +26,11 @@ export function compile<R = unknown, A extends unknown[] = []>(
 					`Expected a "function" for sandbox property \`${name}\`, but got "${typeof value}"`
 				);
 			}
-			const fnHandle = vm.newFunction(name, (...args) => {
+			const fnHandle = vm.newFunction(name, (_this, ...args) => {
 				const result = value(
-					...args.map((arg) => quickJSHandleToHost(vm, arg))
+					...args.map((arg) => vm.dump(arg))
 				);
-				vm.runtime.executePendingJobs();
+				vm.executePendingJobs();
 				return hostToQuickJSHandle(vm, result);
 			});
 			fnHandle.consume((handle) => vm.setProp(vm.global, name, handle));
@@ -53,8 +47,8 @@ export function compile<R = unknown, A extends unknown[] = []>(
 		);
 	}
 	const r = async function (...args: A): Promise<R> {
-		let promiseHandle: QuickJSHandle | undefined;
-		let resolvedHandle: QuickJSHandle | undefined;
+		let promiseHandle: JSValueHandle | undefined;
+		let resolvedHandle: JSValueHandle | undefined;
 		try {
 			const result = vm.callFunction(
 				fn,
@@ -63,10 +57,23 @@ export function compile<R = unknown, A extends unknown[] = []>(
 			);
 			promiseHandle = vm.unwrapResult(result);
 			const resolvedResultP = vm.resolvePromise(promiseHandle);
-			vm.runtime.executePendingJobs();
+			vm.executePendingJobs();
 			const resolvedResult = await resolvedResultP;
-			resolvedHandle = vm.unwrapResult(resolvedResult);
-			return quickJSHandleToHost(vm, resolvedHandle);
+			if ('error' in resolvedResult) {
+				const dumped = vm.dump(resolvedResult.error);
+				resolvedResult.error.dispose();
+				if (dumped instanceof Error) {
+					// QuickJS Error `stack` does not include the name +
+					// message, so patch those in to behave more like V8
+					if (dumped.stack && !dumped.stack.startsWith(dumped.name)) {
+						dumped.stack = `${dumped.name}: ${dumped.message}\n${dumped.stack}`;
+					}
+					throw dumped;
+				}
+				throw new Error(String(dumped));
+			}
+			resolvedHandle = resolvedResult.value;
+			return vm.dump(resolvedHandle) as R;
 		} catch (err: unknown) {
 			if (err && typeof err === 'object' && 'cause' in err && err.cause) {
 				if (
@@ -97,11 +104,7 @@ export function compile<R = unknown, A extends unknown[] = []>(
 	return r;
 }
 
-function quickJSHandleToHost(vm: QuickJSContext, val: QuickJSHandle) {
-	return vm.dump(val);
-}
-
-function hostToQuickJSHandle(vm: QuickJSContext, val: unknown): QuickJSHandle {
+function hostToQuickJSHandle(vm: QuickJS, val: unknown): JSValueHandle {
 	if (typeof val === 'undefined') {
 		return vm.undefined;
 	} else if (val === null) {
@@ -116,13 +119,14 @@ function hostToQuickJSHandle(vm: QuickJSContext, val: unknown): QuickJSHandle {
 		return val ? vm.true : vm.false;
 	} else if (types.isPromise(val)) {
 		const promise = vm.newPromise();
-		promise.settled.then(vm.runtime.executePendingJobs);
 		val.then(
 			(r: unknown) => {
 				promise.resolve(hostToQuickJSHandle(vm, r));
+				vm.executePendingJobs();
 			},
 			(err: unknown) => {
 				promise.reject(hostToQuickJSHandle(vm, err));
+				vm.executePendingJobs();
 			}
 		);
 		return promise.handle;

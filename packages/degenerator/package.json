@@ -34,10 +34,10 @@
     "esprima": "^4.0.1"
   },
   "devDependencies": {
-    "@tootallnate/quickjs-emscripten": "catalog:",
     "@types/escodegen": "^0.0.7",
     "@types/esprima": "^4.0.3",
     "@types/node": "catalog:",
+    "quickjs-wasi": "catalog:",
     "tsconfig": "workspace:*",
     "typescript": "catalog:"
   }

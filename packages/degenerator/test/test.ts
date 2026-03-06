@@ -2,10 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import assert from 'assert';
 import { degenerator, compile } from '../src';
-import {
-	getQuickJS,
-	type QuickJSWASMModule,
-} from '@tootallnate/quickjs-emscripten';
+import { QuickJS } from 'quickjs-wasi';
 
 describe('degenerator()', () => {
 	it('should support "async" output functions', () => {
@@ -68,10 +65,14 @@ describe('degenerator()', () => {
 	});
 
 	describe('`compile()`', () => {
-		let qjs: QuickJSWASMModule;
+		let qjs: QuickJS;
 
 		beforeAll(async () => {
-			qjs = await getQuickJS();
+			qjs = await QuickJS.create();
+		});
+
+		afterAll(() => {
+			qjs?.dispose(false);
 		});
 
 		it('should compile code into an invocable async function', async () => {
@@ -173,7 +174,7 @@ describe('degenerator()', () => {
 				err = _err as Error;
 			}
 			assert(err);
-			assert.equal(err.message, "'process' is not defined");
+			assert(err.message.includes('process is not defined'));
 		});
 		it('should allow to return synchronous undefined', async () => {
 			function u() {

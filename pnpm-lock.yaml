@@ -6,9 +6,6 @@ settings:
 
 catalogs:
   default:
-    '@tootallnate/quickjs-emscripten':
-      specifier: ^0.23.0
-      version: 0.23.0
     '@types/async-retry':
       specifier: ^1.4.5
       version: 1.4.9
@@ -30,6 +27,9 @@ catalogs:
     debug:
       specifier: ^4.3.4
       version: 4.4.3
+    quickjs-wasi:
+      specifier: ^0.0.1
+      version: 0.0.1
     socksv5:
       specifier: github:TooTallNate/socksv5#fix/dstSock-close-event
       version: 0.0.6
@@ -126,9 +126,6 @@ importers:
         specifier: ^4.0.1
         version: 4.0.1
     devDependencies:
-      '@tootallnate/quickjs-emscripten':
-        specifier: 'catalog:'
-        version: 0.23.0
       '@types/escodegen':
         specifier: ^0.0.7
         version: 0.0.7
@@ -138,6 +135,9 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 22.19.15
+      quickjs-wasi:
+        specifier: 'catalog:'
+        version: 0.0.1
       tsconfig:
         specifier: workspace:*
         version: link:../tsconfig
@@ -246,9 +246,6 @@ importers:
 
   packages/pac-proxy-agent:
     dependencies:
-      '@tootallnate/quickjs-emscripten':
-        specifier: 'catalog:'
-        version: 0.23.0
       agent-base:
         specifier: workspace:*
         version: link:../agent-base
@@ -267,6 +264,9 @@ importers:
       pac-resolver:
         specifier: workspace:*
         version: link:../pac-resolver
+      quickjs-wasi:
+        specifier: 'catalog:'
+        version: 0.0.1
       socks-proxy-agent:
         specifier: workspace:*
         version: link:../socks-proxy-agent
@@ -302,15 +302,15 @@ importers:
         specifier: ^2.0.2
         version: 2.0.2
     devDependencies:
-      '@tootallnate/quickjs-emscripten':
-        specifier: 'catalog:'
-        version: 0.23.0
       '@types/netmask':
         specifier: ^1.0.30
         version: 1.0.30
       '@types/node':
         specifier: 'catalog:'
         version: 22.19.15
+      quickjs-wasi:
+        specifier: 'catalog:'
+        version: 0.0.1
       tsconfig:
         specifier: workspace:*
         version: link:../tsconfig
@@ -882,9 +882,6 @@ packages:
 
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
-
-  '@tootallnate/quickjs-emscripten@0.23.0':
-    resolution: {integrity: sha512-C5Mc6rdnsaJDjO3UpGW/CQTHtCKaYlScZTly4JIu97Jxo/odCiH0ITnDXSJPTOrEKk/ycSZ0AOgTmkDtkOsvIA==}
 
   '@types/agent-base@4.2.5':
     resolution: {integrity: sha512-7A+Jev2t6tsRHhdYiGPata3hh9aouM6CmpLHTmX9E9hvW3dUriNvLLS/IKPQUdJV7cKAlrCFXoUJQXOBgIYt3w==}
@@ -1716,6 +1713,9 @@ packages:
   queue-microtask@1.2.3:
     resolution: {integrity: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==}
 
+  quickjs-wasi@0.0.1:
+    resolution: {integrity: sha512-fBWNLTBkxkLAhe1AzF1hyXEvuA+N+vV1WMP2D6iiMUblvmOt8Pp5t8zUcgvz7aYA1ldUdxDlgUse15dmcKjkNg==}
+
   read-yaml-file@1.1.0:
     resolution: {integrity: sha512-VIMnQi/Z4HT2Fxuwg5KrY174U1VdUIASQVWXXyqtNRtxSr9IYkn1rsI6Tb6HsrHCmB7gVpNwX6JxPTHcH6IoTA==}
     engines: {node: '>=6'}
@@ -2451,8 +2451,6 @@ snapshots:
     optional: true
 
   '@standard-schema/spec@1.1.0': {}
-
-  '@tootallnate/quickjs-emscripten@0.23.0': {}
 
   '@types/agent-base@4.2.5':
     dependencies:
@@ -3273,6 +3271,8 @@ snapshots:
   quansync@0.2.11: {}
 
   queue-microtask@1.2.3: {}
+
+  quickjs-wasi@0.0.1: {}
 
   read-yaml-file@1.1.0:
     dependencies:
