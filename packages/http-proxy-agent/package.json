@@ -33,15 +33,15 @@
   "license": "MIT",
   "dependencies": {
     "agent-base": "workspace:*",
-    "debug": "^4.3.4"
+    "debug": "catalog:"
   },
   "devDependencies": {
-    "@types/debug": "^4.1.7",
-    "@types/node": "^22.13.0",
-    "async-listen": "^3.0.0",
+    "@types/debug": "catalog:",
+    "@types/node": "catalog:",
+    "async-listen": "catalog:",
     "proxy": "workspace:*",
     "tsconfig": "workspace:*",
-    "typescript": "^5.0.4"
+    "typescript": "catalog:"
   },
   "engines": {
     "node": ">= 14"

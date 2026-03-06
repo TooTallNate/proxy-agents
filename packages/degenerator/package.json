@@ -34,11 +34,11 @@
     "esprima": "^4.0.1"
   },
   "devDependencies": {
-    "@tootallnate/quickjs-emscripten": "^0.23.0",
+    "@tootallnate/quickjs-emscripten": "catalog:",
     "@types/escodegen": "^0.0.7",
     "@types/esprima": "^4.0.3",
-    "@types/node": "^22.13.0",
+    "@types/node": "catalog:",
     "tsconfig": "workspace:*",
-    "typescript": "^5.1.6"
+    "typescript": "catalog:"
   }
 }

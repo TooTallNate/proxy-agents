@@ -40,19 +40,19 @@
   "author": "Nathan Rajlich <nathan@tootallnate.net> (http://n8.io/)",
   "license": "MIT",
   "devDependencies": {
-    "@types/debug": "^4.1.7",
+    "@types/debug": "catalog:",
     "@types/ftpd": "^0.2.35",
-    "@types/node": "^22.13.0",
-    "async-listen": "^3.0.0",
+    "@types/node": "catalog:",
+    "async-listen": "catalog:",
     "ftpd": "^0.2.14",
     "st": "^3.0.0",
     "tsconfig": "workspace:*",
-    "typescript": "^5.0.4"
+    "typescript": "catalog:"
   },
   "dependencies": {
     "basic-ftp": "^5.0.2",
     "data-uri-to-buffer": "workspace:*",
-    "debug": "^4.3.4"
+    "debug": "catalog:"
   },
   "engines": {
     "node": ">= 14"

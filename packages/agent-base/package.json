@@ -33,14 +33,14 @@
   "author": "Nathan Rajlich <nathan@tootallnate.net> (http://n8.io/)",
   "license": "MIT",
   "devDependencies": {
-    "@types/debug": "^4.1.7",
-    "@types/node": "^22.13.0",
+    "@types/debug": "catalog:",
+    "@types/node": "catalog:",
     "@types/semver": "^7.3.13",
-    "@types/ws": "^6.0.4",
-    "async-listen": "^3.0.0",
+    "@types/ws": "catalog:",
+    "async-listen": "catalog:",
     "tsconfig": "workspace:*",
-    "typescript": "^5.0.4",
-    "ws": "^5.2.4"
+    "typescript": "catalog:",
+    "ws": "catalog:"
   },
   "engines": {
     "node": ">= 14"

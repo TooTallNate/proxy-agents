@@ -42,15 +42,15 @@
   "dependencies": {
     "args": "^5.0.3",
     "basic-auth-parser": "0.0.2-1",
-    "debug": "^4.3.4"
+    "debug": "catalog:"
   },
   "devDependencies": {
     "@types/args": "^5.0.0",
-    "@types/debug": "^4.1.7",
-    "@types/node": "^22.13.0",
-    "async-listen": "^3.0.0",
+    "@types/debug": "catalog:",
+    "@types/node": "catalog:",
+    "async-listen": "catalog:",
     "tsconfig": "workspace:*",
-    "typescript": "^5.0.4"
+    "typescript": "catalog:"
   },
   "engines": {
     "node": ">= 14"

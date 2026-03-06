@@ -38,7 +38,7 @@
   "license": "MIT",
   "dependencies": {
     "agent-base": "workspace:*",
-    "debug": "^4.3.4",
+    "debug": "catalog:",
     "http-proxy-agent": "workspace:*",
     "https-proxy-agent": "workspace:*",
     "lru-cache": "^7.14.1",
@@ -48,15 +48,15 @@
   },
   "devDependencies": {
     "@types/agent-base": "^4.2.0",
-    "@types/debug": "^4.1.7",
-    "@types/node": "^22.13.0",
+    "@types/debug": "catalog:",
+    "@types/node": "catalog:",
     "@types/proxy-from-env": "^1.0.1",
-    "@types/ws": "^8.5.4",
-    "async-listen": "^3.0.0",
+    "@types/ws": "catalog:",
+    "async-listen": "catalog:",
     "proxy": "workspace:*",
-    "socksv5": "github:TooTallNate/socksv5#fix/dstSock-close-event",
+    "socksv5": "catalog:",
     "tsconfig": "workspace:*",
-    "typescript": "^5.0.4",
-    "ws": "^8.13.0"
+    "typescript": "catalog:",
+    "ws": "catalog:"
   }
 }

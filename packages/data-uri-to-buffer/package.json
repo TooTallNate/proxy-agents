@@ -43,8 +43,8 @@
   "author": "Nathan Rajlich <nathan@tootallnate.net> (http://n8.io/)",
   "license": "MIT",
   "devDependencies": {
-    "@types/node": "^22.13.0",
+    "@types/node": "catalog:",
     "tsconfig": "workspace:*",
-    "typescript": "^5.0.4"
+    "typescript": "catalog:"
   }
 }

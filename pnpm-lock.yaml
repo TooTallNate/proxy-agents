@@ -4,6 +4,42 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+catalogs:
+  default:
+    '@tootallnate/quickjs-emscripten':
+      specifier: ^0.23.0
+      version: 0.23.0
+    '@types/async-retry':
+      specifier: ^1.4.5
+      version: 1.4.9
+    '@types/debug':
+      specifier: ^4.1.7
+      version: 4.1.12
+    '@types/node':
+      specifier: ^22.13.0
+      version: 22.19.15
+    '@types/ws':
+      specifier: ^8.5.4
+      version: 8.18.1
+    async-listen:
+      specifier: ^3.0.0
+      version: 3.1.0
+    async-retry:
+      specifier: ^1.3.3
+      version: 1.3.3
+    debug:
+      specifier: ^4.3.4
+      version: 4.4.3
+    socksv5:
+      specifier: github:TooTallNate/socksv5#fix/dstSock-close-event
+      version: 0.0.6
+    typescript:
+      specifier: ^5.1.6
+      version: 5.9.3
+    ws:
+      specifier: ^8.13.0
+      version: 8.19.0
+
 importers:
 
   .:
@@ -42,40 +78,40 @@ importers:
   packages/agent-base:
     devDependencies:
       '@types/debug':
-        specifier: ^4.1.7
+        specifier: 'catalog:'
         version: 4.1.12
       '@types/node':
-        specifier: ^22.13.0
+        specifier: 'catalog:'
         version: 22.19.15
       '@types/semver':
         specifier: ^7.3.13
         version: 7.7.1
       '@types/ws':
-        specifier: ^6.0.4
-        version: 6.0.4
+        specifier: 'catalog:'
+        version: 8.18.1
       async-listen:
-        specifier: ^3.0.0
+        specifier: 'catalog:'
         version: 3.1.0
       tsconfig:
         specifier: workspace:*
         version: link:../tsconfig
       typescript:
-        specifier: ^5.0.4
+        specifier: 'catalog:'
         version: 5.9.3
       ws:
-        specifier: ^5.2.4
-        version: 5.2.4
+        specifier: 'catalog:'
+        version: 8.19.0
 
   packages/data-uri-to-buffer:
     devDependencies:
       '@types/node':
-        specifier: ^22.13.0
+        specifier: 'catalog:'
         version: 22.19.15
       tsconfig:
         specifier: workspace:*
         version: link:../tsconfig
       typescript:
-        specifier: ^5.0.4
+        specifier: 'catalog:'
         version: 5.9.3
 
   packages/degenerator:
@@ -91,7 +127,7 @@ importers:
         version: 4.0.1
     devDependencies:
       '@tootallnate/quickjs-emscripten':
-        specifier: ^0.23.0
+        specifier: 'catalog:'
         version: 0.23.0
       '@types/escodegen':
         specifier: ^0.0.7
@@ -100,13 +136,13 @@ importers:
         specifier: ^4.0.3
         version: 4.0.6
       '@types/node':
-        specifier: ^22.13.0
+        specifier: 'catalog:'
         version: 22.19.15
       tsconfig:
         specifier: workspace:*
         version: link:../tsconfig
       typescript:
-        specifier: ^5.1.6
+        specifier: 'catalog:'
         version: 5.9.3
 
   packages/get-uri:
@@ -118,20 +154,20 @@ importers:
         specifier: workspace:*
         version: link:../data-uri-to-buffer
       debug:
-        specifier: ^4.3.4
+        specifier: 'catalog:'
         version: 4.4.3
     devDependencies:
       '@types/debug':
-        specifier: ^4.1.7
+        specifier: 'catalog:'
         version: 4.1.12
       '@types/ftpd':
         specifier: ^0.2.35
         version: 0.2.40
       '@types/node':
-        specifier: ^22.13.0
+        specifier: 'catalog:'
         version: 22.19.15
       async-listen:
-        specifier: ^3.0.0
+        specifier: 'catalog:'
         version: 3.1.0
       ftpd:
         specifier: ^0.2.14
@@ -143,7 +179,7 @@ importers:
         specifier: workspace:*
         version: link:../tsconfig
       typescript:
-        specifier: ^5.0.4
+        specifier: 'catalog:'
         version: 5.9.3
 
   packages/http-proxy-agent:
@@ -152,17 +188,17 @@ importers:
         specifier: workspace:*
         version: link:../agent-base
       debug:
-        specifier: ^4.3.4
+        specifier: 'catalog:'
         version: 4.4.3
     devDependencies:
       '@types/debug':
-        specifier: ^4.1.7
+        specifier: 'catalog:'
         version: 4.1.12
       '@types/node':
-        specifier: ^22.13.0
+        specifier: 'catalog:'
         version: 22.19.15
       async-listen:
-        specifier: ^3.0.0
+        specifier: 'catalog:'
         version: 3.1.0
       proxy:
         specifier: workspace:*
@@ -171,7 +207,7 @@ importers:
         specifier: workspace:*
         version: link:../tsconfig
       typescript:
-        specifier: ^5.0.4
+        specifier: 'catalog:'
         version: 5.9.3
 
   packages/https-proxy-agent:
@@ -180,23 +216,23 @@ importers:
         specifier: workspace:*
         version: link:../agent-base
       debug:
-        specifier: '4'
+        specifier: 'catalog:'
         version: 4.4.3
     devDependencies:
       '@types/async-retry':
-        specifier: ^1.4.5
+        specifier: 'catalog:'
         version: 1.4.9
       '@types/debug':
-        specifier: '4'
+        specifier: 'catalog:'
         version: 4.1.12
       '@types/node':
-        specifier: ^22.13.0
+        specifier: 'catalog:'
         version: 22.19.15
       async-listen:
-        specifier: ^3.0.0
+        specifier: 'catalog:'
         version: 3.1.0
       async-retry:
-        specifier: ^1.3.3
+        specifier: 'catalog:'
         version: 1.3.3
       proxy:
         specifier: workspace:*
@@ -205,19 +241,19 @@ importers:
         specifier: workspace:*
         version: link:../tsconfig
       typescript:
-        specifier: ^5.0.4
+        specifier: 'catalog:'
         version: 5.9.3
 
   packages/pac-proxy-agent:
     dependencies:
       '@tootallnate/quickjs-emscripten':
-        specifier: ^0.23.0
+        specifier: 'catalog:'
         version: 0.23.0
       agent-base:
         specifier: workspace:*
         version: link:../agent-base
       debug:
-        specifier: ^4.3.4
+        specifier: 'catalog:'
         version: 4.4.3
       get-uri:
         specifier: workspace:*
@@ -236,25 +272,25 @@ importers:
         version: link:../socks-proxy-agent
     devDependencies:
       '@types/debug':
-        specifier: ^4.1.7
+        specifier: 'catalog:'
         version: 4.1.12
       '@types/node':
-        specifier: ^22.13.0
+        specifier: 'catalog:'
         version: 22.19.15
       async-listen:
-        specifier: ^3.0.0
+        specifier: 'catalog:'
         version: 3.1.0
       proxy:
         specifier: workspace:*
         version: link:../proxy
       socksv5:
-        specifier: 0.0.6
-        version: 0.0.6
+        specifier: 'catalog:'
+        version: https://codeload.github.com/TooTallNate/socksv5/tar.gz/d937368b28e929396166d77a06d387a4a902bd51
       tsconfig:
         specifier: workspace:*
         version: link:../tsconfig
       typescript:
-        specifier: ^5.0.4
+        specifier: 'catalog:'
         version: 5.9.3
 
   packages/pac-resolver:
@@ -267,19 +303,19 @@ importers:
         version: 2.0.2
     devDependencies:
       '@tootallnate/quickjs-emscripten':
-        specifier: ^0.23.0
+        specifier: 'catalog:'
         version: 0.23.0
       '@types/netmask':
         specifier: ^1.0.30
         version: 1.0.30
       '@types/node':
-        specifier: ^22.13.0
+        specifier: 'catalog:'
         version: 22.19.15
       tsconfig:
         specifier: workspace:*
         version: link:../tsconfig
       typescript:
-        specifier: ^5.1.6
+        specifier: 'catalog:'
         version: 5.9.3
 
   packages/proxy:
@@ -291,26 +327,26 @@ importers:
         specifier: 0.0.2-1
         version: 0.0.2-1
       debug:
-        specifier: ^4.3.4
+        specifier: 'catalog:'
         version: 4.4.3
     devDependencies:
       '@types/args':
         specifier: ^5.0.0
         version: 5.0.4
       '@types/debug':
-        specifier: ^4.1.7
+        specifier: 'catalog:'
         version: 4.1.12
       '@types/node':
-        specifier: ^22.13.0
+        specifier: 'catalog:'
         version: 22.19.15
       async-listen:
-        specifier: ^3.0.0
+        specifier: 'catalog:'
         version: 3.1.0
       tsconfig:
         specifier: workspace:*
         version: link:../tsconfig
       typescript:
-        specifier: ^5.0.4
+        specifier: 'catalog:'
         version: 5.9.3
 
   packages/proxy-agent:
@@ -319,7 +355,7 @@ importers:
         specifier: workspace:*
         version: link:../agent-base
       debug:
-        specifier: ^4.3.4
+        specifier: 'catalog:'
         version: 4.4.3
       http-proxy-agent:
         specifier: workspace:*
@@ -344,34 +380,34 @@ importers:
         specifier: ^4.2.0
         version: 4.2.5
       '@types/debug':
-        specifier: ^4.1.7
+        specifier: 'catalog:'
         version: 4.1.12
       '@types/node':
-        specifier: ^22.13.0
+        specifier: 'catalog:'
         version: 22.19.15
       '@types/proxy-from-env':
         specifier: ^1.0.1
         version: 1.0.4
       '@types/ws':
-        specifier: ^8.5.4
+        specifier: 'catalog:'
         version: 8.18.1
       async-listen:
-        specifier: ^3.0.0
+        specifier: 'catalog:'
         version: 3.1.0
       proxy:
         specifier: workspace:*
         version: link:../proxy
       socksv5:
-        specifier: github:TooTallNate/socksv5#fix/dstSock-close-event
+        specifier: 'catalog:'
         version: https://codeload.github.com/TooTallNate/socksv5/tar.gz/d937368b28e929396166d77a06d387a4a902bd51
       tsconfig:
         specifier: workspace:*
         version: link:../tsconfig
       typescript:
-        specifier: ^5.0.4
+        specifier: 'catalog:'
         version: 5.9.3
       ws:
-        specifier: ^8.13.0
+        specifier: 'catalog:'
         version: 8.19.0
 
   packages/socks-proxy-agent:
@@ -380,29 +416,29 @@ importers:
         specifier: workspace:*
         version: link:../agent-base
       debug:
-        specifier: ^4.3.4
+        specifier: 'catalog:'
         version: 4.4.3
       socks:
         specifier: ^2.8.3
         version: 2.8.7
     devDependencies:
       '@types/async-retry':
-        specifier: ^1.4.5
+        specifier: 'catalog:'
         version: 1.4.9
       '@types/debug':
-        specifier: ^4.1.7
+        specifier: 'catalog:'
         version: 4.1.12
       '@types/dns2':
         specifier: ^2.0.3
         version: 2.0.10
       '@types/node':
-        specifier: ^22.13.0
+        specifier: 'catalog:'
         version: 22.19.15
       async-listen:
-        specifier: ^3.0.0
+        specifier: 'catalog:'
         version: 3.1.0
       async-retry:
-        specifier: ^1.3.3
+        specifier: 'catalog:'
         version: 1.3.3
       cacheable-lookup:
         specifier: ^6.1.0
@@ -414,13 +450,13 @@ importers:
         specifier: workspace:*
         version: link:../proxy
       socksv5:
-        specifier: github:TooTallNate/socksv5#fix/dstSock-close-event
+        specifier: 'catalog:'
         version: https://codeload.github.com/TooTallNate/socksv5/tar.gz/d937368b28e929396166d77a06d387a4a902bd51
       tsconfig:
         specifier: workspace:*
         version: link:../tsconfig
       typescript:
-        specifier: ^5.0.4
+        specifier: 'catalog:'
         version: 5.9.3
 
   packages/tsconfig: {}
@@ -910,9 +946,6 @@ packages:
   '@types/semver@7.7.1':
     resolution: {integrity: sha512-FmgJfu+MOcQ370SD0ev7EI8TlCAfKYU+B4m5T3yXc1CiRN94g/SZPtsCkk506aUDtlMnFZvasDwHHUcZUEaYuA==}
 
-  '@types/ws@6.0.4':
-    resolution: {integrity: sha512-PpPrX7SZW9re6+Ha8ojZG4Se8AZXgf0GK6zmfqEuCsY49LFDNXO3SByp44X3dFEqtB73lkCDAdUazhAjVPiNwg==}
-
   '@types/ws@8.18.1':
     resolution: {integrity: sha512-ThVF6DCVhA8kUGy+aazFQ4kXQ7E1Ty7A3ypFOe0IcJV8O/M511G99AW24irKrW56Wt44yG9+ij8FaqoBGkuBXg==}
 
@@ -1064,9 +1097,6 @@ packages:
   astral-regex@2.0.0:
     resolution: {integrity: sha512-Z7tMw1ytTXt5jqMcOP+OQteU1VuNK9Y02uuJtKQ1Sv69jXQKKg5cibLwGJow8yzZP+eAc18EmLGPal0bp36rvQ==}
     engines: {node: '>=8'}
-
-  async-limiter@1.0.1:
-    resolution: {integrity: sha512-csOlWGAcRFJaI6m+F2WKdnMKr4HhdhFVBk0H/QbJFMCr+uO2kwohwXQPxw/9OCxp05r5ghVBFSyioixx3gfkNQ==}
 
   async-listen@3.1.0:
     resolution: {integrity: sha512-TkOhqze98lP+6e7SPbrBpyhTpfvqqX8VYKGn4uckrgPan4WQIHnTaUD2zZzZS18eVVDj4rHPcIZa1PGgvo1DfA==}
@@ -1773,12 +1803,6 @@ packages:
     resolution: {integrity: sha512-HLpt+uLy/pxB+bum/9DzAgiKS8CX1EvbWxI4zlmgGCExImLdiad2iCwXT5Z4c9c3Eq8rP2318mPW2c+QbtjK8A==}
     engines: {node: '>= 10.0.0', npm: '>= 3.0.0'}
 
-  socksv5@0.0.6:
-    resolution: {integrity: sha512-tQpQ0MdNQAsQBDhCXy3OvGGJikh9QOl3PkbwT4POJiQCm/fK4z9AxKQQRG8WLeF6talphnPrSWiZRpTl42rApg==}
-    engines: {node: '>=0.10.0'}
-    bundledDependencies:
-      - ipv6
-
   socksv5@https://codeload.github.com/TooTallNate/socksv5/tar.gz/d937368b28e929396166d77a06d387a4a902bd51:
     resolution: {tarball: https://codeload.github.com/TooTallNate/socksv5/tar.gz/d937368b28e929396166d77a06d387a4a902bd51}
     version: 0.0.6
@@ -2032,17 +2056,6 @@ packages:
 
   wrappy@1.0.2:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
-
-  ws@5.2.4:
-    resolution: {integrity: sha512-fFCejsuC8f9kOSu9FYaOw8CdO68O3h5v0lg4p74o8JqWpwTf9tniOD+nOB78aWoVSS6WptVUmDrp/KPsMVBWFQ==}
-    peerDependencies:
-      bufferutil: ^4.0.1
-      utf-8-validate: ^5.0.2
-    peerDependenciesMeta:
-      bufferutil:
-        optional: true
-      utf-8-validate:
-        optional: true
 
   ws@8.19.0:
     resolution: {integrity: sha512-blAT2mjOEIi0ZzruJfIhb3nps74PRWTCz1IjglWEEpQl5XS/UNama6u2/rjFkDDouqr4L67ry+1aGIALViWjDg==}
@@ -2502,10 +2515,6 @@ snapshots:
 
   '@types/semver@7.7.1': {}
 
-  '@types/ws@6.0.4':
-    dependencies:
-      '@types/node': 22.19.15
-
   '@types/ws@8.18.1':
     dependencies:
       '@types/node': 22.19.15
@@ -2691,8 +2700,6 @@ snapshots:
       tslib: 2.8.1
 
   astral-regex@2.0.0: {}
-
-  async-limiter@1.0.1: {}
 
   async-listen@3.1.0: {}
 
@@ -3364,8 +3371,6 @@ snapshots:
       ip-address: 10.1.0
       smart-buffer: 4.2.0
 
-  socksv5@0.0.6: {}
-
   socksv5@https://codeload.github.com/TooTallNate/socksv5/tar.gz/d937368b28e929396166d77a06d387a4a902bd51: {}
 
   source-map-js@1.2.1: {}
@@ -3564,9 +3569,5 @@ snapshots:
   word-wrap@1.2.5: {}
 
   wrappy@1.0.2: {}
-
-  ws@5.2.4:
-    dependencies:
-      async-limiter: 1.0.1
 
   ws@8.19.0: {}

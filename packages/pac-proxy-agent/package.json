@@ -36,9 +36,9 @@
   "author": "Nathan Rajlich <nathan@tootallnate.net> (http://n8.io/)",
   "license": "MIT",
   "dependencies": {
-    "@tootallnate/quickjs-emscripten": "^0.23.0",
+    "@tootallnate/quickjs-emscripten": "catalog:",
     "agent-base": "workspace:*",
-    "debug": "^4.3.4",
+    "debug": "catalog:",
     "get-uri": "workspace:*",
     "http-proxy-agent": "workspace:*",
     "https-proxy-agent": "workspace:*",
@@ -46,13 +46,13 @@
     "socks-proxy-agent": "workspace:*"
   },
   "devDependencies": {
-    "@types/debug": "^4.1.7",
-    "@types/node": "^22.13.0",
-    "async-listen": "^3.0.0",
+    "@types/debug": "catalog:",
+    "@types/node": "catalog:",
+    "async-listen": "catalog:",
     "proxy": "workspace:*",
-    "socksv5": "0.0.6",
+    "socksv5": "catalog:",
     "tsconfig": "workspace:*",
-    "typescript": "^5.0.4"
+    "typescript": "catalog:"
   },
   "engines": {
     "node": ">= 14"

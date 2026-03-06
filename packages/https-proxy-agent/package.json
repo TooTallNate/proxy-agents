@@ -34,17 +34,17 @@
   "license": "MIT",
   "dependencies": {
     "agent-base": "workspace:*",
-    "debug": "4"
+    "debug": "catalog:"
   },
   "devDependencies": {
-    "@types/async-retry": "^1.4.5",
-    "@types/debug": "4",
-    "@types/node": "^22.13.0",
-    "async-listen": "^3.0.0",
-    "async-retry": "^1.3.3",
+    "@types/async-retry": "catalog:",
+    "@types/debug": "catalog:",
+    "@types/node": "catalog:",
+    "async-listen": "catalog:",
+    "async-retry": "catalog:",
     "proxy": "workspace:*",
     "tsconfig": "workspace:*",
-    "typescript": "^5.0.4"
+    "typescript": "catalog:"
   },
   "engines": {
     "node": ">= 14"
