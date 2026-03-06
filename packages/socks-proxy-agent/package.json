@@ -112,7 +112,7 @@
     "socks5h"
   ],
   "dependencies": {
-    "agent-base": "^7.1.2",
+    "agent-base": "workspace:*",
     "debug": "^4.3.4",
     "socks": "^2.8.3"
   },

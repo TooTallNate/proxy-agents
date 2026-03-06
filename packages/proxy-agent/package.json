@@ -37,14 +37,14 @@
   "author": "Nathan Rajlich <nathan@tootallnate.net> (http://n8.io/)",
   "license": "MIT",
   "dependencies": {
-    "agent-base": "^7.1.2",
+    "agent-base": "workspace:*",
     "debug": "^4.3.4",
-    "http-proxy-agent": "^7.0.1",
-    "https-proxy-agent": "^7.0.6",
+    "http-proxy-agent": "workspace:*",
+    "https-proxy-agent": "workspace:*",
     "lru-cache": "^7.14.1",
-    "pac-proxy-agent": "^7.1.0",
+    "pac-proxy-agent": "workspace:*",
     "proxy-from-env": "^1.1.0",
-    "socks-proxy-agent": "^8.0.5"
+    "socks-proxy-agent": "workspace:*"
   },
   "devDependencies": {
     "@types/agent-base": "^4.2.0",

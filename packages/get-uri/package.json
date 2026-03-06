@@ -51,7 +51,7 @@
   },
   "dependencies": {
     "basic-ftp": "^5.0.2",
-    "data-uri-to-buffer": "^6.0.2",
+    "data-uri-to-buffer": "workspace:*",
     "debug": "^4.3.4"
   },
   "engines": {

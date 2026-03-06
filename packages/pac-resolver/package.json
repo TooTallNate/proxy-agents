@@ -13,7 +13,7 @@
     "dist"
   ],
   "dependencies": {
-    "degenerator": "^5.0.0",
+    "degenerator": "workspace:*",
     "netmask": "^2.0.2"
   },
   "devDependencies": {

@@ -37,13 +37,13 @@
   "license": "MIT",
   "dependencies": {
     "@tootallnate/quickjs-emscripten": "^0.23.0",
-    "agent-base": "^7.1.2",
+    "agent-base": "workspace:*",
     "debug": "^4.3.4",
-    "get-uri": "^6.0.1",
-    "http-proxy-agent": "^7.0.0",
-    "https-proxy-agent": "^7.0.6",
-    "pac-resolver": "^7.0.1",
-    "socks-proxy-agent": "^8.0.5"
+    "get-uri": "workspace:*",
+    "http-proxy-agent": "workspace:*",
+    "https-proxy-agent": "workspace:*",
+    "pac-resolver": "workspace:*",
+    "socks-proxy-agent": "workspace:*"
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",

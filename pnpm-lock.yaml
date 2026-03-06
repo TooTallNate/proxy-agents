@@ -115,8 +115,8 @@ importers:
         specifier: ^5.0.2
         version: 5.2.0
       data-uri-to-buffer:
-        specifier: ^6.0.2
-        version: 6.0.2
+        specifier: workspace:*
+        version: link:../data-uri-to-buffer
       debug:
         specifier: ^4.3.4
         version: 4.4.3
@@ -149,8 +149,8 @@ importers:
   packages/http-proxy-agent:
     dependencies:
       agent-base:
-        specifier: ^7.1.0
-        version: 7.1.4
+        specifier: workspace:*
+        version: link:../agent-base
       debug:
         specifier: ^4.3.4
         version: 4.4.3
@@ -177,8 +177,8 @@ importers:
   packages/https-proxy-agent:
     dependencies:
       agent-base:
-        specifier: ^7.1.2
-        version: 7.1.4
+        specifier: workspace:*
+        version: link:../agent-base
       debug:
         specifier: '4'
         version: 4.4.3
@@ -214,26 +214,26 @@ importers:
         specifier: ^0.23.0
         version: 0.23.0
       agent-base:
-        specifier: ^7.1.2
-        version: 7.1.4
+        specifier: workspace:*
+        version: link:../agent-base
       debug:
         specifier: ^4.3.4
         version: 4.4.3
       get-uri:
-        specifier: ^6.0.1
-        version: 6.0.5
+        specifier: workspace:*
+        version: link:../get-uri
       http-proxy-agent:
-        specifier: ^7.0.0
-        version: 7.0.2
+        specifier: workspace:*
+        version: link:../http-proxy-agent
       https-proxy-agent:
-        specifier: ^7.0.6
-        version: 7.0.6
+        specifier: workspace:*
+        version: link:../https-proxy-agent
       pac-resolver:
-        specifier: ^7.0.1
-        version: 7.0.1
+        specifier: workspace:*
+        version: link:../pac-resolver
       socks-proxy-agent:
-        specifier: ^8.0.5
-        version: 8.0.5
+        specifier: workspace:*
+        version: link:../socks-proxy-agent
     devDependencies:
       '@types/debug':
         specifier: ^4.1.7
@@ -260,8 +260,8 @@ importers:
   packages/pac-resolver:
     dependencies:
       degenerator:
-        specifier: ^5.0.0
-        version: 5.0.1
+        specifier: workspace:*
+        version: link:../degenerator
       netmask:
         specifier: ^2.0.2
         version: 2.0.2
@@ -316,29 +316,29 @@ importers:
   packages/proxy-agent:
     dependencies:
       agent-base:
-        specifier: ^7.1.2
-        version: 7.1.4
+        specifier: workspace:*
+        version: link:../agent-base
       debug:
         specifier: ^4.3.4
         version: 4.4.3
       http-proxy-agent:
-        specifier: ^7.0.1
-        version: 7.0.2
+        specifier: workspace:*
+        version: link:../http-proxy-agent
       https-proxy-agent:
-        specifier: ^7.0.6
-        version: 7.0.6
+        specifier: workspace:*
+        version: link:../https-proxy-agent
       lru-cache:
         specifier: ^7.14.1
         version: 7.18.3
       pac-proxy-agent:
-        specifier: ^7.1.0
-        version: 7.2.0
+        specifier: workspace:*
+        version: link:../pac-proxy-agent
       proxy-from-env:
         specifier: ^1.1.0
         version: 1.1.0
       socks-proxy-agent:
-        specifier: ^8.0.5
-        version: 8.0.5
+        specifier: workspace:*
+        version: link:../socks-proxy-agent
     devDependencies:
       '@types/agent-base':
         specifier: ^4.2.0
@@ -377,8 +377,8 @@ importers:
   packages/socks-proxy-agent:
     dependencies:
       agent-base:
-        specifier: ^7.1.2
-        version: 7.1.4
+        specifier: workspace:*
+        version: link:../agent-base
       debug:
         specifier: ^4.3.4
         version: 4.4.3
@@ -1017,10 +1017,6 @@ packages:
     engines: {node: '>=0.4.0'}
     hasBin: true
 
-  agent-base@7.1.4:
-    resolution: {integrity: sha512-MnA+YT8fwfJPgBx3m60MNqakm30XOkyIoH1y6huTQvC0PwZG7ki8NacLBcrPbNoo8vEZy7Jpuk7+jMO+CUovTQ==}
-    engines: {node: '>= 14'}
-
   ajv@6.14.0:
     resolution: {integrity: sha512-IWrosm/yrn43eiKqkfkHis7QioDleaXQHdDVPKg0FSwwd/DuvyX79TZnFOnYpB7dcsFAMmtFztZuXPDvSePkFw==}
 
@@ -1156,10 +1152,6 @@ packages:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
     engines: {node: '>= 8'}
 
-  data-uri-to-buffer@6.0.2:
-    resolution: {integrity: sha512-7hvf7/GW8e86rW0ptuwS3OcBGDjIi6SZva7hCyWC0yYry2cOPmLIjXAUHI6DK2HsnwJd9ifmt57i8eV2n4YNpw==}
-    engines: {node: '>= 14'}
-
   dateformat@1.0.7-1.2.3:
     resolution: {integrity: sha512-rzAoghPcnojOgYhvqb9ZYR5Ws9hDM2SGB6xLSUX9pEAKYnbxyexHZypDLgx3+SF3SR+at6waVRCxKDm6q2Z6+g==}
 
@@ -1174,10 +1166,6 @@ packages:
 
   deep-is@0.1.4:
     resolution: {integrity: sha512-oIPzksmTg4/MriiaYGO+okXDT7ztn/w3Eptv/+gSIdMdKsJo0u4CfYNFJPy+4SKMuCqGw2wxnA+URMg3t8a/bQ==}
-
-  degenerator@5.0.1:
-    resolution: {integrity: sha512-TllpMR/t0M5sqCXfj85i4XaAzxmS5tVA16dqvdkMwGmzI+dXLXnw3J+3Vdv7VKw+ThlTMboK6i9rnZ6Nntj5CQ==}
-    engines: {node: '>= 14'}
 
   detect-indent@6.1.0:
     resolution: {integrity: sha512-reYkTUJAZb9gUuZ2RvVCNhVHdg62RHnJ7WJl8ftMi4diZ6NWlciOzQN88pUhSELEwflJht4oQDv0F0BMlwaYtA==}
@@ -1388,10 +1376,6 @@ packages:
   functional-red-black-tree@1.0.1:
     resolution: {integrity: sha512-dsKNQNdj6xA3T+QlADDA7mOSlX0qiMINjn0cgr+eGHGsbSHzTabcIogz2+p/iqP1Xs6EP/sS2SbqH+brGTbq0g==}
 
-  get-uri@6.0.5:
-    resolution: {integrity: sha512-b1O07XYq8eRuVzBNgJLstU6FYc1tS6wnMtF1I1D9lE8LxZSOGZ7LhxN54yPP6mGw5f2CkXY2BQUL9Fx41qvcIg==}
-    engines: {node: '>= 14'}
-
   glob-parent@5.1.2:
     resolution: {integrity: sha512-AOIgSQCepiJYwP3ARnGx+5VnTu2HBYdzbGP45eLw1vr3zB3vZLeyed1sC9hnbcOc9/SrMyM5RPQrkGz4aS9Zow==}
     engines: {node: '>= 6'}
@@ -1421,14 +1405,6 @@ packages:
   has-flag@4.0.0:
     resolution: {integrity: sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ==}
     engines: {node: '>=8'}
-
-  http-proxy-agent@7.0.2:
-    resolution: {integrity: sha512-T1gkAiYYDWYx3V5Bmyu7HcfcvL7mUrTWiM6yOfa3PIphViJ/gFPbvidQ+veqSOHci/PxBcDabeUNCzpOODJZig==}
-    engines: {node: '>= 14'}
-
-  https-proxy-agent@7.0.6:
-    resolution: {integrity: sha512-vK9P5/iUfdl95AI+JVyUuIcVtd4ofvtrOr3HNtM2yxC9bnMbEdp3x01OhQNnjb8IJYi38VlTE3mBXwcfvywuSw==}
-    engines: {node: '>= 14'}
 
   human-id@4.1.3:
     resolution: {integrity: sha512-tsYlhAYpjCKa//8rXZ9DqKEawhPoSytweBC2eNvcaDK+57RZLHGqNs3PZTQO6yekLFSuvA6AlnAfrw1uBvtb+Q==}
@@ -1635,14 +1611,6 @@ packages:
     resolution: {integrity: sha512-R4nPAVTAU0B9D35/Gk3uJf/7XYbQcyohSKdvAxIRSNghFl4e71hVoGnBNQz9cWaXxO2I10KTC+3jMdvvoKw6dQ==}
     engines: {node: '>=6'}
 
-  pac-proxy-agent@7.2.0:
-    resolution: {integrity: sha512-TEB8ESquiLMc0lV8vcd5Ql/JAKAoyzHFXaStwjkzpOpC5Yv+pIzLfHvjTSdf3vpa2bMiUQrg9i6276yn8666aA==}
-    engines: {node: '>= 14'}
-
-  pac-resolver@7.0.1:
-    resolution: {integrity: sha512-5NPgf87AT2STgwa2ntRMr45jTKrYBGkVU36yT0ig/n/GMAa3oPqhZfIQ2kMEimReg0+t9kZViDVZ83qfVUlckg==}
-    engines: {node: '>= 14'}
-
   package-manager-detector@0.2.11:
     resolution: {integrity: sha512-BEnLolu+yuz22S56CU1SUKq3XC3PkwD5wv4ikR4MfGvnRVcmzXR9DwSlW2fEamyTPyXHomBJRzgapeuBvRNzJQ==}
 
@@ -1800,10 +1768,6 @@ packages:
   smart-buffer@4.2.0:
     resolution: {integrity: sha512-94hK0Hh8rPqQl2xXc3HsaBoOXKV20MToPkcXvwbISWLEs+64sBq5kFgn2kJDHb1Pry9yrP0dxrCI9RRci7RXKg==}
     engines: {node: '>= 6.0.0', npm: '>= 3.0.0'}
-
-  socks-proxy-agent@8.0.5:
-    resolution: {integrity: sha512-HehCEsotFqbPW9sJ8WVYB6UbmIMv7kUUORIF2Nncq4VQvBfNBLibW9YZR5dlYCSUhwcD628pRllm7n+E+YTzJw==}
-    engines: {node: '>= 14'}
 
   socks@2.8.7:
     resolution: {integrity: sha512-HLpt+uLy/pxB+bum/9DzAgiKS8CX1EvbWxI4zlmgGCExImLdiad2iCwXT5Z4c9c3Eq8rP2318mPW2c+QbtjK8A==}
@@ -2679,8 +2643,6 @@ snapshots:
 
   acorn@7.4.1: {}
 
-  agent-base@7.1.4: {}
-
   ajv@6.14.0:
     dependencies:
       fast-deep-equal: 3.1.3
@@ -2812,8 +2774,6 @@ snapshots:
       shebang-command: 2.0.0
       which: 2.0.2
 
-  data-uri-to-buffer@6.0.2: {}
-
   dateformat@1.0.7-1.2.3: {}
 
   debug@4.4.3:
@@ -2821,12 +2781,6 @@ snapshots:
       ms: 2.1.3
 
   deep-is@0.1.4: {}
-
-  degenerator@5.0.1:
-    dependencies:
-      ast-types: 0.13.4
-      escodegen: 2.1.0
-      esprima: 4.0.1
 
   detect-indent@6.1.0: {}
 
@@ -3071,14 +3025,6 @@ snapshots:
 
   functional-red-black-tree@1.0.1: {}
 
-  get-uri@6.0.5:
-    dependencies:
-      basic-ftp: 5.2.0
-      data-uri-to-buffer: 6.0.2
-      debug: 4.4.3
-    transitivePeerDependencies:
-      - supports-color
-
   glob-parent@5.1.2:
     dependencies:
       is-glob: 4.0.3
@@ -3112,20 +3058,6 @@ snapshots:
   has-flag@3.0.0: {}
 
   has-flag@4.0.0: {}
-
-  http-proxy-agent@7.0.2:
-    dependencies:
-      agent-base: 7.1.4
-      debug: 4.4.3
-    transitivePeerDependencies:
-      - supports-color
-
-  https-proxy-agent@7.0.6:
-    dependencies:
-      agent-base: 7.1.4
-      debug: 4.4.3
-    transitivePeerDependencies:
-      - supports-color
 
   human-id@4.1.3: {}
 
@@ -3287,24 +3219,6 @@ snapshots:
 
   p-try@2.2.0: {}
 
-  pac-proxy-agent@7.2.0:
-    dependencies:
-      '@tootallnate/quickjs-emscripten': 0.23.0
-      agent-base: 7.1.4
-      debug: 4.4.3
-      get-uri: 6.0.5
-      http-proxy-agent: 7.0.2
-      https-proxy-agent: 7.0.6
-      pac-resolver: 7.0.1
-      socks-proxy-agent: 8.0.5
-    transitivePeerDependencies:
-      - supports-color
-
-  pac-resolver@7.0.1:
-    dependencies:
-      degenerator: 5.0.1
-      netmask: 2.0.2
-
   package-manager-detector@0.2.11:
     dependencies:
       quansync: 0.2.11
@@ -3444,14 +3358,6 @@ snapshots:
       is-fullwidth-code-point: 3.0.0
 
   smart-buffer@4.2.0: {}
-
-  socks-proxy-agent@8.0.5:
-    dependencies:
-      agent-base: 7.1.4
-      debug: 4.4.3
-      socks: 2.8.7
-    transitivePeerDependencies:
-      - supports-color
 
   socks@2.8.7:
     dependencies:
