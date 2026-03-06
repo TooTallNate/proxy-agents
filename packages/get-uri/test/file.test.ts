@@ -34,6 +34,8 @@ describe('get-uri', () => {
 		it('should return ENOTMODIFIED for the same URI with `cache`', async () => {
 			const uri = pathToFileURL(__filename);
 			const cache = await getUri(uri);
+			// Consume the stream so the file descriptor gets closed
+			await toBuffer(cache);
 			await expect(getUri(uri, { cache })).rejects.toHaveProperty(
 				'code',
 				'ENOTMODIFIED'

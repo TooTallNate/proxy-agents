@@ -1,3 +1,11 @@
+import { createRequire } from 'module';
+// Polyfill `util.isError` which was removed from Node.js but is
+// used by the `socksv5` test dependency.
+const _require = createRequire(import.meta.url);
+const util = _require('util');
+if (typeof util.isError !== 'function') {
+	util.isError = (e: unknown) => e instanceof Error;
+}
 import * as fs from 'fs';
 import * as http from 'http';
 import * as https from 'https';
