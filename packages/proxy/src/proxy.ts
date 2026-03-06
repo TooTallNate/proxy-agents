@@ -1,6 +1,5 @@
 import assert from 'assert';
 import * as net from 'net';
-import * as url from 'url';
 import * as http from 'http';
 import * as os from 'os';
 import pkg from './pkg.js';
@@ -98,7 +97,7 @@ async function onrequest(
 	}
 
 	socket.resume();
-	const parsed = url.parse(req.url || '/');
+	const parsed = new URL(req.url || '/', 'http://localhost');
 
 	// setup outbound proxy request HTTP headers
 	const headers: http.OutgoingHttpHeaders = {};
@@ -195,7 +194,10 @@ async function onrequest(
 
 	let gotResponse = false;
 	const proxyReq = http.request({
-		...parsed,
+		protocol: parsed.protocol,
+		hostname: parsed.hostname.replace(/^\[|]$/g, ''),
+		port: parsed.port,
+		path: parsed.pathname + parsed.search,
 		method: req.method,
 		headers,
 		localAddress: this.localAddress,
