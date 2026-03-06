@@ -16,14 +16,14 @@ import myIpAddress from './myIpAddress.js';
 import shExpMatch from './shExpMatch.js';
 import timeRange from './timeRange.js';
 import weekdayRange from './weekdayRange.js';
-import type { QuickJSWASMModule } from '@tootallnate/quickjs-emscripten';
+import type { QuickJS } from 'quickjs-wasi';
 
 /**
  * Returns an asynchronous `FindProxyForURL()` function
  * from the given JS string (from a PAC file).
  */
 export function createPacResolver(
-	qjs: QuickJSWASMModule,
+	qjs: QuickJS,
 	_str: string | Buffer,
 	_opts: PacResolverOptions = {}
 ) {

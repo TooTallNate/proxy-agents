@@ -2,18 +2,19 @@ import assert from 'assert';
 import { resolve } from 'path';
 import { readFileSync } from 'fs';
 import { createPacResolver } from '../src';
-import {
-	getQuickJS,
-	type QuickJSWASMModule,
-} from '@tootallnate/quickjs-emscripten';
+import { QuickJS } from 'quickjs-wasi';
 
 type FindProxyForURLFn = ReturnType<typeof createPacResolver>;
 
 describe('FindProxyForURL', () => {
-	let qjs: QuickJSWASMModule;
+	let qjs: QuickJS;
 
 	beforeAll(async () => {
-		qjs = await getQuickJS();
+		qjs = await QuickJS.create();
+	});
+
+	afterAll(() => {
+		qjs?.dispose(false);
 	});
 
 	it('should return `undefined` by default', async () => {
@@ -73,7 +74,7 @@ describe('FindProxyForURL', () => {
 			err = _err as Error;
 		}
 		assert(err);
-		expect(err.message).toEqual("'process' is not defined");
+		expect(err.message).toContain('process is not defined');
 	});
 
 	describe('official docs Example #1', () => {
