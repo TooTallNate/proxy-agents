@@ -4,7 +4,7 @@ import * as http from 'http';
 import { Agent as HttpsAgent } from 'https';
 import type { Duplex } from 'stream';
 
-export * from './helpers';
+export * from './helpers.js';
 
 interface HttpConnectOpts extends net.TcpNetConnectOpts {
 	secureEndpoint: false;

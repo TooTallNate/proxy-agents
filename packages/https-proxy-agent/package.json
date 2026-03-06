@@ -1,9 +1,14 @@
 {
   "name": "https-proxy-agent",
   "version": "7.0.6",
+  "type": "module",
   "description": "An HTTP(s) proxy `http.Agent` implementation for HTTPS",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "exports": {
+    "import": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
   "files": [
     "dist"
   ],

@@ -2,11 +2,11 @@ import createDebug from 'debug';
 import { Readable } from 'stream';
 
 // Built-in protocols
-import { data } from './data';
-import { file } from './file';
-import { ftp } from './ftp';
-import { http } from './http';
-import { https } from './https';
+import { data } from './data.js';
+import { file } from './file.js';
+import { ftp } from './ftp.js';
+import { http } from './http.js';
+import { https } from './https.js';
 
 const debug = createDebug('get-uri');
 

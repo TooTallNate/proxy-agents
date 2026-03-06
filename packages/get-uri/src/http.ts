@@ -3,10 +3,10 @@ import https from 'https';
 import { once } from 'events';
 import { Readable } from 'stream';
 import createDebug from 'debug';
-import { GetUriProtocol } from '.';
-import HTTPError from './http-error';
-import NotFoundError from './notfound';
-import NotModifiedError from './notmodified';
+import { GetUriProtocol } from './index.js';
+import HTTPError from './http-error.js';
+import NotFoundError from './notfound.js';
+import NotModifiedError from './notmodified.js';
 
 const debug = createDebug('get-uri:http');
 

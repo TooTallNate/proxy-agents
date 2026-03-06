@@ -2,8 +2,8 @@ import createDebug from 'debug';
 import { Readable } from 'stream';
 import { createHash } from 'crypto';
 import { dataUriToBuffer } from 'data-uri-to-buffer';
-import { GetUriProtocol } from './';
-import NotModifiedError from './notmodified';
+import { GetUriProtocol } from './index.js';
+import NotModifiedError from './notmodified.js';
 
 const debug = createDebug('get-uri:data');
 

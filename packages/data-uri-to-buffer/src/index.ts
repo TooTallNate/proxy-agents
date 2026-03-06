@@ -1,6 +1,6 @@
-import { makeDataUriToBuffer } from './common';
+import { makeDataUriToBuffer } from './common.js';
 
-export type { ParsedDataURI } from './common';
+export type { ParsedDataURI } from './common.js';
 
 function base64ToArrayBuffer(base64: string) {
 	const chars =

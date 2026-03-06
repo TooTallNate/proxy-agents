@@ -1,4 +1,4 @@
-import { dnsLookup } from './util';
+import { dnsLookup } from './util.js';
 
 /**
  * Resolves the given DNS hostname into an IP address, and returns it in the dot

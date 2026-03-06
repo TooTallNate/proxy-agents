@@ -2,9 +2,9 @@ import { Client, AccessOptions } from 'basic-ftp';
 import { PassThrough, Readable } from 'stream';
 import { basename, dirname } from 'path';
 import createDebug from 'debug';
-import NotFoundError from './notfound';
-import NotModifiedError from './notmodified';
-import { GetUriProtocol } from '.';
+import NotFoundError from './notfound.js';
+import NotModifiedError from './notmodified.js';
+import { GetUriProtocol } from './index.js';
 
 const debug = createDebug('get-uri:ftp');
 

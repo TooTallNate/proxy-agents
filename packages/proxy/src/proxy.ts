@@ -3,7 +3,7 @@ import * as net from 'net';
 import * as url from 'url';
 import * as http from 'http';
 import * as os from 'os';
-import pkg from './pkg';
+import pkg from './pkg.js';
 
 import createDebug from 'debug';
 

@@ -1,6 +1,5 @@
-import { join } from 'path';
-import { readFileSync } from 'fs';
+import { createRequire } from 'module';
 
-export default JSON.parse(
-	readFileSync(join(__dirname, '../package.json'), 'utf8')
-);
+const require = createRequire(import.meta.url);
+
+export default require('../package.json');

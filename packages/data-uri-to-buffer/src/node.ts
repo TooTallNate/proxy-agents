@@ -1,6 +1,6 @@
-import { makeDataUriToBuffer } from './common';
+import { makeDataUriToBuffer } from './common.js';
 
-export type { ParsedDataURI } from './common';
+export type { ParsedDataURI } from './common.js';
 
 function nodeBuffertoArrayBuffer(nodeBuf: Buffer): ArrayBuffer {
 	if (nodeBuf.byteLength === nodeBuf.buffer.byteLength) {

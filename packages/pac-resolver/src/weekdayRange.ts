@@ -1,5 +1,5 @@
-import { isGMT } from './util';
-import { GMT, Weekday } from './index';
+import { isGMT } from './util.js';
+import { GMT, Weekday } from './index.js';
 
 const weekdays: Weekday[] = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
 

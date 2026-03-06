@@ -1,12 +1,12 @@
 import { types } from 'util';
-import { degenerator } from './degenerator';
+import { degenerator } from './degenerator.js';
 import type { Context } from 'vm';
 import type {
 	QuickJSContext,
 	QuickJSHandle,
 	QuickJSWASMModule,
 } from '@tootallnate/quickjs-emscripten';
-import type { DegeneratorNames } from './degenerator';
+import type { DegeneratorNames } from './degenerator.js';
 
 export interface CompileOptions {
 	names?: DegeneratorNames;

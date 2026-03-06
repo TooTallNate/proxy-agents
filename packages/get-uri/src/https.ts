@@ -1,6 +1,6 @@
 import https_ from 'https';
-import { http, HttpOptions } from './http';
-import type { GetUriProtocol } from '.';
+import { http, HttpOptions } from './http.js';
+import type { GetUriProtocol } from './index.js';
 
 /**
  * Returns a Readable stream from an "https:" URI.

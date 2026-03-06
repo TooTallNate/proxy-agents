@@ -1,12 +1,17 @@
 {
   "name": "data-uri-to-buffer",
   "version": "6.0.2",
+  "type": "module",
   "description": "Create an ArrayBuffer instance from a Data URI string",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "exports": {
-    "node": "./dist/node.js",
-    "default": "./dist/index.js"
+    "node": {
+      "types": "./dist/node.d.ts",
+      "default": "./dist/node.js"
+    },
+    "default": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
   },
   "files": [
     "dist"

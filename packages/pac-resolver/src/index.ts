@@ -4,18 +4,18 @@ import { CompileOptions, compile } from 'degenerator';
 /**
  * Built-in PAC functions.
  */
-import dateRange from './dateRange';
-import dnsDomainIs from './dnsDomainIs';
-import dnsDomainLevels from './dnsDomainLevels';
-import dnsResolve from './dnsResolve';
-import isInNet from './isInNet';
-import isPlainHostName from './isPlainHostName';
-import isResolvable from './isResolvable';
-import localHostOrDomainIs from './localHostOrDomainIs';
-import myIpAddress from './myIpAddress';
-import shExpMatch from './shExpMatch';
-import timeRange from './timeRange';
-import weekdayRange from './weekdayRange';
+import dateRange from './dateRange.js';
+import dnsDomainIs from './dnsDomainIs.js';
+import dnsDomainLevels from './dnsDomainLevels.js';
+import dnsResolve from './dnsResolve.js';
+import isInNet from './isInNet.js';
+import isPlainHostName from './isPlainHostName.js';
+import isResolvable from './isResolvable.js';
+import localHostOrDomainIs from './localHostOrDomainIs.js';
+import myIpAddress from './myIpAddress.js';
+import shExpMatch from './shExpMatch.js';
+import timeRange from './timeRange.js';
+import weekdayRange from './weekdayRange.js';
 import type { QuickJSWASMModule } from '@tootallnate/quickjs-emscripten';
 
 /**

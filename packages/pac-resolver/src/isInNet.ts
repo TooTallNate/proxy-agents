@@ -1,5 +1,5 @@
 import { Netmask } from 'netmask';
-import { dnsLookup } from './util';
+import { dnsLookup } from './util.js';
 
 /**
  * True iff the IP address of the host matches the specified IP address pattern.

@@ -1,2 +1,2 @@
-export * from './degenerator';
-export * from './compile';
+export * from './degenerator.js';
+export * from './compile.js';

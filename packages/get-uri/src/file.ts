@@ -1,9 +1,9 @@
 import { Readable } from 'stream';
 import createDebug from 'debug';
 import { Stats, createReadStream, promises as fsPromises } from 'fs';
-import { GetUriProtocol } from './';
-import NotFoundError from './notfound';
-import NotModifiedError from './notmodified';
+import { GetUriProtocol } from './index.js';
+import NotFoundError from './notfound.js';
+import NotModifiedError from './notmodified.js';
 import { fileURLToPath } from 'url';
 
 const debug = createDebug('get-uri:file');

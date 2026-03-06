@@ -1,4 +1,4 @@
-import { ip } from './ip';
+import { ip } from './ip.js';
 import net, { AddressInfo } from 'net';
 
 /**

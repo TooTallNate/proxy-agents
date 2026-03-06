@@ -1,4 +1,4 @@
-import { dnsLookup } from './util';
+import { dnsLookup } from './util.js';
 
 /**
  * Tries to resolve the hostname. Returns true if succeeds.
