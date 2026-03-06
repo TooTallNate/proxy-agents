@@ -12,6 +12,11 @@
     "ci:version": "changeset version && pnpm install --no-frozen-lockfile",
     "ci:publish": "pnpm publish -r && changeset tag"
   },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  },
   "devDependencies": {
     "@changesets/cli": "^2.26.1",
     "@typescript-eslint/eslint-plugin": "^5.59.1",
@@ -20,7 +25,8 @@
     "eslint-config-prettier": "^8.8.0",
     "eslint-config-turbo": "^1.9.3",
     "prettier": "^2.8.8",
+    "semver": "^7.6.3",
     "turbo": "^1.10.8",
-    "semver": "^7.6.3"
+    "vitest": "^4.0.18"
   }
 }

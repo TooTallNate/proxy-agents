@@ -146,11 +146,15 @@ export class SocksProxyAgent extends Agent {
 			// Client-side DNS resolution for "4" and "5" socks proxy versions.
 			host = await new Promise<string>((resolve, reject) => {
 				// Use the request's custom lookup, if one was configured:
-				lookupFn(host, {}, (err, res) => {
+				lookupFn(host, {}, (err, address) => {
 					if (err) {
 						reject(err);
 					} else {
-						resolve(res);
+						resolve(
+							typeof address === 'string'
+								? address
+								: address[0].address
+						);
 					}
 				});
 			});

@@ -127,10 +127,8 @@ export abstract class Agent extends http.Agent {
 	getName(options?: AgentConnectOpts): string {
 		const secureEndpoint = this.isSecureEndpoint(options);
 		if (secureEndpoint) {
-			// @ts-expect-error `getName()` isn't defined in `@types/node`
 			return HttpsAgent.prototype.getName.call(this, options);
 		}
-		// @ts-expect-error `getName()` isn't defined in `@types/node`
 		return super.getName(options);
 	}
 

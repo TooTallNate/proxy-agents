@@ -2,9 +2,9 @@ import { makeDataUriToBuffer } from './common';
 
 export type { ParsedDataURI } from './common';
 
-function nodeBuffertoArrayBuffer(nodeBuf: Buffer) {
+function nodeBuffertoArrayBuffer(nodeBuf: Buffer): ArrayBuffer {
 	if (nodeBuf.byteLength === nodeBuf.buffer.byteLength) {
-		return nodeBuf.buffer; // large strings may get their own memory allocation
+		return nodeBuf.buffer as ArrayBuffer; // large strings may get their own memory allocation
 	}
 	const buffer = new ArrayBuffer(nodeBuf.byteLength);
 	const view = new Uint8Array(buffer);

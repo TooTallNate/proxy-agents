@@ -72,19 +72,22 @@ export const http: GetUriProtocol<HttpOptions> = async (url, opts = {}) => {
 
 	// add "cache validation" headers if a `cache` was provided
 	if (cache) {
-		if (!options.headers) {
-			options.headers = {};
+		const prevHeaders = options.headers;
+		const headers: http_.OutgoingHttpHeaders = {};
+		if (prevHeaders && !Array.isArray(prevHeaders)) {
+			Object.assign(headers, prevHeaders);
 		}
+		options.headers = headers;
 
 		const lastModified = cache.headers['last-modified'];
 		if (lastModified) {
-			options.headers['If-Modified-Since'] = lastModified;
+			headers['If-Modified-Since'] = lastModified;
 			debug('added "If-Modified-Since" request header: %o', lastModified);
 		}
 
 		const etag = cache.headers.etag;
 		if (etag) {
-			options.headers['If-None-Match'] = etag;
+			headers['If-None-Match'] = etag;
 			debug('added "If-None-Match" request header: %o', etag);
 		}
 	}
