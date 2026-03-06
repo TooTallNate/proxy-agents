@@ -27,9 +27,7 @@ export function compile<R = unknown, A extends unknown[] = []>(
 				);
 			}
 			const fnHandle = vm.newFunction(name, (_this, ...args) => {
-				const result = value(
-					...args.map((arg) => vm.dump(arg))
-				);
+				const result = value(...args.map((arg) => vm.dump(arg)));
 				vm.executePendingJobs();
 				return hostToQuickJSHandle(vm, result);
 			});

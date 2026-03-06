@@ -40,5 +40,8 @@
     "quickjs-wasi": "catalog:",
     "tsconfig": "workspace:*",
     "typescript": "catalog:"
+  },
+  "peerDependencies": {
+    "quickjs-wasi": "catalog:"
   }
 }

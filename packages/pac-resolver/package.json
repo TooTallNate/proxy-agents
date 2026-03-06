@@ -23,6 +23,9 @@
     "tsconfig": "workspace:*",
     "typescript": "catalog:"
   },
+  "peerDependencies": {
+    "quickjs-wasi": "catalog:"
+  },
   "scripts": {
     "build": "tsc",
     "test": "vitest",
