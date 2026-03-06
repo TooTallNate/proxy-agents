@@ -42,8 +42,6 @@ export const file: GetUriProtocol<FileOptions> = async (
 		// `open()` first to get a file descriptor and ensure that the file
 		// exists.
 		const fdHandle = await fsPromises.open(filepath, flags, mode);
-		// extract the numeric file descriptor
-		const fd = fdHandle.fd;
 
 		// store the stat object for the cache.
 		const stat = await fdHandle.stat();
@@ -54,12 +52,12 @@ export const file: GetUriProtocol<FileOptions> = async (
 			throw new NotModifiedError();
 		}
 
-		// `fs.ReadStream` takes care of calling `fs.close()` on the
-		// fd after it's done reading
+		// `fs.ReadStream` takes care of closing the file handle
+		// after it's done reading
 		const rs = createReadStream(filepath, {
 			autoClose: true,
 			...opts,
-			fd,
+			fd: fdHandle,
 		}) as FileReadable;
 		rs.stat = stat;
 		return rs;
