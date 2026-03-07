@@ -1,6 +1,6 @@
 {
   "name": "socks-proxy-agent",
-  "version": "8.0.5",
+  "version": "9.0.0",
   "type": "module",
   "description": "A SOCKS proxy `http.Agent` implementation for HTTP and HTTPS",
   "exports": {

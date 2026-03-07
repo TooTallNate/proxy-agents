@@ -1,5 +1,11 @@
 # proxy
 
+## 3.0.0
+
+### Major Changes
+
+- 9c92c09: Convert to ESM. All packages now use `"type": "module"` and compile to ESM output instead of CommonJS.
+
 ## 2.2.0
 
 ### Minor Changes

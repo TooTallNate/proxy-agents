@@ -1,5 +1,11 @@
 # data-uri-to-buffer
 
+## 7.0.0
+
+### Major Changes
+
+- 9c92c09: Convert to ESM. All packages now use `"type": "module"` and compile to ESM output instead of CommonJS.
+
 ## 6.0.2
 
 ### Patch Changes

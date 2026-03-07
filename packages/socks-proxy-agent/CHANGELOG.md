@@ -1,5 +1,16 @@
 # socks-proxy-agent
 
+## 9.0.0
+
+### Major Changes
+
+- 9c92c09: Convert to ESM. All packages now use `"type": "module"` and compile to ESM output instead of CommonJS.
+
+### Patch Changes
+
+- Updated dependencies [9c92c09]
+  - agent-base@8.0.0
+
 ## 8.0.5
 
 ### Patch Changes

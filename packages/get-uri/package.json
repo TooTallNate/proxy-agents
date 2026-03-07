@@ -1,6 +1,6 @@
 {
   "name": "get-uri",
-  "version": "6.0.5",
+  "version": "7.0.0",
   "type": "module",
   "description": "Returns a `stream.Readable` from a URI string",
   "exports": {

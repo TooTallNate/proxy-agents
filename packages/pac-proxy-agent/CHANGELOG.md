@@ -1,5 +1,26 @@
 # pac-proxy-agent
 
+## 8.0.0
+
+### Major Changes
+
+- 9c92c09: Convert to ESM. All packages now use `"type": "module"` and compile to ESM output instead of CommonJS.
+
+### Minor Changes
+
+- b1509d8: Replace `@tootallnate/quickjs-emscripten` with `quickjs-wasi` for running sandboxed PAC file code. `quickjs-wasi` is a lighter-weight QuickJS WASM runtime built on quickjs-ng with WASI reactor mode. The `compile()` function now takes a `QuickJS` instance directly instead of `QuickJSWASMModule`, and `createPacResolver()` / `pac-proxy-agent` are updated accordingly.
+
+### Patch Changes
+
+- Updated dependencies [9c92c09]
+- Updated dependencies [b1509d8]
+  - agent-base@8.0.0
+  - http-proxy-agent@8.0.0
+  - https-proxy-agent@8.0.0
+  - socks-proxy-agent@9.0.0
+  - pac-resolver@8.0.0
+  - get-uri@7.0.0
+
 ## 7.2.0
 
 ### Minor Changes
