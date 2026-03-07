@@ -1,6 +1,6 @@
 {
   "name": "pac-proxy-agent",
-  "version": "7.2.0",
+  "version": "8.0.0",
   "type": "module",
   "description": "A PAC file proxy `http.Agent` implementation for HTTP",
   "exports": {

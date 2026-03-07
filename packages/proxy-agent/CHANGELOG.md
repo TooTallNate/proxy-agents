@@ -1,5 +1,21 @@
 # proxy-agent
 
+## 7.0.0
+
+### Major Changes
+
+- 9c92c09: Convert to ESM. All packages now use `"type": "module"` and compile to ESM output instead of CommonJS.
+
+### Patch Changes
+
+- Updated dependencies [9c92c09]
+- Updated dependencies [b1509d8]
+  - agent-base@8.0.0
+  - http-proxy-agent@8.0.0
+  - https-proxy-agent@8.0.0
+  - socks-proxy-agent@9.0.0
+  - pac-proxy-agent@8.0.0
+
 ## 6.5.0
 
 ### Minor Changes
