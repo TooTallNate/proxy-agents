@@ -1,5 +1,21 @@
 # pac-resolver
 
+## 8.0.0
+
+### Major Changes
+
+- 9c92c09: Convert to ESM. All packages now use `"type": "module"` and compile to ESM output instead of CommonJS.
+
+### Minor Changes
+
+- b1509d8: Replace `@tootallnate/quickjs-emscripten` with `quickjs-wasi` for running sandboxed PAC file code. `quickjs-wasi` is a lighter-weight QuickJS WASM runtime built on quickjs-ng with WASI reactor mode. The `compile()` function now takes a `QuickJS` instance directly instead of `QuickJSWASMModule`, and `createPacResolver()` / `pac-proxy-agent` are updated accordingly.
+
+### Patch Changes
+
+- Updated dependencies [9c92c09]
+- Updated dependencies [b1509d8]
+  - degenerator@6.0.0
+
 ## 7.0.1
 
 ### Patch Changes

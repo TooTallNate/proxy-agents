@@ -1,6 +1,6 @@
 {
   "name": "https-proxy-agent",
-  "version": "7.0.6",
+  "version": "8.0.0",
   "type": "module",
   "description": "An HTTP(s) proxy `http.Agent` implementation for HTTPS",
   "exports": {
