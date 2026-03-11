@@ -10,7 +10,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "ci:version": "changeset version && pnpm install --no-frozen-lockfile",
-    "ci:publish": "pnpm publish -r && changeset tag"
+    "ci:publish": "pnpm publish -r --provenance && changeset tag"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
