@@ -38,7 +38,7 @@
     "directory": "packages/pac-resolver"
   },
   "engines": {
-    "node": ">= 14"
+    "node": ">= 20"
   },
   "keywords": [
     "pac",

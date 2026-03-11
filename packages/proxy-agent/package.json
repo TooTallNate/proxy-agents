@@ -19,7 +19,7 @@
     "pack": "node ../../scripts/pack.mjs"
   },
   "engines": {
-    "node": ">= 14"
+    "node": ">= 20"
   },
   "repository": {
     "type": "git",
