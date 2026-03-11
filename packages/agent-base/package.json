@@ -1,6 +1,6 @@
 {
   "name": "agent-base",
-  "version": "7.1.4",
+  "version": "8.0.0",
   "type": "module",
   "description": "Turn a function into an `http.Agent` instance",
   "exports": {
