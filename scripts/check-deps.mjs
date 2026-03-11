@@ -12,7 +12,7 @@ import assert from 'node:assert';
  */
 const CHECKS = {
 	engines: {
-		wanted: '>=14',
+		wanted: '>=20',
 		get title() {
 			return `Engines must be a subset of "${this.wanted}"`;
 		},
