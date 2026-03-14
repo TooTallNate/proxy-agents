@@ -148,15 +148,14 @@ export abstract class Agent extends http.Agent {
 			.then(
 				(socket) => {
 					this.decrementSockets(name, fakeSocket);
-					if (socket instanceof http.Agent || (typeof (socket as any).addRequest === 'function')) {
+					if (typeof (socket as any).addRequest === 'function') {
 						try {
-							// @ts-expect-error `addRequest()` isn't defined in `@types/node`
-							return socket.addRequest(req, connectOpts);
+							return (socket as any).addRequest(req, connectOpts);
 						} catch (err: unknown) {
 							return cb(err as Error);
 						}
 					}
-					this[INTERNAL].currentSocket = socket;
+					this[INTERNAL].currentSocket = socket as Duplex;
 					// @ts-expect-error `createSocket()` isn't defined in `@types/node`
 					super.createSocket(req, options, cb);
 				},
