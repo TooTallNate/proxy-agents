@@ -148,9 +148,9 @@ export abstract class Agent extends http.Agent {
 			.then(
 				(socket) => {
 					this.decrementSockets(name, fakeSocket);
-					if (typeof (socket as any).addRequest === 'function') {
+					if (typeof (socket as unknown as Record<string, unknown>).addRequest === 'function') {
 						try {
-							return (socket as any).addRequest(req, connectOpts);
+							return (socket as unknown as Record<string, (...args: unknown[]) => unknown>).addRequest(req, connectOpts);
 						} catch (err: unknown) {
 							return cb(err as Error);
 						}

@@ -424,7 +424,7 @@ describe('Agent (TypeScript)', () => {
 				async connect(
 					_req: http.ClientRequest,
 					opts: AgentConnectOpts
-				): Promise<any> {
+				): Promise<http.Agent> {
 					gotCallback = true;
 					assert.equal(opts.secureEndpoint, true);
 					// Return a plain object with `addRequest` (duck-typed agent)
@@ -435,7 +435,7 @@ describe('Agent (TypeScript)', () => {
 						) {
 							gotAddRequest = true;
 							// Delegate to a real HTTPS agent
-							return https.globalAgent.addRequest(req, opts as any);
+							return https.globalAgent.addRequest(req, opts as AgentConnectOpts);
 						},
 					};
 				}
