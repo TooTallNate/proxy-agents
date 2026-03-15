@@ -415,6 +415,66 @@ describe('Agent (TypeScript)', () => {
 			}
 		});
 
+		it('should work when returning a duck-typed agent (non-instanceof http.Agent with addRequest)', async () => {
+			let gotReq = false;
+			let gotCallback = false;
+			let gotAddRequest = false;
+
+			class MyAgent extends Agent {
+				async connect(
+					_req: http.ClientRequest,
+					opts: AgentConnectOpts
+				): Promise<http.Agent> {
+					gotCallback = true;
+					assert.equal(opts.secureEndpoint, true);
+					// Return a plain object with `addRequest` (duck-typed agent)
+					return {
+						addRequest(
+							req: http.ClientRequest,
+							opts: AgentConnectOpts
+						) {
+							gotAddRequest = true;
+							// Delegate to a real HTTPS agent
+							return https.globalAgent.addRequest(
+								req,
+								opts as AgentConnectOpts
+							);
+						},
+					};
+				}
+			}
+
+			const agent = new MyAgent();
+
+			const server = https.createServer(sslOptions, (req, res) => {
+				gotReq = true;
+				res.setHeader('X-Foo', 'bar');
+				res.setHeader('X-Url', req.url || '/');
+				res.end();
+			});
+			await listen(server);
+
+			const addr = server.address();
+			if (!addr || typeof addr === 'string') {
+				throw new Error('Server did not bind to a port');
+			}
+			const { port } = addr;
+
+			try {
+				const res = await req(`https://127.0.0.1:${port}/foo`, {
+					agent,
+					rejectUnauthorized: false,
+				});
+				assert.equal('bar', res.headers['x-foo']);
+				assert.equal('/foo', res.headers['x-url']);
+				assert(gotReq);
+				assert(gotCallback);
+				assert(gotAddRequest);
+			} finally {
+				server.close();
+			}
+		});
+
 		it('should work when returning another `agent-base`', async () => {
 			let gotReq = false;
 			let gotCallback1 = false;
