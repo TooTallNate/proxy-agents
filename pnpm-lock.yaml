@@ -148,7 +148,7 @@ importers:
   packages/get-uri:
     dependencies:
       basic-ftp:
-        specifier: ^5.0.2
+        specifier: ^5.2.0
         version: 5.2.0
       data-uri-to-buffer:
         specifier: workspace:*
