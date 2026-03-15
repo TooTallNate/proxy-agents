@@ -31,7 +31,7 @@ catalogs:
       specifier: ^0.0.1
       version: 0.0.1
     socksv5:
-      specifier: github:TooTallNate/socksv5#fix/dstSock-close-event
+      specifier: github:TooTallNate/socksv5#d937368b28e929396166d77a06d387a4a902bd51
       version: 0.0.6
     typescript:
       specifier: ^5.1.6

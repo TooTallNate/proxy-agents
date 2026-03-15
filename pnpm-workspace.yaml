@@ -11,6 +11,6 @@ catalog:
   async-listen: ^3.0.0
   async-retry: ^1.3.3
   debug: ^4.3.4
-  socksv5: 'github:TooTallNate/socksv5#fix/dstSock-close-event'
+  socksv5: 'github:TooTallNate/socksv5#d937368b28e929396166d77a06d387a4a902bd51'
   typescript: ^5.1.6
   ws: ^8.13.0
