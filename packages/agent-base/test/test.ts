@@ -435,7 +435,10 @@ describe('Agent (TypeScript)', () => {
 						) {
 							gotAddRequest = true;
 							// Delegate to a real HTTPS agent
-							return https.globalAgent.addRequest(req, opts as AgentConnectOpts);
+							return https.globalAgent.addRequest(
+								req,
+								opts as AgentConnectOpts
+							);
 						},
 					};
 				}
