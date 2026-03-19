@@ -7,6 +7,10 @@
     "import": {
       "types": "./dist/proxy.d.ts",
       "default": "./dist/proxy.js"
+    },
+    "require": {
+      "types": "./dist/proxy.d.ts",
+      "default": "./dist/proxy.js"
     }
   },
   "files": [
