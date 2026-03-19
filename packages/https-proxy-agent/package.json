@@ -4,10 +4,8 @@
   "type": "module",
   "description": "An HTTP(s) proxy `http.Agent` implementation for HTTPS",
   "exports": {
-    "import": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
-    }
+    "types": "./dist/index.d.ts",
+    "default": "./dist/index.js"
   },
   "files": [
     "dist"

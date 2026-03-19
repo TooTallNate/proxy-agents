@@ -4,7 +4,6 @@
   "type": "module",
   "description": "An HTTP proxy written with Node.js (think Squid)",
   "exports": {
-    "import": {
       "types": "./dist/proxy.d.ts",
       "default": "./dist/proxy.js"
     }
