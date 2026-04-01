@@ -1,5 +1,18 @@
 # get-uri
 
+## 8.0.0
+
+### Major Changes
+
+- 7d12b51: Set minimum Node.js version to 20
+
+### Patch Changes
+
+- 4e922b5: Bumps basic-ftp dependency to v5.2.0
+- 7ca27d0: Simplify package.json exports to remove unnecessary imports restriction
+- Updated dependencies [7d12b51]
+  - data-uri-to-buffer@8.0.0
+
 ## 7.0.0
 
 ### Major Changes

@@ -1,5 +1,24 @@
 # proxy-agent
 
+## 8.0.0
+
+### Major Changes
+
+- 7d12b51: Set minimum Node.js version to 20
+
+### Patch Changes
+
+- 0e639d4: chore: update `proxy-from-env` to fix DEP0169
+- 7ca27d0: Simplify package.json exports to remove unnecessary imports restriction
+- Updated dependencies [ca12148]
+- Updated dependencies [7d12b51]
+- Updated dependencies [7ca27d0]
+  - agent-base@9.0.0
+  - http-proxy-agent@9.0.0
+  - https-proxy-agent@9.0.0
+  - pac-proxy-agent@9.0.0
+  - socks-proxy-agent@10.0.0
+
 ## 7.0.0
 
 ### Major Changes
