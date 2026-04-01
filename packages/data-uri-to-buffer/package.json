@@ -1,6 +1,6 @@
 {
   "name": "data-uri-to-buffer",
-  "version": "7.0.0",
+  "version": "8.0.0",
   "type": "module",
   "description": "Create an ArrayBuffer instance from a Data URI string",
   "exports": {

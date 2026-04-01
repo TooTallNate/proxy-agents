@@ -1,6 +1,6 @@
 {
   "name": "proxy",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "type": "module",
   "description": "An HTTP proxy written with Node.js (think Squid)",
   "exports": {

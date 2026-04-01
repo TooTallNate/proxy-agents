@@ -1,5 +1,16 @@
 # agent-base
 
+## 9.0.0
+
+### Major Changes
+
+- 7d12b51: Set minimum Node.js version to 20
+
+### Patch Changes
+
+- ca12148: Fix: use duck typing for agent detection in createSocket to prevent silent hang with non-http.Agent agents like tunnel-agent's TunnelingAgent
+- 7ca27d0: Simplify package.json exports to remove unnecessary imports restriction
+
 ## 8.0.0
 
 ### Major Changes
