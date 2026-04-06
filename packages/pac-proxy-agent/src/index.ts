@@ -147,13 +147,13 @@ export class PacProxyAgent<Uri extends string> extends Agent {
 					'Same sha1 hash for code - contents have not changed, reusing previous proxy resolver'
 				);
 				// Dispose the newly created VM since we're reusing the old resolver
-				qjs.dispose(false);
+				qjs.dispose();
 				return this.resolver;
 			}
 
 			// Dispose the previous VM before creating a new resolver
 			if (this.qjs) {
-				this.qjs.dispose(false);
+				this.qjs.dispose();
 			}
 			this.qjs = qjs;
 

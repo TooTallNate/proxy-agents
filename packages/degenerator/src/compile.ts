@@ -10,6 +10,8 @@ export interface CompileOptions {
 	sandbox?: Context;
 }
 
+const SANDBOX_FUNCTION_PREFIX = '__degeneratorSandboxFunction:';
+
 export function compile<R = unknown, A extends unknown[] = []>(
 	vm: QuickJS,
 	code: string,
@@ -26,17 +28,12 @@ export function compile<R = unknown, A extends unknown[] = []>(
 					`Expected a "function" for sandbox property \`${name}\`, but got "${typeof value}"`
 				);
 			}
-			const fnHandle = vm.newFunction(name, (_this, ...args) => {
-				const result = value(...args.map((arg) => vm.dump(arg)));
-				vm.executePendingJobs();
-				return hostToQuickJSHandle(vm, result);
-			});
+			const fnHandle = getOrCreateSandboxFunction(vm, name, value);
 			fnHandle.consume((handle) => vm.setProp(vm.global, name, handle));
 		}
 	}
 
-	const fnResult = vm.evalCode(`${compiled};${returnName}`, options.filename);
-	const fn = vm.unwrapResult(fnResult);
+	const fn = vm.evalCode(`${compiled};${returnName}`, options.filename);
 
 	const t = vm.typeof(fn);
 	if (t !== 'function') {
@@ -53,7 +50,7 @@ export function compile<R = unknown, A extends unknown[] = []>(
 				vm.undefined,
 				...args.map((arg) => hostToQuickJSHandle(vm, arg))
 			);
-			promiseHandle = vm.unwrapResult(result);
+			promiseHandle = result;
 			const resolvedResultP = vm.resolvePromise(promiseHandle);
 			vm.executePendingJobs();
 			const resolvedResult = await resolvedResultP;
@@ -100,6 +97,41 @@ export function compile<R = unknown, A extends unknown[] = []>(
 		enumerable: false,
 	});
 	return r;
+}
+
+function getOrCreateSandboxFunction(
+	vm: QuickJS,
+	name: string,
+	value: (...args: unknown[]) => unknown
+): JSValueHandle {
+	const callback = (...args: JSValueHandle[]) => {
+		const result = value(...args.map((arg) => vm.dump(arg)));
+		vm.executePendingJobs();
+		return hostToQuickJSHandle(vm, result);
+	};
+
+	const globalFunctionName = `${SANDBOX_FUNCTION_PREFIX}${name}`;
+	const keyHandle = vm.newString(globalFunctionName);
+	let existingHandle: JSValueHandle | undefined;
+	try {
+		existingHandle = vm.getProp(vm.global, keyHandle);
+		if (vm.typeof(existingHandle) === 'function') {
+			vm.registerHostCallback(name, callback);
+			return existingHandle;
+		}
+		existingHandle.dispose();
+		existingHandle = undefined;
+
+		const fnHandle = vm.newFunction(name, callback);
+		vm.defineProp(vm.global, globalFunctionName, fnHandle, {
+			writable: false,
+			enumerable: false,
+			configurable: false,
+		});
+		return fnHandle;
+	} finally {
+		keyHandle.dispose();
+	}
 }
 
 function hostToQuickJSHandle(vm: QuickJS, val: unknown): JSValueHandle {

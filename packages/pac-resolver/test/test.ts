@@ -14,7 +14,7 @@ describe('FindProxyForURL', () => {
 	});
 
 	afterAll(() => {
-		qjs?.dispose(false);
+		qjs?.dispose();
 	});
 
 	it('should return `undefined` by default', async () => {

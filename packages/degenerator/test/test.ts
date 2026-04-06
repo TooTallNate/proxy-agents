@@ -72,7 +72,7 @@ describe('degenerator()', () => {
 		});
 
 		afterAll(() => {
-			qjs?.dispose(false);
+			qjs?.dispose();
 		});
 
 		it('should compile code into an invocable async function', async () => {
