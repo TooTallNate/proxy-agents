@@ -1,5 +1,13 @@
 # pac-resolver
 
+## 9.0.1
+
+### Patch Changes
+
+- 16a7c8a: Update QuickJS integration for `quickjs-wasi` v2.2.0. This removes deprecated `unwrapResult()` / `dispose(false)` usage and avoids duplicate sandbox host callback registration when recompiling PAC resolvers.
+- Updated dependencies [16a7c8a]
+  - degenerator@7.0.1
+
 ## 9.0.0
 
 ### Major Changes
