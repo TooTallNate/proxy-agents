@@ -22,13 +22,13 @@ args.option(
 	'"authenticate" command to run when the "Proxy-Authorization" header is sent',
 	'',
 	String
+)
+.option(
+	'local-address',
+	'IP address of the network interface to send the outgoing requests through',
+	'',
+    String
 );
-//.option(
-//	'local-address',
-//	'IP address of the network interface to send the outgoing requests through',
-//	'',
-//	String
-//);
 
 const flags = args.parse(process.argv);
 const { port, authenticate } = flags;
@@ -46,9 +46,9 @@ const proxy = createProxy();
  * Proxy outgoing request localAddress parameter
  */
 
-//if (flags.localAddress) {
-//	proxy.localAddress = flags.localAddress;
-//}
+if (flags.localAddress) {
+	proxy.localAddress = flags.localAddress;
+}
 
 /**
  * Proxy authenticate function.
