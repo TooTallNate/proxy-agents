@@ -3,7 +3,7 @@ packages:
   - 'packages/*'
 
 catalog:
-  quickjs-wasi: ^0.0.1
+  quickjs-wasi: ^2.2.0
   '@types/async-retry': ^1.4.5
   '@types/debug': ^4.1.7
   '@types/node': ^22.13.0
