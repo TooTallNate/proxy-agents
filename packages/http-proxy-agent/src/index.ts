@@ -83,7 +83,18 @@ export class HttpProxyAgent<Uri extends string> extends Agent {
 	): void {
 		const { proxy } = this;
 		const protocol = opts.secureEndpoint ? 'https:' : 'http:';
-		const hostname = req.getHeader('host') || 'localhost';
+
+		let hostname = req.getHeader('host');
+		// If host header is not set or available in the processed headers, construct it from opts.host and opts.port
+		if (!hostname) {
+			const host = opts.host || 'localhost';
+			const port = opts.port || '';
+			
+			// Wrap IPv6 addresses in brackets for proper hostname format
+			const formattedHost = net.isIPv6(host) ? `[${host}]` : host;
+			hostname = port ? `${formattedHost}:${port}` : formattedHost;
+		}
+
 		const base = `${protocol}//${hostname}`;
 		const url = new URL(req.path, base);
 		if (opts.port !== 80) {
