@@ -98,6 +98,14 @@ async function onrequest(
 	}
 
 	socket.resume();
+
+	// Reject excessively long URLs to prevent potential DoS
+	if (req.url && req.url.length > 4096) {
+		res.writeHead(414);
+		res.end();
+		return;
+	}
+
 	const parsed = url.parse(req.url || '/');
 
 	// setup outbound proxy request HTTP headers
@@ -411,6 +419,16 @@ async function onconnect(
 
 	if (!req.url) {
 		throw new TypeError('No "url" provided');
+	}
+
+	// Reject excessively long URLs to prevent potential DoS
+	if (req.url.length > 4096) {
+		debug.response('HTTP/1.1 414 URI Too Long');
+		if (res) {
+			res.writeHead(414);
+			res.end();
+		}
+		return;
 	}
 
 	// `req.url` should look like "example.com:443"
