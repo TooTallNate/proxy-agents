@@ -2,6 +2,11 @@ http-proxy-agent
 ================
 ### An HTTP(s) proxy `http.Agent` implementation for HTTP
 
+> **Security Notice:** `http-proxy-agent@5` depends on the vulnerable
+> `@tootallnate/once@2` package ([CVE-2026-3449](https://github.com/advisories/GHSA-vpq2-c234-7xj6)).
+> This dependency was removed in v7+. If you are using v5, please upgrade to v7
+> or later. See [#406](https://github.com/TooTallNate/proxy-agents/issues/406).
+
 This module provides an `http.Agent` implementation that connects to a specified
 HTTP or HTTPS proxy server, and can be used with the built-in `http` module.
 
