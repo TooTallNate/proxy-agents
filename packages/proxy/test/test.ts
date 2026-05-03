@@ -145,6 +145,42 @@ describe('proxy', () => {
 		socket.destroy();
 	});
 
+	describe('URL length validation', () => {
+		it('should reject HTTP requests with excessively long URLs', async () => {
+			const socket = net.connect({ port: +proxyUrl.port });
+			await once(socket, 'connect');
+
+			const longHost = 'a'.repeat(5000);
+			socket.write(
+				`GET http://${longHost}/ HTTP/1.1\r\n` +
+					`Host: ${longHost}\r\n` +
+					'\r\n'
+			);
+
+			socket.setEncoding('utf8');
+			const [data] = await once(socket, 'data');
+			assert(0 == data.indexOf('HTTP/1.1 414'));
+			socket.destroy();
+		});
+
+		it('should reject CONNECT requests with excessively long URLs', async () => {
+			const socket = net.connect({ port: +proxyUrl.port });
+			await once(socket, 'connect');
+
+			const longHost = 'a'.repeat(5000);
+			socket.write(
+				`CONNECT ${longHost}:443 HTTP/1.1\r\n` +
+					`Host: ${longHost}:443\r\n` +
+					'\r\n'
+			);
+
+			socket.setEncoding('utf8');
+			const [data] = await once(socket, 'data');
+			assert(0 == data.indexOf('HTTP/1.1 414'));
+			socket.destroy();
+		});
+	});
+
 	describe('authentication', () => {
 		beforeAll(() => {
 			delete proxy.authenticate;
