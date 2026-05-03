@@ -13,6 +13,22 @@ export interface ProxyConnect {
 	socket: net.Socket;
 }
 
+export interface ProxyAuthResponse {
+	headers: OutgoingHttpHeaders;
+}
+
+export interface ProxyAuthParams {
+	response: {
+		statusCode: number;
+		headers: http.IncomingHttpHeaders;
+	};
+	scheme: string;
+}
+
+export type OnProxyAuthCallback = (
+	params: ProxyAuthParams
+) => Promise<ProxyAuthResponse>;
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 type Protocol<T> = T extends `${infer Protocol}:${infer _}` ? Protocol : never;
 
@@ -30,6 +46,8 @@ type ConnectOpts<T> = {
 export type HttpProxyAgentOptions<T> = ConnectOpts<T> &
 	http.AgentOptions & {
 		headers?: OutgoingHttpHeaders | (() => OutgoingHttpHeaders);
+		onProxyAuth?: OnProxyAuthCallback;
+		negotiate?: boolean;
 	};
 
 interface HttpProxyAgentClientRequest extends http.ClientRequest {
@@ -50,12 +68,19 @@ export class HttpProxyAgent<Uri extends string> extends Agent {
 	readonly proxy: URL;
 	proxyHeaders: OutgoingHttpHeaders | (() => OutgoingHttpHeaders);
 	connectOpts: net.TcpNetConnectOpts & tls.ConnectionOptions;
+	onProxyAuth?: OnProxyAuthCallback;
 
 	constructor(proxy: Uri | URL, opts?: HttpProxyAgentOptions<Uri>) {
 		super(opts);
 		this.proxy = typeof proxy === 'string' ? new URL(proxy) : proxy;
 		this.proxyHeaders = opts?.headers ?? {};
 		debug('Creating new HttpProxyAgent instance: %o', this.proxy.href);
+
+		if (opts?.negotiate) {
+			this.onProxyAuth = createNegotiateAuth();
+		} else if (opts?.onProxyAuth) {
+			this.onProxyAuth = opts.onProxyAuth;
+		}
 
 		// Trim off the brackets from IPv6 addresses
 		const host = (this.proxy.hostname || this.proxy.host).replace(
@@ -68,7 +93,9 @@ export class HttpProxyAgent<Uri extends string> extends Agent {
 			? 443
 			: 80;
 		this.connectOpts = {
-			...(opts ? omit(opts, 'headers') : null),
+			...(opts
+				? omit(opts, 'headers', 'onProxyAuth', 'negotiate')
+				: null),
 			host,
 			port,
 		};
@@ -177,6 +204,48 @@ export class HttpProxyAgent<Uri extends string> extends Agent {
 
 		return socket;
 	}
+}
+
+function createNegotiateAuth(): OnProxyAuthCallback {
+	return async ({ response, scheme }) => {
+		if (scheme.toLowerCase() !== 'negotiate') {
+			throw new Error(`Expected Negotiate scheme but got "${scheme}"`);
+		}
+
+		let kerberos;
+		try {
+			kerberos = await import('kerberos');
+		} catch {
+			throw new Error(
+				'The "kerberos" package is required for Negotiate proxy authentication. ' +
+					'Install it with: npm install kerberos'
+			);
+		}
+
+		const proxyAuthenticate = response.headers['proxy-authenticate'] || '';
+		const challengeHeader = Array.isArray(proxyAuthenticate)
+			? proxyAuthenticate[0]
+			: proxyAuthenticate;
+		const serverToken =
+			typeof challengeHeader === 'string' && challengeHeader.includes(' ')
+				? challengeHeader.split(' ').slice(1).join(' ')
+				: undefined;
+
+		const client = await kerberos.initializeClient('HTTP@proxy', {
+			mechOID: kerberos.GSS_MECH_OID_SPNEGO,
+		});
+
+		const token = await client.step(serverToken || '');
+		if (!token) {
+			throw new Error('Kerberos client.step() returned no token');
+		}
+
+		return {
+			headers: {
+				'Proxy-Authorization': `Negotiate ${token}`,
+			},
+		};
+	};
 }
 
 function omit<T extends object, K extends [...(keyof T)[]]>(

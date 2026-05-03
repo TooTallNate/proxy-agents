@@ -18,7 +18,9 @@ const debug = {
 const hostname = os.hostname();
 
 export interface ProxyServer extends http.Server {
-	authenticate?: (req: http.IncomingMessage) => boolean | Promise<boolean>;
+	authenticate?:
+		| ((req: http.IncomingMessage) => boolean | Promise<boolean>)
+		| 'negotiate';
 	localAddress?: string;
 }
 
@@ -87,7 +89,7 @@ async function onrequest(
 
 	try {
 		const success = await authenticate(this, req);
-		if (!success) return requestAuthorization(req, res);
+		if (!success) return requestAuthorization(req, res, this);
 	} catch (_err: unknown) {
 		const err = _err as Error;
 		// an error occurred during login!
@@ -408,7 +410,7 @@ async function onconnect(
 
 	try {
 		const success = await authenticate(this, req);
-		if (!success) return requestAuthorization(req, res);
+		if (!success) return requestAuthorization(req, res, this);
 	} catch (_err) {
 		const err = _err as Error;
 		// an error occurred during login!
@@ -453,6 +455,21 @@ async function onconnect(
  * requests as well as regular HTTP requests.
  */
 async function authenticate(server: ProxyServer, req: http.IncomingMessage) {
+	if (server.authenticate === 'negotiate') {
+		debug.request(
+			'authenticating request (negotiate) "%s %s"',
+			req.method,
+			req.url
+		);
+		const authHeader = req.headers['proxy-authorization'];
+		if (
+			typeof authHeader === 'string' &&
+			authHeader.startsWith('Negotiate ')
+		) {
+			return true;
+		}
+		return false;
+	}
 	if (typeof server.authenticate === 'function') {
 		debug.request('authenticating request "%s %s"', req.method, req.url);
 		return server.authenticate(req);
@@ -466,15 +483,25 @@ async function authenticate(server: ProxyServer, req: http.IncomingMessage) {
  */
 function requestAuthorization(
 	req: http.IncomingMessage,
-	res: http.ServerResponse
+	res: http.ServerResponse,
+	server?: ProxyServer
 ) {
-	// request Basic proxy authorization
 	debug.response(
 		'requesting proxy authorization for "%s %s"',
 		req.method,
 		req.url
 	);
 
+	if (server?.authenticate === 'negotiate') {
+		const headers = {
+			'Proxy-Authenticate': 'Negotiate',
+		};
+		res.writeHead(407, headers);
+		res.end('Proxy authentication required');
+		return;
+	}
+
+	// request Basic proxy authorization
 	// TODO: make "realm" and "type" (Basic) be configurable...
 	const realm = 'proxy';
 

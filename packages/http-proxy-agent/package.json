@@ -43,5 +43,13 @@
   },
   "engines": {
     "node": ">= 20"
+  },
+  "peerDependencies": {
+    "kerberos": "^2.0.0"
+  },
+  "peerDependenciesMeta": {
+    "kerberos": {
+      "optional": true
+    }
   }
 }

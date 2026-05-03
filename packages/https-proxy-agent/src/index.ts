@@ -5,7 +5,7 @@ import assert from 'assert';
 import createDebug from 'debug';
 import { Agent, AgentConnectOpts } from 'agent-base';
 import { URL } from 'url';
-import { parseProxyResponse } from './parse-proxy-response.js';
+import { parseProxyResponse, ConnectResponse } from './parse-proxy-response.js';
 import type { OutgoingHttpHeaders } from 'http';
 
 const debug = createDebug('https-proxy-agent');
@@ -42,9 +42,24 @@ type ConnectOpts<T> = {
 		: never;
 }[keyof ConnectOptsMap];
 
+export interface ProxyAuthResponse {
+	headers: OutgoingHttpHeaders;
+}
+
+export interface ProxyAuthParams {
+	response: ConnectResponse;
+	scheme: string;
+}
+
+export type OnProxyAuthCallback = (
+	params: ProxyAuthParams
+) => Promise<ProxyAuthResponse>;
+
 export type HttpsProxyAgentOptions<T> = ConnectOpts<T> &
 	http.AgentOptions & {
 		headers?: OutgoingHttpHeaders | (() => OutgoingHttpHeaders);
+		onProxyAuth?: OnProxyAuthCallback;
+		negotiate?: boolean;
 	};
 
 /**
@@ -65,6 +80,7 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 	readonly proxy: URL;
 	proxyHeaders: OutgoingHttpHeaders | (() => OutgoingHttpHeaders);
 	connectOpts: net.TcpNetConnectOpts & tls.ConnectionOptions;
+	onProxyAuth?: OnProxyAuthCallback;
 
 	constructor(proxy: Uri | URL, opts?: HttpsProxyAgentOptions<Uri>) {
 		super(opts);
@@ -72,6 +88,12 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 		this.proxy = typeof proxy === 'string' ? new URL(proxy) : proxy;
 		this.proxyHeaders = opts?.headers ?? {};
 		debug('Creating new HttpsProxyAgent instance: %o', this.proxy.href);
+
+		if (opts?.negotiate) {
+			this.onProxyAuth = createNegotiateAuth();
+		} else if (opts?.onProxyAuth) {
+			this.onProxyAuth = opts.onProxyAuth;
+		}
 
 		// Trim off the brackets from IPv6 addresses
 		const host = (this.proxy.hostname || this.proxy.host).replace(
@@ -86,7 +108,9 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 		this.connectOpts = {
 			// Attempt to negotiate http/1.1 for proxy servers that support http/2
 			ALPNProtocols: ['http/1.1'],
-			...(opts ? omit(opts, 'headers') : null),
+			...(opts
+				? omit(opts, 'headers', 'onProxyAuth', 'negotiate')
+				: null),
 			host,
 			port,
 		};
@@ -173,6 +197,26 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 			return socket;
 		}
 
+		// Handle 407 Proxy Authentication Required
+		if (connect.statusCode === 407 && this.onProxyAuth) {
+			debug('Got 407 response, invoking onProxyAuth callback');
+			socket.destroy();
+
+			const proxyAuthenticate =
+				connect.headers['proxy-authenticate'] || '';
+			const scheme = Array.isArray(proxyAuthenticate)
+				? proxyAuthenticate[0].split(/\s/)[0]
+				: proxyAuthenticate.split(/\s/)[0];
+
+			const authResponse = await this.onProxyAuth({
+				response: connect,
+				scheme,
+			});
+
+			// Retry with the auth headers
+			return this._connectWithAuth(req, opts, authResponse.headers);
+		}
+
 		// Some other status code that's not 200... need to re-play the HTTP
 		// header "data" events onto the socket once the HTTP machinery is
 		// attached so that the node core `http` can parse and handle the
@@ -203,6 +247,129 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 
 		return fakeSocket;
 	}
+
+	/**
+	 * Retry a CONNECT request with additional auth headers.
+	 */
+	private async _connectWithAuth(
+		req: http.ClientRequest,
+		opts: AgentConnectOpts,
+		authHeaders: OutgoingHttpHeaders
+	): Promise<net.Socket> {
+		const { proxy } = this;
+
+		let socket: net.Socket;
+		if (proxy.protocol === 'https:') {
+			socket = tls.connect(setServernameFromNonIpHost(this.connectOpts));
+		} else {
+			socket = net.connect(this.connectOpts);
+		}
+
+		const headers: OutgoingHttpHeaders =
+			typeof this.proxyHeaders === 'function'
+				? this.proxyHeaders()
+				: { ...this.proxyHeaders };
+		const host = net.isIPv6(opts.host!) ? `[${opts.host}]` : opts.host!;
+		let payload = `CONNECT ${host}:${opts.port} HTTP/1.1\r\n`;
+
+		if (proxy.username || proxy.password) {
+			const auth = `${decodeURIComponent(
+				proxy.username
+			)}:${decodeURIComponent(proxy.password)}`;
+			headers['Proxy-Authorization'] = `Basic ${Buffer.from(
+				auth
+			).toString('base64')}`;
+		}
+
+		// Merge auth headers (overrides existing)
+		Object.assign(headers, authHeaders);
+
+		headers.Host = `${host}:${opts.port}`;
+
+		if (!headers['Proxy-Connection']) {
+			headers['Proxy-Connection'] = this.keepAlive
+				? 'Keep-Alive'
+				: 'close';
+		}
+		for (const name of Object.keys(headers)) {
+			payload += `${name}: ${headers[name]}\r\n`;
+		}
+
+		const proxyResponsePromise = parseProxyResponse(socket);
+		socket.write(`${payload}\r\n`);
+
+		const { connect } = await proxyResponsePromise;
+		req.emit('proxyConnect', connect);
+		this.emit('proxyConnect', connect, req);
+
+		if (connect.statusCode === 200) {
+			req.once('socket', resume);
+
+			if (opts.secureEndpoint) {
+				debug('Upgrading socket connection to TLS');
+				return tls.connect({
+					...omit(
+						setServernameFromNonIpHost(opts),
+						'host',
+						'path',
+						'port'
+					),
+					socket,
+				});
+			}
+
+			return socket;
+		}
+
+		// If still not 200, throw
+		socket.destroy();
+		throw new Error(
+			`Proxy authentication failed with status ${connect.statusCode} after retry`
+		);
+	}
+}
+
+function createNegotiateAuth(): OnProxyAuthCallback {
+	return async ({ response, scheme }) => {
+		if (scheme.toLowerCase() !== 'negotiate') {
+			throw new Error(`Expected Negotiate scheme but got "${scheme}"`);
+		}
+
+		// Dynamically import kerberos
+		let kerberos;
+		try {
+			kerberos = await import('kerberos');
+		} catch {
+			throw new Error(
+				'The "kerberos" package is required for Negotiate proxy authentication. ' +
+					'Install it with: npm install kerberos'
+			);
+		}
+
+		// Check if there's a server token in the challenge
+		const proxyAuthenticate = response.headers['proxy-authenticate'] || '';
+		const challengeHeader = Array.isArray(proxyAuthenticate)
+			? proxyAuthenticate[0]
+			: proxyAuthenticate;
+		const serverToken = challengeHeader.includes(' ')
+			? challengeHeader.split(' ').slice(1).join(' ')
+			: undefined;
+
+		const client = await kerberos.initializeClient('HTTP@proxy', {
+			mechOID: kerberos.GSS_MECH_OID_SPNEGO,
+		});
+
+		const token = await client.step(serverToken || '');
+		if (!token) {
+			throw new Error('Kerberos client.step() returned no token');
+		}
+
+		return {
+			headers: {
+				'Proxy-Authorization': `Negotiate ${token}`,
+			},
+		};
+	};
 }
 
 function resume(socket: net.Socket | tls.TLSSocket): void {
