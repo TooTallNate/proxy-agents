@@ -9,6 +9,10 @@ import type { OutgoingHttpHeaders } from 'http';
 
 const debug = createDebug('http-proxy-agent');
 
+export interface ProxyConnect {
+	socket: net.Socket;
+}
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 type Protocol<T> = T extends `${infer Protocol}:${infer _}` ? Protocol : never;
 
@@ -165,6 +169,11 @@ export class HttpProxyAgent<Uri extends string> extends Agent {
 		// important for i.e. `PacProxyAgent` which determines a failed proxy
 		// connection via the `callback()` function throwing.
 		await once(socket, 'connect');
+
+		// Emit the 'proxyConnect' event for parity with https-proxy-agent
+		const connect: ProxyConnect = { socket };
+		req.emit('proxyConnect', connect);
+		this.emit('proxyConnect', connect, req);
 
 		return socket;
 	}

@@ -207,6 +207,36 @@ describe('HttpProxyAgent', () => {
 			expect(body.host).toEqual(httpServerUrl.hostname);
 		});
 
+		it('should emit "proxyConnect" event on the request', async () => {
+			httpServer.once('request', (req, res) => {
+				res.end(JSON.stringify(req.headers));
+			});
+
+			const agent = new HttpProxyAgent(proxyUrl);
+
+			const r = req(httpServerUrl, { agent });
+			const [connect] = await once(r, 'proxyConnect');
+			expect(connect.socket).toBeDefined();
+			expect(connect.socket.remoteAddress).toBeDefined();
+			const res = await r;
+			expect(res.statusCode).toEqual(200);
+		});
+
+		it('should emit "proxyConnect" event on the agent', async () => {
+			httpServer.once('request', (req, res) => {
+				res.end(JSON.stringify(req.headers));
+			});
+
+			const agent = new HttpProxyAgent(proxyUrl);
+
+			const r = req(httpServerUrl, { agent });
+			const [connect] = await once(agent, 'proxyConnect');
+			expect(connect.socket).toBeDefined();
+			expect(connect.socket.remoteAddress).toBeDefined();
+			const res = await r;
+			expect(res.statusCode).toEqual(200);
+		});
+
 		it('should work with `keepAlive: true`', async () => {
 			httpServer.on('request', (req, res) => {
 				res.end(JSON.stringify(req.headers));
