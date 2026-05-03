@@ -24,6 +24,25 @@ import { QuickJS } from 'quickjs-wasi';
 
 const debug = createDebug('pac-proxy-agent');
 
+/**
+ * Sanitizes PAC proxy result strings by replacing any embedded
+ * credentials (userinfo) with `<credentials>` for safe logging.
+ *
+ * For example, `PROXY user:pass@host:8080` becomes
+ * `PROXY <credentials>@host:8080`.
+ */
+export function sanitizeProxyResultCredentials(
+	result: string | undefined
+): string {
+	if (!result) {
+		return '';
+	}
+	return String(result).replace(
+		/(\b(?:PROXY|HTTPS?|SOCKS[45]?)\s+)[^\s@]+@/gi,
+		'$1<credentials>@'
+	);
+}
+
 const setServernameFromNonIpHost = <
 	T extends { host?: string; servername?: string }
 >(
@@ -242,7 +261,10 @@ export class PacProxyAgent<Uri extends string> extends Agent {
 			let agent: Agent | null = null;
 			let socket: net.Socket | null = null;
 			const [type, target] = proxy.split(/\s+/);
-			debug('Attempting to use proxy: %o', proxy);
+			debug(
+				'Attempting to use proxy: %o',
+				sanitizeProxyResultCredentials(proxy)
+			);
 
 			if (type === 'DIRECT') {
 				// Direct connection to the destination endpoint
@@ -299,14 +321,18 @@ export class PacProxyAgent<Uri extends string> extends Agent {
 				}
 				throw new Error(`Could not determine proxy type for: ${proxy}`);
 			} catch (err) {
-				debug('Got error for proxy %o: %o', proxy, err);
+				debug(
+					'Got error for proxy %o: %o',
+					sanitizeProxyResultCredentials(proxy),
+					err
+				);
 				req.emit('proxy', { proxy, error: err });
 			}
 		}
 
 		throw new Error(
 			`Failed to establish a socket connection to proxies: ${JSON.stringify(
-				proxies
+				proxies.map(sanitizeProxyResultCredentials)
 			)}`
 		);
 	}
