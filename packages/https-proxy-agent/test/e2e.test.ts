@@ -26,11 +26,11 @@ async function getRealIP(): Promise<string> {
 }
 
 describe('HttpsProxyAgent', () => {
-	let server: NordVPNServer;
+	let servers: NordVPNServer[];
 
-	it('should find NordVPN "proxy_ssl" server', async () => {
-		server = await retry(
-			async (): Promise<NordVPNServer> => {
+	it('should find NordVPN "proxy_ssl" servers', async () => {
+		servers = await retry(
+			async (): Promise<NordVPNServer[]> => {
 				const res = await req(
 					'https://api.nordvpn.com/v1/servers?limit=0'
 				);
@@ -39,17 +39,17 @@ describe('HttpsProxyAgent', () => {
 					throw new Error(`Status code: ${res.statusCode}`);
 				}
 				const body = await json(res);
-				const servers = (body as NordVPNServer[]).filter(
+				const filtered = (body as NordVPNServer[]).filter(
 					(s) =>
 						s.status === 'online' &&
 						s.technologies.find((t) => t.identifier === 'proxy_ssl')
 				);
-				if (servers.length === 0) {
+				if (filtered.length === 0) {
 					throw new Error(
 						'Could not find `https` proxy server from NordVPN'
 					);
 				}
-				return servers[Math.floor(Math.random() * servers.length)];
+				return filtered;
 			},
 			{
 				retries: 5,
@@ -60,9 +60,7 @@ describe('HttpsProxyAgent', () => {
 				},
 			}
 		);
-		console.log(
-			`Using NordVPN "proxy_ssl" server: ${server.name} (${server.hostname})`
-		);
+		console.log(`Found ${servers.length} NordVPN "proxy_ssl" servers`);
 	});
 
 	it('should work over NordVPN proxy', async () => {
@@ -77,20 +75,38 @@ describe('HttpsProxyAgent', () => {
 		const username = encodeURIComponent(NORDVPN_USERNAME);
 		const password = encodeURIComponent(NORDVPN_PASSWORD);
 
-		// NordVPN runs their HTTPS proxy servers on port 89
-		// https://www.reddit.com/r/nordvpn/comments/hvz48h/nordvpn_https_proxy/
-		const agent = new HttpsProxyAgent(
-			`https://${username}:${password}@${server.hostname}:89`
-		);
+		await retry(
+			async () => {
+				const server =
+					servers[Math.floor(Math.random() * servers.length)];
+				console.log(
+					`Trying NordVPN server: ${server.name} (${server.hostname})`
+				);
 
-		const [res, realIp] = await Promise.all([
-			req('https://dump.n8.io', { agent }),
-			getRealIP(),
-		]);
-		const body = await json(res);
-		expect(body.request.headers['x-real-ip']).not.toEqual(realIp);
-		expect(body.request.headers['x-vercel-ip-country']).toEqual(
-			server.locations[0].country.code
+				// NordVPN runs their HTTPS proxy servers on port 89
+				// https://www.reddit.com/r/nordvpn/comments/hvz48h/nordvpn_https_proxy/
+				const agent = new HttpsProxyAgent(
+					`https://${username}:${password}@${server.hostname}:89`
+				);
+
+				const [res, realIp] = await Promise.all([
+					req('https://dump.n8.io', { agent }),
+					getRealIP(),
+				]);
+				const body = await json(res);
+				expect(body.request.headers['x-real-ip']).not.toEqual(realIp);
+				expect(body.request.headers['x-vercel-ip-country']).toEqual(
+					server.locations[0].country.code
+				);
+			},
+			{
+				retries: 3,
+				onRetry(err, attempt) {
+					console.log(
+						`Proxy test failed, retrying with different server… (attempt #${attempt}, ${err.message})`
+					);
+				},
+			}
 		);
 	});
 });
