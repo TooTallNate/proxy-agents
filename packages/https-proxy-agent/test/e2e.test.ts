@@ -82,22 +82,32 @@ describe('HttpsProxyAgent', () => {
 				console.log(
 					`Trying NordVPN server: ${server.name} (${server.hostname})`
 				);
+				try {
+					// NordVPN runs their HTTPS proxy servers on port 89
+					// https://www.reddit.com/r/nordvpn/comments/hvz48h/nordvpn_https_proxy/
+					const agent = new HttpsProxyAgent(
+						`https://${username}:${password}@${server.hostname}:89`
+					);
 
-				// NordVPN runs their HTTPS proxy servers on port 89
-				// https://www.reddit.com/r/nordvpn/comments/hvz48h/nordvpn_https_proxy/
-				const agent = new HttpsProxyAgent(
-					`https://${username}:${password}@${server.hostname}:89`
-				);
-
-				const [res, realIp] = await Promise.all([
-					req('https://dump.n8.io', { agent }),
-					getRealIP(),
-				]);
-				const body = await json(res);
-				expect(body.request.headers['x-real-ip']).not.toEqual(realIp);
-				expect(body.request.headers['x-vercel-ip-country']).toEqual(
-					server.locations[0].country.code
-				);
+					const [res, realIp] = await Promise.all([
+						req('https://dump.n8.io', { agent }),
+						getRealIP(),
+					]);
+					const body = await json(res);
+					expect(body.request.headers['x-real-ip']).not.toEqual(
+						realIp
+					);
+					expect(body.request.headers['x-vercel-ip-country']).toEqual(
+						server.locations[0].country.code
+					);
+				} catch (err: unknown) {
+					console.log(
+						`Server ${server.hostname} failed: ${
+							(err as Error).message
+						}`
+					);
+					throw err;
+				}
 			},
 			{
 				retries: 3,

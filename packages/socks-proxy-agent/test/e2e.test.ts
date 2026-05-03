@@ -82,20 +82,30 @@ describe('SocksProxyAgent', () => {
 				console.log(
 					`Trying NordVPN server: ${server.name} (${server.hostname})`
 				);
+				try {
+					const agent = new SocksProxyAgent(
+						`socks://${username}:${password}@${server.hostname}`
+					);
 
-				const agent = new SocksProxyAgent(
-					`socks://${username}:${password}@${server.hostname}`
-				);
-
-				const [res, realIp] = await Promise.all([
-					req('https://dump.n8.io', { agent }),
-					getRealIP(),
-				]);
-				const body = await json(res);
-				expect(body.request.headers['x-real-ip']).not.toEqual(realIp);
-				expect(body.request.headers['x-vercel-ip-country']).toEqual(
-					server.locations[0].country.code
-				);
+					const [res, realIp] = await Promise.all([
+						req('https://dump.n8.io', { agent }),
+						getRealIP(),
+					]);
+					const body = await json(res);
+					expect(body.request.headers['x-real-ip']).not.toEqual(
+						realIp
+					);
+					expect(body.request.headers['x-vercel-ip-country']).toEqual(
+						server.locations[0].country.code
+					);
+				} catch (err: unknown) {
+					console.log(
+						`Server ${server.hostname} failed: ${
+							(err as Error).message
+						}`
+					);
+					throw err;
+				}
 			},
 			{
 				retries: 3,
