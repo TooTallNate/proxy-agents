@@ -13,6 +13,10 @@ interface NordVPNServer {
 	}[];
 	technologies: {
 		identifier: string;
+		metadata: {
+			name: string;
+			value: string;
+		}[];
 	}[];
 }
 
@@ -79,14 +83,21 @@ describe('HttpsProxyAgent', () => {
 			async () => {
 				const server =
 					servers[Math.floor(Math.random() * servers.length)];
+				const proxySsl = server.technologies.find(
+					(t) => t.identifier === 'proxy_ssl'
+				);
+				const proxyHostname =
+					proxySsl?.metadata?.find((m) => m.name === 'proxy_hostname')
+						?.value ?? server.hostname;
 				console.log(
-					`Trying NordVPN server: ${server.name} (${server.hostname})`
+					`Trying NordVPN server: ${server.name} (${proxyHostname})`
 				);
 				try {
 					// NordVPN runs their HTTPS proxy servers on port 89
 					// https://www.reddit.com/r/nordvpn/comments/hvz48h/nordvpn_https_proxy/
+					// Use `proxy_hostname` from metadata for correct TLS cert matching
 					const agent = new HttpsProxyAgent(
-						`https://${username}:${password}@${server.hostname}:89`
+						`https://${username}:${password}@${proxyHostname}:89`
 					);
 
 					const [res, realIp] = await Promise.all([
@@ -102,7 +113,7 @@ describe('HttpsProxyAgent', () => {
 					);
 				} catch (err: unknown) {
 					console.log(
-						`Server ${server.hostname} failed: ${
+						`Server ${proxyHostname} failed: ${
 							(err as Error).message
 						}`
 					);
