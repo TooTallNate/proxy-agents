@@ -155,6 +155,59 @@ describe('PacProxyAgent', () => {
 		});
 	});
 
+	describe('credentials in PAC results', () => {
+		it('should construct a proxy URL with embedded credentials for PROXY type', () => {
+			// When a PAC file returns "PROXY user:pass@host:port", the proxy URL
+			// should be "http://user:pass@host:port" which passes credentials
+			// through to the underlying HttpProxyAgent / HttpsProxyAgent.
+			const result = 'PROXY user:pass@proxy.example.com:8080';
+			const [type, target] = result.split(/\s+/);
+			const proxyURL = `${
+				type === 'HTTPS' ? 'https' : 'http'
+			}://${target}`;
+			const parsed = new URL(proxyURL);
+			assert.equal(parsed.username, 'user');
+			assert.equal(parsed.password, 'pass');
+			assert.equal(parsed.hostname, 'proxy.example.com');
+			assert.equal(parsed.port, '8080');
+		});
+
+		it('should construct a proxy URL with embedded credentials for HTTPS type', () => {
+			const result = 'HTTPS user:pass@proxy.example.com:8443';
+			const [type, target] = result.split(/\s+/);
+			const proxyURL = `${
+				type === 'HTTPS' ? 'https' : 'http'
+			}://${target}`;
+			const parsed = new URL(proxyURL);
+			assert.equal(parsed.username, 'user');
+			assert.equal(parsed.password, 'pass');
+			assert.equal(parsed.hostname, 'proxy.example.com');
+			assert.equal(parsed.port, '8443');
+			assert.equal(parsed.protocol, 'https:');
+		});
+
+		it('should construct a proxy URL with URL-encoded credentials', () => {
+			const result = 'PROXY user%40domain:p%40ss@proxy.example.com:8080';
+			const [, target] = result.split(/\s+/);
+			const proxyURL = `http://${target}`;
+			const parsed = new URL(proxyURL);
+			assert.equal(parsed.username, 'user%40domain');
+			assert.equal(parsed.password, 'p%40ss');
+			assert.equal(parsed.hostname, 'proxy.example.com');
+		});
+
+		it('should construct a SOCKS proxy URL with embedded credentials', () => {
+			const result = 'SOCKS user:pass@proxy.example.com:1080';
+			const [, target] = result.split(/\s+/);
+			const proxyURL = `socks://${target}`;
+			const parsed = new URL(proxyURL);
+			assert.equal(parsed.username, 'user');
+			assert.equal(parsed.password, 'pass');
+			assert.equal(parsed.hostname, 'proxy.example.com');
+			assert.equal(parsed.port, '1080');
+		});
+	});
+
 	describe('"http" module', () => {
 		it('should work over an HTTP proxy', async () => {
 			httpServer.once('request', function (req, res) {
