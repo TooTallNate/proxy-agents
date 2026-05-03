@@ -6,28 +6,20 @@ import { once } from 'events';
 import { Agent, AgentConnectOpts } from 'agent-base';
 import { URL } from 'url';
 import type { OutgoingHttpHeaders } from 'http';
+import {
+	createNegotiateAuth,
+	type OnProxyAuthCallback,
+	type ProxyAuthParams,
+	type ProxyAuthResponse,
+} from 'proxy-agent-negotiate';
+
+export type { OnProxyAuthCallback, ProxyAuthParams, ProxyAuthResponse };
 
 const debug = createDebug('http-proxy-agent');
 
 export interface ProxyConnect {
 	socket: net.Socket;
 }
-
-export interface ProxyAuthResponse {
-	headers: OutgoingHttpHeaders;
-}
-
-export interface ProxyAuthParams {
-	response: {
-		statusCode: number;
-		headers: http.IncomingHttpHeaders;
-	};
-	scheme: string;
-}
-
-export type OnProxyAuthCallback = (
-	params: ProxyAuthParams
-) => Promise<ProxyAuthResponse>;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 type Protocol<T> = T extends `${infer Protocol}:${infer _}` ? Protocol : never;
@@ -204,48 +196,6 @@ export class HttpProxyAgent<Uri extends string> extends Agent {
 
 		return socket;
 	}
-}
-
-function createNegotiateAuth(): OnProxyAuthCallback {
-	return async ({ response, scheme }) => {
-		if (scheme.toLowerCase() !== 'negotiate') {
-			throw new Error(`Expected Negotiate scheme but got "${scheme}"`);
-		}
-
-		let kerberos;
-		try {
-			kerberos = await import('kerberos');
-		} catch {
-			throw new Error(
-				'The "kerberos" package is required for Negotiate proxy authentication. ' +
-					'Install it with: npm install kerberos'
-			);
-		}
-
-		const proxyAuthenticate = response.headers['proxy-authenticate'] || '';
-		const challengeHeader = Array.isArray(proxyAuthenticate)
-			? proxyAuthenticate[0]
-			: proxyAuthenticate;
-		const serverToken =
-			typeof challengeHeader === 'string' && challengeHeader.includes(' ')
-				? challengeHeader.split(' ').slice(1).join(' ')
-				: undefined;
-
-		const client = await kerberos.initializeClient('HTTP@proxy', {
-			mechOID: kerberos.GSS_MECH_OID_SPNEGO,
-		});
-
-		const token = await client.step(serverToken || '');
-		if (!token) {
-			throw new Error('Kerberos client.step() returned no token');
-		}
-
-		return {
-			headers: {
-				'Proxy-Authorization': `Negotiate ${token}`,
-			},
-		};
-	};
 }
 
 function omit<T extends object, K extends [...(keyof T)[]]>(

@@ -7,6 +7,13 @@ import { Agent, AgentConnectOpts } from 'agent-base';
 import { URL } from 'url';
 import { parseProxyResponse, ConnectResponse } from './parse-proxy-response.js';
 import type { OutgoingHttpHeaders } from 'http';
+import {
+	createNegotiateAuth,
+	type OnProxyAuthCallback,
+	type ProxyAuthResponse,
+} from 'proxy-agent-negotiate';
+
+export type { OnProxyAuthCallback, ProxyAuthResponse };
 
 const debug = createDebug('https-proxy-agent');
 
@@ -41,19 +48,6 @@ type ConnectOpts<T> = {
 		? ConnectOptsMap[P]
 		: never;
 }[keyof ConnectOptsMap];
-
-export interface ProxyAuthResponse {
-	headers: OutgoingHttpHeaders;
-}
-
-export interface ProxyAuthParams {
-	response: ConnectResponse;
-	scheme: string;
-}
-
-export type OnProxyAuthCallback = (
-	params: ProxyAuthParams
-) => Promise<ProxyAuthResponse>;
 
 export type HttpsProxyAgentOptions<T> = ConnectOpts<T> &
 	http.AgentOptions & {
@@ -327,49 +321,6 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 			`Proxy authentication failed with status ${connect.statusCode} after retry`
 		);
 	}
-}
-
-function createNegotiateAuth(): OnProxyAuthCallback {
-	return async ({ response, scheme }) => {
-		if (scheme.toLowerCase() !== 'negotiate') {
-			throw new Error(`Expected Negotiate scheme but got "${scheme}"`);
-		}
-
-		// Dynamically import kerberos
-		let kerberos;
-		try {
-			kerberos = await import('kerberos');
-		} catch {
-			throw new Error(
-				'The "kerberos" package is required for Negotiate proxy authentication. ' +
-					'Install it with: npm install kerberos'
-			);
-		}
-
-		// Check if there's a server token in the challenge
-		const proxyAuthenticate = response.headers['proxy-authenticate'] || '';
-		const challengeHeader = Array.isArray(proxyAuthenticate)
-			? proxyAuthenticate[0]
-			: proxyAuthenticate;
-		const serverToken = challengeHeader.includes(' ')
-			? challengeHeader.split(' ').slice(1).join(' ')
-			: undefined;
-
-		const client = await kerberos.initializeClient('HTTP@proxy', {
-			mechOID: kerberos.GSS_MECH_OID_SPNEGO,
-		});
-
-		const token = await client.step(serverToken || '');
-		if (!token) {
-			throw new Error('Kerberos client.step() returned no token');
-		}
-
-		return {
-			headers: {
-				'Proxy-Authorization': `Negotiate ${token}`,
-			},
-		};
-	};
 }
 
 function resume(socket: net.Socket | tls.TLSSocket): void {

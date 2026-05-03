@@ -190,9 +190,9 @@ importers:
       debug:
         specifier: 'catalog:'
         version: 4.4.3
-      kerberos:
-        specifier: ^2.0.0
-        version: 2.2.2
+      proxy-agent-negotiate:
+        specifier: workspace:*
+        version: link:../negotiate
     devDependencies:
       '@types/debug':
         specifier: 'catalog:'
@@ -221,9 +221,9 @@ importers:
       debug:
         specifier: 'catalog:'
         version: 4.4.3
-      kerberos:
-        specifier: ^2.0.0
-        version: 2.2.2
+      proxy-agent-negotiate:
+        specifier: workspace:*
+        version: link:../negotiate
     devDependencies:
       '@types/async-retry':
         specifier: 'catalog:'
@@ -243,6 +243,22 @@ importers:
       proxy:
         specifier: workspace:*
         version: link:../proxy
+      tsconfig:
+        specifier: workspace:*
+        version: link:../tsconfig
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+
+  packages/negotiate:
+    dependencies:
+      kerberos:
+        specifier: ^2.0.0
+        version: 2.2.2
+    devDependencies:
+      '@types/node':
+        specifier: 'catalog:'
+        version: 22.19.15
       tsconfig:
         specifier: workspace:*
         version: link:../tsconfig

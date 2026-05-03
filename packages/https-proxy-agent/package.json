@@ -32,7 +32,8 @@
   "license": "MIT",
   "dependencies": {
     "agent-base": "workspace:*",
-    "debug": "catalog:"
+    "debug": "catalog:",
+    "proxy-agent-negotiate": "workspace:*"
   },
   "devDependencies": {
     "@types/async-retry": "catalog:",
@@ -46,13 +47,5 @@
   },
   "engines": {
     "node": ">= 20"
-  },
-  "peerDependencies": {
-    "kerberos": "^2.0.0"
-  },
-  "peerDependenciesMeta": {
-    "kerberos": {
-      "optional": true
-    }
   }
 }
