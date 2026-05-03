@@ -160,6 +160,24 @@ describe('SocksProxyAgent', () => {
 			assert.equal('bar', body.foo);
 		});
 
+		it('should emit "proxy" event on the request', async () => {
+			httpServer.once('request', function (req, res) {
+				res.statusCode = 200;
+				res.end();
+			});
+
+			const agent = new SocksProxyAgent(socksServerUrl);
+			const r = req(httpServerUrl, { agent });
+			const [proxyEvent] = await once(r, 'proxy');
+			assert.equal(
+				proxyEvent.proxy,
+				new URL(socksServerUrl.toString()).href
+			);
+			assert(proxyEvent.socket);
+			const res = await r;
+			assert.equal(200, res.statusCode);
+		});
+
 		it('should work with username/password auth', async () => {
 			let authWasCalled = false;
 			socksServer._auths.pop();

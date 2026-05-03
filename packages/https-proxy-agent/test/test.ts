@@ -108,6 +108,22 @@ describe('HttpsProxyAgent', () => {
 			assert.equal(serverUrl.host, body.host);
 		});
 
+		it('should emit "proxy" event on the request', async () => {
+			server.once('request', (req, res) => {
+				res.end(JSON.stringify(req.headers));
+			});
+
+			const agent = new HttpsProxyAgent(proxyUrl);
+
+			const r = req(serverUrl, { agent });
+			const [proxyEvent] = await once(r, 'proxy');
+			expect(proxyEvent.proxy).toEqual(new URL(proxyUrl.toString()).href);
+			expect(proxyEvent.socket).toBeDefined();
+			const res = await r;
+			const body = await json(res);
+			assert.equal(serverUrl.host, body.host);
+		});
+
 		it('should work over an HTTPS proxy', async () => {
 			server.once('request', (req, res) => {
 				res.end(JSON.stringify(req.headers));

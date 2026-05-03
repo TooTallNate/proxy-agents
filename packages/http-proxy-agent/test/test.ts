@@ -237,6 +237,21 @@ describe('HttpProxyAgent', () => {
 			expect(res.statusCode).toEqual(200);
 		});
 
+		it('should emit "proxy" event on the request', async () => {
+			httpServer.once('request', (req, res) => {
+				res.end(JSON.stringify(req.headers));
+			});
+
+			const agent = new HttpProxyAgent(proxyUrl);
+
+			const r = req(httpServerUrl, { agent });
+			const [proxyEvent] = await once(r, 'proxy');
+			expect(proxyEvent.proxy).toEqual(new URL(proxyUrl.toString()).href);
+			expect(proxyEvent.socket).toBeDefined();
+			const res = await r;
+			expect(res.statusCode).toEqual(200);
+		});
+
 		it('should work with `keepAlive: true`', async () => {
 			httpServer.on('request', (req, res) => {
 				res.end(JSON.stringify(req.headers));

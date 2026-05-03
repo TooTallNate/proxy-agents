@@ -110,6 +110,7 @@ export class SocksProxyAgent extends Agent {
 
 	readonly shouldLookup: boolean;
 	readonly proxy: SocksProxy;
+	readonly proxyUrl: string;
 	timeout: number | null;
 	socketOptions: SocksSocketOptions | null;
 
@@ -121,6 +122,7 @@ export class SocksProxyAgent extends Agent {
 
 		this.shouldLookup = lookup;
 		this.proxy = proxy;
+		this.proxyUrl = url.href;
 		this.timeout = opts?.timeout ?? null;
 		this.socketOptions = opts?.socketOptions ?? null;
 	}
@@ -182,6 +184,7 @@ export class SocksProxyAgent extends Agent {
 		debug('Creating socks proxy connection: %o', socksOpts);
 		const { socket } = await SocksClient.createConnection(socksOpts);
 		debug('Successfully created socks proxy connection');
+		req.emit('proxy', { proxy: this.proxyUrl, socket });
 
 		if (timeout !== null) {
 			socket.setTimeout(timeout);
