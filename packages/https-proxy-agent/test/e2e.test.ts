@@ -17,7 +17,7 @@ interface NordVPNServer {
 }
 
 import { vi } from 'vitest';
-vi.setConfig({ testTimeout: 30000 });
+vi.setConfig({ testTimeout: 120000 });
 
 async function getRealIP(): Promise<string> {
 	const res = await req('https://dump.n8.io');
