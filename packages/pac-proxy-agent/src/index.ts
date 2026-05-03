@@ -24,10 +24,29 @@ import { QuickJS } from 'quickjs-wasi';
 
 const debug = createDebug('pac-proxy-agent');
 
+/**
+ * Sanitizes PAC proxy result strings by replacing any embedded
+ * credentials (userinfo) with `<credentials>` for safe logging.
+ *
+ * For example, `PROXY user:pass@host:8080` becomes
+ * `PROXY <credentials>@host:8080`.
+ */
+export function sanitizeProxyResultCredentials(
+	result: string | undefined,
+): string {
+	if (!result) {
+		return '';
+	}
+	return String(result).replace(
+		/(\b(?:PROXY|HTTPS?|SOCKS[45]?)\s+)[^\s@]+@/gi,
+		'$1<credentials>@',
+	);
+}
+
 const setServernameFromNonIpHost = <
-	T extends { host?: string; servername?: string }
+	T extends { host?: string; servername?: string },
 >(
-	options: T
+	options: T,
 ) => {
 	if (
 		options.servername === undefined &&
@@ -48,9 +67,9 @@ type Protocols = keyof typeof gProtocols;
 type Protocol<T> = T extends `pac+${infer P}:${infer _}`
 	? P
 	: // eslint-disable-next-line @typescript-eslint/no-unused-vars
-	T extends `${infer P}:${infer _}`
-	? P
-	: never;
+		T extends `${infer P}:${infer _}`
+		? P
+		: never;
 
 export type PacProxyAgentOptions<T> = http.AgentOptions &
 	PacResolverOptions &
@@ -125,7 +144,7 @@ export class PacProxyAgent<Uri extends string> extends Agent {
 			this.resolverPromise = this.loadResolver();
 			this.resolverPromise.then(
 				this.clearResolverPromise,
-				this.clearResolverPromise
+				this.clearResolverPromise,
 			);
 		}
 		return this.resolverPromise;
@@ -144,7 +163,7 @@ export class PacProxyAgent<Uri extends string> extends Agent {
 
 			if (this.resolver && this.resolverHash === hash) {
 				debug(
-					'Same sha1 hash for code - contents have not changed, reusing previous proxy resolver'
+					'Same sha1 hash for code - contents have not changed, reusing previous proxy resolver',
 				);
 				// Dispose the newly created VM since we're reusing the old resolver
 				qjs.dispose();
@@ -171,7 +190,7 @@ export class PacProxyAgent<Uri extends string> extends Agent {
 				(err as NodeJS.ErrnoException).code === 'ENOTMODIFIED'
 			) {
 				debug(
-					'Got ENOTMODIFIED response, reusing previous proxy resolver'
+					'Got ENOTMODIFIED response, reusing previous proxy resolver',
 				);
 				return this.resolver;
 			}
@@ -202,7 +221,7 @@ export class PacProxyAgent<Uri extends string> extends Agent {
 	 */
 	async connect(
 		req: http.ClientRequest,
-		opts: AgentConnectOpts
+		opts: AgentConnectOpts,
 	): Promise<http.Agent | net.Socket> {
 		const { secureEndpoint } = opts;
 		const isWebSocket = req.getHeader('upgrade') === 'websocket';
@@ -218,7 +237,7 @@ export class PacProxyAgent<Uri extends string> extends Agent {
 		const defaultPort = secureEndpoint ? 443 : 80;
 		const url = Object.assign(
 			new URL(req.path, `${protocol}//${host}`),
-			defaultPort ? undefined : { port: opts.port }
+			defaultPort ? undefined : { port: opts.port },
 		);
 
 		debug('url: %s', url);
@@ -242,7 +261,10 @@ export class PacProxyAgent<Uri extends string> extends Agent {
 			let agent: Agent | null = null;
 			let socket: net.Socket | null = null;
 			const [type, target] = proxy.split(/\s+/);
-			debug('Attempting to use proxy: %o', proxy);
+			debug(
+				'Attempting to use proxy: %o',
+				sanitizeProxyResultCredentials(proxy),
+			);
 
 			if (type === 'DIRECT') {
 				// Direct connection to the destination endpoint
@@ -270,9 +292,8 @@ export class PacProxyAgent<Uri extends string> extends Agent {
 					type === 'HTTPS' ? 'https' : 'http'
 				}://${target}`;
 				if (secureEndpoint || isWebSocket) {
-					const { HttpsProxyAgent } = await import(
-						'https-proxy-agent'
-					);
+					const { HttpsProxyAgent } =
+						await import('https-proxy-agent');
 					agent = new HttpsProxyAgent(proxyURL, this.opts);
 				} else {
 					const { HttpProxyAgent } = await import('http-proxy-agent');
@@ -291,7 +312,7 @@ export class PacProxyAgent<Uri extends string> extends Agent {
 					const s = await agent.connect(req, opts);
 					if (!(s instanceof net.Socket)) {
 						throw new Error(
-							'Expected a `net.Socket` to be returned from agent'
+							'Expected a `net.Socket` to be returned from agent',
 						);
 					}
 					req.emit('proxy', { proxy, socket: s });
@@ -299,15 +320,19 @@ export class PacProxyAgent<Uri extends string> extends Agent {
 				}
 				throw new Error(`Could not determine proxy type for: ${proxy}`);
 			} catch (err) {
-				debug('Got error for proxy %o: %o', proxy, err);
+				debug(
+					'Got error for proxy %o: %o',
+					sanitizeProxyResultCredentials(proxy),
+					err,
+				);
 				req.emit('proxy', { proxy, error: err });
 			}
 		}
 
 		throw new Error(
 			`Failed to establish a socket connection to proxies: ${JSON.stringify(
-				proxies
-			)}`
+				proxies.map(sanitizeProxyResultCredentials),
+			)}`,
 		);
 	}
 }

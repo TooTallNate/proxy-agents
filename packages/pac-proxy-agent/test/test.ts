@@ -16,7 +16,7 @@ import socks from 'socksv5';
 import { listen } from 'async-listen';
 import { ProxyServer, createProxy } from 'proxy';
 import { req, json } from 'agent-base';
-import { PacProxyAgent } from '../src';
+import { PacProxyAgent, sanitizeProxyResultCredentials } from '../src';
 
 const sslOptions = {
 	key: fs.readFileSync(`${__dirname}/ssl-cert-snakeoil.key`),
@@ -112,7 +112,7 @@ describe('PacProxyAgent', () => {
 					foo,
 					bar: asyncBar,
 				},
-			}
+			},
 		);
 
 		let err: Error | undefined;
@@ -132,7 +132,7 @@ describe('PacProxyAgent', () => {
 		});
 		it('should accept a `URL` instance proxy argument', () => {
 			const agent = new PacProxyAgent(
-				new URL('pac+ftp://example.com/proxy.pac')
+				new URL('pac+ftp://example.com/proxy.pac'),
 			);
 			assert.equal('ftp://example.com/proxy.pac', agent.uri.href);
 		});
@@ -145,7 +145,7 @@ describe('PacProxyAgent', () => {
 			}
 
 			const uri = `data:,${encodeURIComponent(
-				FindProxyForURL.toString()
+				FindProxyForURL.toString(),
 			)}`;
 			const agent = new PacProxyAgent(uri);
 
@@ -166,7 +166,7 @@ describe('PacProxyAgent', () => {
 			}
 
 			const uri = `data:,${encodeURIComponent(
-				FindProxyForURL.toString().replace('PORT', proxyServerUrl.port)
+				FindProxyForURL.toString().replace('PORT', proxyServerUrl.port),
 			)}`;
 			const agent = new PacProxyAgent(uri);
 
@@ -188,8 +188,8 @@ describe('PacProxyAgent', () => {
 			const uri = `data:,${encodeURIComponent(
 				FindProxyForURL.toString().replace(
 					'PORT',
-					proxyHttpsServerUrl.port
-				)
+					proxyHttpsServerUrl.port,
+				),
 			)}`;
 			const agent = new PacProxyAgent(uri, { rejectUnauthorized: false });
 
@@ -209,7 +209,7 @@ describe('PacProxyAgent', () => {
 			}
 
 			const uri = `data:,${encodeURIComponent(
-				FindProxyForURL.toString().replace('PORT', proxyServerUrl.port)
+				FindProxyForURL.toString().replace('PORT', proxyServerUrl.port),
 			)}`;
 			const agent = new PacProxyAgent(uri);
 
@@ -233,7 +233,7 @@ describe('PacProxyAgent', () => {
 			}
 
 			const uri = `data:,${encodeURIComponent(
-				FindProxyForURL.toString().replace('PORT', socksServerUrl.port)
+				FindProxyForURL.toString().replace('PORT', socksServerUrl.port),
 			)}`;
 			const agent = new PacProxyAgent(uri);
 
@@ -307,7 +307,7 @@ describe('PacProxyAgent', () => {
 			}
 
 			const uri = `data:,${encodeURIComponent(
-				FindProxyForURL.toString().replace('PORT', proxyServerUrl.port)
+				FindProxyForURL.toString().replace('PORT', proxyServerUrl.port),
 			)}`;
 			const agent = new PacProxyAgent(uri);
 
@@ -333,8 +333,8 @@ describe('PacProxyAgent', () => {
 			const uri = `pac+data:,${encodeURIComponent(
 				FindProxyForURL.toString().replace(
 					'PORT',
-					proxyHttpsServerUrl.port
-				)
+					proxyHttpsServerUrl.port,
+				),
 			)}`;
 			const agent = new PacProxyAgent(uri, {
 				rejectUnauthorized: false,
@@ -361,7 +361,7 @@ describe('PacProxyAgent', () => {
 			}
 
 			const uri = `data:,${encodeURIComponent(
-				FindProxyForURL.toString().replace('PORT', socksServerUrl.port)
+				FindProxyForURL.toString().replace('PORT', socksServerUrl.port),
 			)}`;
 			const agent = new PacProxyAgent(uri);
 
@@ -408,5 +408,84 @@ describe('PacProxyAgent', () => {
 			assert.equal(proxyCount, 4);
 			assert(gotReq);
 		}, 10000); // This test is slow on Windows :/
+	});
+});
+
+describe('sanitizeProxyResultCredentials()', () => {
+	it('should return empty string for undefined', () => {
+		assert.equal(sanitizeProxyResultCredentials(undefined), '');
+	});
+
+	it('should return empty string for empty string', () => {
+		assert.equal(sanitizeProxyResultCredentials(''), '');
+	});
+
+	it('should not modify DIRECT', () => {
+		assert.equal(sanitizeProxyResultCredentials('DIRECT'), 'DIRECT');
+	});
+
+	it('should not modify proxy without credentials', () => {
+		assert.equal(
+			sanitizeProxyResultCredentials('PROXY host:8080'),
+			'PROXY host:8080',
+		);
+	});
+
+	it('should sanitize PROXY with credentials', () => {
+		assert.equal(
+			sanitizeProxyResultCredentials('PROXY user:pass@host:8080'),
+			'PROXY <credentials>@host:8080',
+		);
+	});
+
+	it('should sanitize HTTPS with credentials', () => {
+		assert.equal(
+			sanitizeProxyResultCredentials('HTTPS user:pass@host:8080'),
+			'HTTPS <credentials>@host:8080',
+		);
+	});
+
+	it('should sanitize HTTP with credentials', () => {
+		assert.equal(
+			sanitizeProxyResultCredentials('HTTP user:pass@host:8080'),
+			'HTTP <credentials>@host:8080',
+		);
+	});
+
+	it('should sanitize SOCKS with credentials', () => {
+		assert.equal(
+			sanitizeProxyResultCredentials('SOCKS user:pass@host:1080'),
+			'SOCKS <credentials>@host:1080',
+		);
+	});
+
+	it('should sanitize SOCKS4 with credentials', () => {
+		assert.equal(
+			sanitizeProxyResultCredentials('SOCKS4 user:pass@host:1080'),
+			'SOCKS4 <credentials>@host:1080',
+		);
+	});
+
+	it('should sanitize SOCKS5 with credentials', () => {
+		assert.equal(
+			sanitizeProxyResultCredentials('SOCKS5 user:pass@host:1080'),
+			'SOCKS5 <credentials>@host:1080',
+		);
+	});
+
+	it('should sanitize multiple proxies in a result', () => {
+		assert.equal(
+			sanitizeProxyResultCredentials(
+				'PROXY user:pass@host1:8080; HTTPS admin:secret@host2:443; DIRECT',
+			),
+			'PROXY <credentials>@host1:8080; HTTPS <credentials>@host2:443; DIRECT',
+		);
+	});
+
+	it('should be case-insensitive', () => {
+		assert.equal(
+			sanitizeProxyResultCredentials('proxy user:pass@host:8080'),
+			'proxy <credentials>@host:8080',
+		);
 	});
 });
