@@ -174,6 +174,7 @@ export class HttpProxyAgent<Uri extends string> extends Agent {
 		const connect: ProxyConnect = { socket };
 		req.emit('proxyConnect', connect);
 		this.emit('proxyConnect', connect, req);
+		req.emit('proxy', { proxy: this.proxy.href, socket });
 
 		return socket;
 	}
