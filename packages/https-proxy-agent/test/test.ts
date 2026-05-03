@@ -400,4 +400,58 @@ describe('HttpsProxyAgent', () => {
 			}
 		});
 	});
+
+	describe('socket event race condition', () => {
+		it('should defer socket.resume() to allow listener attachment', async () => {
+			// Verify that the `resume` function uses `setImmediate`
+			// to defer `socket.resume()`, preventing data from being
+			// emitted before the HTTP client attaches its listeners.
+
+			// Create a target HTTP server
+			const targetServer = http.createServer((_req, res) => {
+				res.end(JSON.stringify({ hello: 'world' }));
+			});
+			await new Promise<void>((resolve) =>
+				targetServer.listen(0, '127.0.0.1', resolve)
+			);
+			const targetAddr = targetServer.address() as net.AddressInfo;
+
+			// Create a custom proxy server
+			const customProxy = net.createServer((socket) => {
+				socket.once('data', () => {
+					socket.write('HTTP/1.1 200 Connection Established\r\n\r\n');
+					const target = net.connect(
+						targetAddr.port,
+						'127.0.0.1',
+						() => {
+							socket.pipe(target);
+							target.pipe(socket);
+						}
+					);
+					target.on('error', () => {});
+					socket.on('error', () => {});
+				});
+			});
+			await new Promise<void>((resolve) =>
+				customProxy.listen(0, '127.0.0.1', resolve)
+			);
+			const proxyAddr = customProxy.address() as net.AddressInfo;
+			const customProxyUrl = new URL(
+				`http://127.0.0.1:${proxyAddr.port}`
+			);
+
+			try {
+				const agent = new HttpsProxyAgent(customProxyUrl);
+				const targetUrl = new URL(
+					`http://127.0.0.1:${targetAddr.port}`
+				);
+				const res = await req(targetUrl, { agent });
+				const body = await json(res);
+				expect(body).toEqual({ hello: 'world' });
+			} finally {
+				targetServer.close();
+				customProxy.close();
+			}
+		});
+	});
 });

@@ -206,7 +206,14 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 }
 
 function resume(socket: net.Socket | tls.TLSSocket): void {
-	socket.resume();
+	// Defer the resume so that all 'socket' event handlers have a chance
+	// to attach their listeners (e.g. the HTTP client's 'data' handler)
+	// before data starts flowing. Without this, buffered proxy-response
+	// data can be emitted synchronously before listeners are ready.
+	// See: https://github.com/nicolo-ribaudo/tc39-proposal-await-dictionary/issues/7
+	setImmediate(() => {
+		socket.resume();
+	});
 }
 
 function omit<T extends object, K extends [...(keyof T)[]]>(
