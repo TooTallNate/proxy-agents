@@ -32,7 +32,8 @@
   "license": "MIT",
   "dependencies": {
     "agent-base": "workspace:*",
-    "debug": "catalog:"
+    "debug": "catalog:",
+    "proxy-agent-negotiate": "workspace:*"
   },
   "devDependencies": {
     "@types/async-retry": "catalog:",

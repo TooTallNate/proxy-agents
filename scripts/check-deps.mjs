@@ -26,11 +26,13 @@ const CHECKS = {
 	licenses: {
 		wanted: [
 			'0BSD',
+			'Apache-2.0',
 			'BlueOak-1.0.0',
 			'BSD-2-Clause',
 			'BSD-3-Clause',
 			'ISC',
 			'MIT',
+			'WTFPL',
 		],
 		get title() {
 			return `License must be one of the following: "${this.wanted.join(
@@ -41,7 +43,15 @@ const CHECKS = {
 			return pkg.license;
 		},
 		isOK(value) {
-			return value === undefined || this.wanted.includes(value);
+			if (value === undefined) return true;
+			if (this.wanted.includes(value)) return true;
+			// Handle SPDX OR expressions like "(MIT OR WTFPL)"
+			const orMatch = value.match(/^\((.+)\)$/);
+			if (orMatch) {
+				const parts = orMatch[1].split(/\s+OR\s+/);
+				return parts.some((p) => this.wanted.includes(p));
+			}
+			return false;
 		},
 	},
 };
