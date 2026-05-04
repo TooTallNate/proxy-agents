@@ -4,18 +4,6 @@ import { json, req } from 'agent-base';
 import { createProxy, ProxyServer } from 'proxy';
 import { HttpsProxyAgent } from '../src';
 
-function listenOnLocalhost(server: http.Server): Promise<URL> {
-	return new Promise((resolve, reject) => {
-		server.listen(0, '127.0.0.1', () => {
-			const addr = server.address();
-			if (!addr || typeof addr === 'string') {
-				return reject(new Error('unexpected address'));
-			}
-			resolve(new URL(`http://127.0.0.1:${addr.port}`));
-		});
-	});
-}
-
 describe('HttpsProxyAgent Negotiate / onProxyAuth', () => {
 	let server: http.Server;
 	let serverUrl: URL;
@@ -26,14 +14,14 @@ describe('HttpsProxyAgent Negotiate / onProxyAuth', () => {
 	beforeAll(async () => {
 		// setup target HTTP server
 		server = http.createServer();
-		serverUrl = await listenOnLocalhost(server);
+		serverUrl = await listen(server);
 	});
 
 	beforeAll(async () => {
 		// setup negotiate proxy
 		negotiateProxy = createProxy();
 		negotiateProxy.authenticate = 'negotiate';
-		negotiateProxyUrl = await listenOnLocalhost(negotiateProxy);
+		negotiateProxyUrl = await listen(negotiateProxy);
 	});
 
 	beforeEach(() => {
