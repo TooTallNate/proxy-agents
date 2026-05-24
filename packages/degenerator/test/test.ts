@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import assert from 'assert';
 import { degenerator, compile } from '../src';
+import { readFile } from 'fs/promises';
 import { QuickJS } from 'quickjs-wasi';
 
 describe('degenerator()', () => {
@@ -68,7 +69,7 @@ describe('degenerator()', () => {
 		let qjs: QuickJS;
 
 		beforeAll(async () => {
-			qjs = await QuickJS.create();
+			qjs = await QuickJS.create({ wasm: await readFile(new URL(import.meta.resolve('quickjs-wasi/quickjs.wasm'))) });
 		});
 
 		afterAll(() => {
