@@ -1,31 +1,31 @@
 {
-	"private": true,
-	"name": "proxy-agent-monorepo",
-	"packageManager": "pnpm@10.30.3",
-	"scripts": {
-		"build": "turbo run build",
-		"lint": "turbo run lint",
-		"test": "turbo run test",
-		"test-e2e": "turbo run test-e2e",
-		"format": "prettier --write .",
-		"format:check": "prettier --check .",
-		"ci:version": "changeset version && pnpm install --no-frozen-lockfile",
-		"ci:publish": "pnpm publish -r --provenance && changeset tag"
-	},
-	"pnpm": {
-		"onlyBuiltDependencies": [
-			"esbuild"
-		]
-	},
-	"devDependencies": {
-		"@changesets/cli": "^2.30.0",
-		"@typescript-eslint/eslint-plugin": "^5.59.1",
-		"@typescript-eslint/parser": "^5.59.1",
-		"eslint": "^7.32.0",
-		"eslint-config-prettier": "^8.8.0",
-		"prettier": "^2.8.8",
-		"semver": "^7.6.3",
-		"turbo": "^2.9.14",
-		"vitest": "^4.0.18"
-	}
+  "private": true,
+  "name": "proxy-agent-monorepo",
+  "packageManager": "pnpm@10.30.3",
+  "scripts": {
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "test-e2e": "turbo run test-e2e",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "ci:version": "changeset version && pnpm install --no-frozen-lockfile",
+    "ci:publish": "pnpm publish -r --provenance && changeset tag"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.30.0",
+    "@typescript-eslint/eslint-plugin": "^5.59.1",
+    "@typescript-eslint/parser": "^5.59.1",
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.8.0",
+    "prettier": "^2.8.8",
+    "semver": "^7.6.3",
+    "turbo": "^2.9.14",
+    "vitest": "^4.0.18"
+  }
 }
