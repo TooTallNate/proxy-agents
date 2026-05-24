@@ -13,4 +13,4 @@ catalog:
   debug: ^4.3.4
   socksv5: 'github:TooTallNate/socksv5#d937368b28e929396166d77a06d387a4a902bd51'
   typescript: ^5.1.6
-  ws: ^8.13.0
+  ws: ^8.20.1
