@@ -1,5 +1,27 @@
 # http-proxy-agent
 
+## 9.1.0
+
+### Minor Changes
+
+- d8f2926: Adds `proxyConnect` event emission to `http-proxy-agent` for parity with `https-proxy-agent`. The event is emitted on both the request and the agent instance when the socket connects to the proxy server.
+- 84e85ed: Add `onProxyAuth` callback and `negotiate` option for Kerberos/SPNEGO proxy authentication
+
+  - Extract shared Negotiate/SPNEGO auth logic into new `proxy-agent-negotiate` package
+  - Added optional `onProxyAuth` async callback to `HttpsProxyAgent` and `HttpProxyAgent` options
+  - When the proxy responds with 407 Proxy-Authentication Required, the callback is invoked with the response and auth scheme
+  - The callback returns headers (e.g. `Proxy-Authorization`) to retry the request with
+  - Added `negotiate: true` option that uses the `kerberos` package for automatic Negotiate/SPNEGO auth
+  - Added `kerberos` as an optional peer dependency of `proxy-agent-negotiate`
+  - Extended the `proxy` test package to support `authenticate: 'negotiate'` mode for mock testing
+
+- 3ebf4b2: Add `proxy` event emission on the request object for all proxy agents. After the proxy connection is established, the request emits a `proxy` event with `{ proxy, socket }` where `proxy` is the proxy URL string. This is useful for debugging and logging which proxy was used for a connection.
+
+### Patch Changes
+
+- Updated dependencies [84e85ed]
+  - proxy-agent-negotiate@1.1.0
+
 ## 9.0.0
 
 ### Major Changes

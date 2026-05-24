@@ -1,5 +1,11 @@
 # get-uri
 
+## 8.0.1
+
+### Patch Changes
+
+- 417f6e9: Bump basic-ftp from 5.2.0 to 5.3.0
+
 ## 8.0.0
 
 ### Major Changes
