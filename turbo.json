@@ -10,7 +10,7 @@
     "NORDVPN_USERNAME",
     "NORDVPN_PASSWORD"
   ],
-  "pipeline": {
+  "tasks": {
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["src/**"],
