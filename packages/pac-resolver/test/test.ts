@@ -11,7 +11,11 @@ describe('FindProxyForURL', () => {
 	let qjs: QuickJS;
 
 	beforeAll(async () => {
-		qjs = await QuickJS.create({ wasm: await readFile(new URL(import.meta.resolve('quickjs-wasi/quickjs.wasm'))) });
+		qjs = await QuickJS.create({
+			wasm: await readFile(
+				new URL(import.meta.resolve('quickjs-wasi/quickjs.wasm'))
+			),
+		});
 	});
 
 	afterAll(() => {
