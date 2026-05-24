@@ -1,5 +1,24 @@
 # pac-proxy-agent
 
+## 9.1.0
+
+### Minor Changes
+
+- 8487a78: Document and test support for credentials in PAC proxy results (e.g. `PROXY user:pass@host:port`)
+
+### Patch Changes
+
+- ce0243e: Add `sanitizeProxyResultCredentials()` utility to strip embedded credentials from PAC proxy results in debug/error log output, preventing accidental credential leakage.
+- Updated dependencies [417f6e9]
+- Updated dependencies [1852c75]
+- Updated dependencies [d8f2926]
+- Updated dependencies [84e85ed]
+- Updated dependencies [3ebf4b2]
+  - get-uri@8.0.1
+  - https-proxy-agent@9.1.0
+  - http-proxy-agent@9.1.0
+  - socks-proxy-agent@10.1.0
+
 ## 9.0.1
 
 ### Patch Changes

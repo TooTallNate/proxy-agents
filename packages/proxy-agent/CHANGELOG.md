@@ -1,5 +1,20 @@
 # proxy-agent
 
+## 8.0.2
+
+### Patch Changes
+
+- Updated dependencies [1852c75]
+- Updated dependencies [d8f2926]
+- Updated dependencies [84e85ed]
+- Updated dependencies [8487a78]
+- Updated dependencies [3ebf4b2]
+- Updated dependencies [ce0243e]
+  - https-proxy-agent@9.1.0
+  - http-proxy-agent@9.1.0
+  - pac-proxy-agent@9.1.0
+  - socks-proxy-agent@10.1.0
+
 ## 8.0.1
 
 ### Patch Changes
