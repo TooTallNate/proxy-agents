@@ -160,39 +160,43 @@ describe('ProxyAgent', () => {
 			assert.equal(httpServerUrl.host, body.host);
 		});
 
-		it('should work with `keepAlive: true`', { timeout: 30000 }, async () => {
-			httpServer.on('request', function (req, res) {
-				res.end(JSON.stringify(req.headers));
-			});
-
-			process.env.HTTP_PROXY = httpsProxyServerUrl.href;
-			const agent = new ProxyAgent({
-				keepAlive: true,
-				rejectUnauthorized: false,
-			});
-
-			try {
-				const res = await req(new URL('/test', httpServerUrl), {
-					agent,
+		it(
+			'should work with `keepAlive: true`',
+			{ timeout: 30000 },
+			async () => {
+				httpServer.on('request', function (req, res) {
+					res.end(JSON.stringify(req.headers));
 				});
-				res.resume();
-				expect(res.headers.connection).toEqual('keep-alive');
-				const s1 = res.socket;
-				await once(s1, 'free');
 
-				const res2 = await req(new URL('/test', httpServerUrl), {
-					agent,
+				process.env.HTTP_PROXY = httpsProxyServerUrl.href;
+				const agent = new ProxyAgent({
+					keepAlive: true,
+					rejectUnauthorized: false,
 				});
-				res2.resume();
-				expect(res2.headers.connection).toEqual('keep-alive');
-				const s2 = res2.socket;
-				assert(s1 === s2);
 
-				await once(s2, 'free');
-			} finally {
-				agent.destroy();
-			}
-		});
+				try {
+					const res = await req(new URL('/test', httpServerUrl), {
+						agent,
+					});
+					res.resume();
+					expect(res.headers.connection).toEqual('keep-alive');
+					const s1 = res.socket;
+					await once(s1, 'free');
+
+					const res2 = await req(new URL('/test', httpServerUrl), {
+						agent,
+					});
+					res2.resume();
+					expect(res2.headers.connection).toEqual('keep-alive');
+					const s2 = res2.socket;
+					assert(s1 === s2);
+
+					await once(s2, 'free');
+				} finally {
+					agent.destroy();
+				}
+			},
+		);
 	});
 
 	describe('"https" module', () => {
@@ -267,7 +271,7 @@ describe('ProxyAgent', () => {
 			assert.equal(httpsServerUrl.host, body2.host);
 			expect(agent.cache.size).toEqual(2);
 			expect([...agent.cache.values()][0]).toBeInstanceOf(
-				HttpsProxyAgent
+				HttpsProxyAgent,
 			);
 		});
 
@@ -374,7 +378,7 @@ describe('ProxyAgent', () => {
 				{
 					agent,
 					rejectUnauthorized: false,
-				}
+				},
 			);
 			const [message] = await once(ws, 'message');
 			expect(connectionCount).toEqual(1);
