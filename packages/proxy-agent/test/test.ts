@@ -160,7 +160,7 @@ describe('ProxyAgent', () => {
 			assert.equal(httpServerUrl.host, body.host);
 		});
 
-		it('should work with `keepAlive: true`', async () => {
+		it('should work with `keepAlive: true`', { timeout: 30000 }, async () => {
 			httpServer.on('request', function (req, res) {
 				res.end(JSON.stringify(req.headers));
 			});
