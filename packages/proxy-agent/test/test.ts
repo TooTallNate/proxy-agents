@@ -195,7 +195,7 @@ describe('ProxyAgent', () => {
 				} finally {
 					agent.destroy();
 				}
-			},
+			}
 		);
 	});
 
@@ -271,7 +271,7 @@ describe('ProxyAgent', () => {
 			assert.equal(httpsServerUrl.host, body2.host);
 			expect(agent.cache.size).toEqual(2);
 			expect([...agent.cache.values()][0]).toBeInstanceOf(
-				HttpsProxyAgent,
+				HttpsProxyAgent
 			);
 		});
 
@@ -378,7 +378,7 @@ describe('ProxyAgent', () => {
 				{
 					agent,
 					rejectUnauthorized: false,
-				},
+				}
 			);
 			const [message] = await once(ws, 'message');
 			expect(connectionCount).toEqual(1);
