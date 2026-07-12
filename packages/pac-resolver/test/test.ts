@@ -2,6 +2,7 @@ import assert from 'assert';
 import { resolve } from 'path';
 import { readFileSync } from 'fs';
 import { createPacResolver } from '../src';
+import { readFile } from 'fs/promises';
 import { QuickJS } from 'quickjs-wasi';
 
 type FindProxyForURLFn = ReturnType<typeof createPacResolver>;
@@ -10,7 +11,11 @@ describe('FindProxyForURL', () => {
 	let qjs: QuickJS;
 
 	beforeAll(async () => {
-		qjs = await QuickJS.create();
+		qjs = await QuickJS.create({
+			wasm: await readFile(
+				new URL(import.meta.resolve('quickjs-wasi/quickjs.wasm'))
+			),
+		});
 	});
 
 	afterAll(() => {

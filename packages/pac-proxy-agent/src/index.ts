@@ -20,7 +20,12 @@ import {
 	FindProxyForURL,
 	PacResolverOptions,
 } from 'pac-resolver';
+import { readFile } from 'fs/promises';
 import { QuickJS } from 'quickjs-wasi';
+
+const quickjsWasm = readFile(
+	new URL(import.meta.resolve('quickjs-wasi/quickjs.wasm'))
+);
 
 const debug = createDebug('pac-proxy-agent');
 
@@ -154,7 +159,7 @@ export class PacProxyAgent<Uri extends string> extends Agent {
 		try {
 			// (Re)load the contents of the PAC file URI
 			const [qjs, code] = await Promise.all([
-				QuickJS.create(),
+				QuickJS.create({ wasm: await quickjsWasm }),
 				this.loadPacFile(),
 			]);
 

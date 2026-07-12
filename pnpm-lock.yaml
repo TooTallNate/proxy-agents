@@ -28,8 +28,8 @@ catalogs:
       specifier: ^4.3.4
       version: 4.4.3
     quickjs-wasi:
-      specifier: ^2.2.0
-      version: 2.2.0
+      specifier: ^3.0.0
+      version: 3.0.0
     socksv5:
       specifier: github:TooTallNate/socksv5#d937368b28e929396166d77a06d387a4a902bd51
       version: 0.0.6
@@ -134,7 +134,7 @@ importers:
         version: 22.19.15
       quickjs-wasi:
         specifier: 'catalog:'
-        version: 2.2.0
+        version: 3.0.0
       tsconfig:
         specifier: workspace:*
         version: link:../tsconfig
@@ -285,7 +285,7 @@ importers:
         version: link:../pac-resolver
       quickjs-wasi:
         specifier: 'catalog:'
-        version: 2.2.0
+        version: 3.0.0
       socks-proxy-agent:
         specifier: workspace:*
         version: link:../socks-proxy-agent
@@ -329,7 +329,7 @@ importers:
         version: 22.19.15
       quickjs-wasi:
         specifier: 'catalog:'
-        version: 2.2.0
+        version: 3.0.0
       tsconfig:
         specifier: workspace:*
         version: link:../tsconfig
@@ -1813,8 +1813,8 @@ packages:
   queue-microtask@1.2.3:
     resolution: {integrity: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==}
 
-  quickjs-wasi@2.2.0:
-    resolution: {integrity: sha512-zQxXmQMrEoD3S+jQdYsloq4qAuaxKFHZj6hHqOYGwB2iQZH+q9e/lf5zQPXCKOk0WJuAjzRFbO4KwHIp2D05Iw==}
+  quickjs-wasi@3.0.0:
+    resolution: {integrity: sha512-X7ouKC4ZVf9bXQ8rsE7+L6TeBbesejAJH61x16xRaGAQGfBHHRcniWgzJZZVtHc8rS9yVsY+Tvk8/usAosg4bg==}
 
   rc@1.2.8:
     resolution: {integrity: sha512-y3bGgqKj3QBdxLbLkomlohkvsA8gdAiUQlSBJnBhfn+BPxg4bc62d8TcBW15wavDfgexCgccckhcZvywyQYPOw==}
@@ -3449,7 +3449,7 @@ snapshots:
 
   queue-microtask@1.2.3: {}
 
-  quickjs-wasi@2.2.0: {}
+  quickjs-wasi@3.0.0: {}
 
   rc@1.2.8:
     dependencies:
