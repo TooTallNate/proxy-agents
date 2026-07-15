@@ -30,7 +30,7 @@ const setServernameFromNonIpHost = <
 function parseSocksURL(url: URL): { lookup: boolean; proxy: SocksProxy } {
 	let lookup = false;
 	let type: SocksProxy['type'] = 5;
-	const host = url.hostname;
+	const host = url.hostname.replace(/^\[|\]$/g, '');
 
 	// From RFC 1928, Section 3: https://tools.ietf.org/html/rfc1928#section-3
 	// "The SOCKS service is conventionally located on TCP port 1080"

@@ -90,6 +90,11 @@ describe('SocksProxyAgent', () => {
 			assert.equal(socksServerUrl.hostname, agent.proxy.host);
 			assert.equal(+socksServerUrl.port, agent.proxy.port);
 		});
+		it('should trim brackets from IPv6 literal proxy hosts', () => {
+			const agent = new SocksProxyAgent('socks://[::1]:1080');
+			assert.equal('::1', agent.proxy.host);
+			assert.equal(1080, agent.proxy.port);
+		});
 		it('should respect `timeout` option during connection to socks server', async () => {
 			const agent = new SocksProxyAgent(socksServerUrl, { timeout: 1 });
 
