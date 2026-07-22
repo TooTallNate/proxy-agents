@@ -363,6 +363,33 @@ describe('Agent (TypeScript)', () => {
 				server.close();
 			}
 		});
+
+		it('should dispatch queued requests when `connect()` rejects', async () => {
+			let connectCount = 0;
+
+			class FailingAgent extends Agent {
+				async connect() {
+					connectCount++;
+					throw new Error('simulated connection failure');
+				}
+			}
+
+			const agent = new FailingAgent({ maxSockets: 2 });
+			const errors = Array.from(
+				{ length: 4 },
+				(_, index) =>
+					new Promise<Error>((resolve) => {
+						http.get(`http://example.invalid/${index}`, {
+							agent,
+						}).once('error', resolve);
+					})
+			);
+
+			await Promise.all(errors.slice(0, 2));
+			expect(connectCount).toEqual(4);
+			await expect(Promise.all(errors)).resolves.toHaveLength(4);
+			agent.destroy();
+		});
 	});
 
 	describe('"https" module', () => {
