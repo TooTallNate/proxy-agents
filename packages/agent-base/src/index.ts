@@ -122,6 +122,55 @@ export abstract class Agent extends http.Agent {
 		}
 	}
 
+	private drainRequests(
+		failedReq: http.ClientRequest,
+		name: string,
+		options: AgentConnectOpts
+	) {
+		const queue = this.requests[name];
+		if (!queue || queue.length === 0) {
+			return;
+		}
+
+		const failedIndex = queue.indexOf(failedReq);
+		if (failedIndex !== -1) {
+			queue.splice(failedIndex, 1);
+		}
+		if (queue.length === 0) {
+			// @ts-expect-error `requests` is readonly in `@types/node`
+			delete this.requests[name];
+			return;
+		}
+
+		const socketCount = this.sockets[name]?.length ?? 0;
+		// @ts-expect-error `totalSocketCount` isn't defined in `@types/node`
+		const totalSocketCount = this.totalSocketCount;
+		if (
+			socketCount >= this.maxSockets ||
+			totalSocketCount >= this.maxTotalSockets
+		) {
+			return;
+		}
+
+		const nextReq = queue.shift();
+		if (!nextReq) {
+			return;
+		}
+		if (queue.length === 0) {
+			// @ts-expect-error `requests` is readonly in `@types/node`
+			delete this.requests[name];
+		}
+
+		this.createSocket(nextReq, options, (err, socket) => {
+			if (err) {
+				// @ts-expect-error the error overload is missing from `@types/node`
+				nextReq.onSocket(null, err);
+			} else {
+				nextReq.onSocket(socket as net.Socket);
+			}
+		});
+	}
+
 	// In order to properly update the socket pool, we need to call `getName()` on
 	// the core `https.Agent` if it is a secureEndpoint.
 	getName(options?: AgentConnectOpts): string {
@@ -169,6 +218,7 @@ export abstract class Agent extends http.Agent {
 				},
 				(err) => {
 					this.decrementSockets(name, fakeSocket);
+					this.drainRequests(req, name, connectOpts);
 					cb(err);
 				}
 			);
