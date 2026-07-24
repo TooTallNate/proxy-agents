@@ -278,5 +278,30 @@ describe('HttpProxyAgent', () => {
 				agent.destroy();
 			}
 		});
+
+		it('should use the HTTPS proxy hostname as SNI by default', async () => {
+			let receivedServername: string | false | undefined;
+
+			httpServer.once('request', (_req, res) => {
+				res.end();
+			});
+
+			sslProxy.once('secureConnection', (socket) => {
+				receivedServername = socket.servername;
+			});
+
+			const hostnameProxyUrl = new URL(sslProxyUrl);
+			hostnameProxyUrl.hostname = 'localhost';
+
+			const agent = new HttpProxyAgent(hostnameProxyUrl, {
+				rejectUnauthorized: false,
+			});
+
+			const res = await req(httpServerUrl, { agent });
+			res.resume();
+			await once(res, 'end');
+
+			expect(receivedServername).toBe('localhost');
+		});
 	});
 });
