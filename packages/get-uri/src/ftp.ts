@@ -1,7 +1,7 @@
 import { Client, AccessOptions } from 'basic-ftp';
 import { PassThrough, Readable } from 'stream';
 import { basename, dirname } from 'path';
-import createDebug from 'debug';
+import { createDebug } from 'obug';
 import NotFoundError from './notfound.js';
 import NotModifiedError from './notmodified.js';
 import { GetUriProtocol } from './index.js';

@@ -111,12 +111,11 @@
   ],
   "dependencies": {
     "agent-base": "workspace:*",
-    "debug": "catalog:",
+    "obug": "catalog:",
     "socks": "^2.8.3"
   },
   "devDependencies": {
     "@types/async-retry": "catalog:",
-    "@types/debug": "catalog:",
     "@types/dns2": "^2.0.3",
     "@types/node": "catalog:",
     "async-listen": "catalog:",
