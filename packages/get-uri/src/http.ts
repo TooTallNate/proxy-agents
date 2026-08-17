@@ -2,7 +2,7 @@ import http_ from 'http';
 import https from 'https';
 import { once } from 'events';
 import { Readable } from 'stream';
-import createDebug from 'debug';
+import { createDebug } from 'obug';
 import { GetUriProtocol } from './index.js';
 import HTTPError from './http-error.js';
 import NotFoundError from './notfound.js';

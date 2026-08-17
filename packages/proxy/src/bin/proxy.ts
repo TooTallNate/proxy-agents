@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import args from 'args';
-import createDebug from 'debug';
+import { createDebug } from 'obug';
 import { spawn } from 'child_process';
 import { once } from 'events';
 import { basicAuthParser } from '../basic-auth-parser.js';
