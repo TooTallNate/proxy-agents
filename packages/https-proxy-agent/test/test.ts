@@ -83,6 +83,48 @@ describe('HttpsProxyAgent', () => {
 			assert.equal(proxyUrl.hostname, agent.proxy.hostname);
 			assert.equal(proxyUrl.port, agent.proxy.port);
 		});
+		it('should preserve Agent options while clearing path', () => {
+			const agent = new HttpsProxyAgent(proxyUrl, {
+				keepAlive: true,
+				timeout: 1234,
+				maxSockets: 7,
+			});
+			assert.equal(agent.options.path, undefined);
+			assert.equal(agent.options.keepAlive, true);
+			assert.equal(agent.options.timeout, 1234);
+			assert.equal(agent.options.maxSockets, 7);
+			assert.equal(agent.connectOpts.timeout, 1234);
+		});
+	});
+
+	describe('timeout', () => {
+		it('should abort a hanging CONNECT within the configured timeout', async () => {
+			// Accept TCP but never answer CONNECT — reproduces #256.
+			const silentProxy = net.createServer((socket) => {
+				socket.resume();
+			});
+			const silentProxyUrl = await listen(silentProxy);
+			try {
+				const agent = new HttpsProxyAgent(silentProxyUrl, {
+					timeout: 200,
+				});
+				const started = Date.now();
+				await assert.rejects(
+					Promise.resolve(req(serverUrl, { agent })),
+					(err: NodeJS.ErrnoException) => {
+						assert.match(String(err.message), /timed out/i);
+						return true;
+					}
+				);
+				const elapsed = Date.now() - started;
+				assert.ok(
+					elapsed < 2000,
+					`expected timeout well under OS defaults, got ${elapsed}ms`
+				);
+			} finally {
+				silentProxy.close();
+			}
+		});
 	});
 
 	describe('"http" module', () => {
