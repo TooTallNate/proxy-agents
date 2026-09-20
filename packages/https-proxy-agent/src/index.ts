@@ -78,7 +78,9 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 
 	constructor(proxy: Uri | URL, opts?: HttpsProxyAgentOptions<Uri>) {
 		super(opts);
-		this.options = { path: undefined };
+		// Keep Agent options from `super(opts)` (keepAlive, timeout, …) while
+		// clearing `path` so CONNECT requests never inherit a request path.
+		this.options = { ...this.options, path: undefined };
 		this.proxy = typeof proxy === 'string' ? new URL(proxy) : proxy;
 		this.proxyHeaders = opts?.headers ?? {};
 		debug('Creating new HttpsProxyAgent instance: %o', this.proxy.href);
@@ -110,6 +112,25 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 		};
 	}
 
+
+	/**
+	 * Honour `timeout` from the constructor options on the proxy socket.
+	 * `net.connect`/`tls.connect` accept a timeout option, but that alone does
+	 * not abort a hanging CONNECT handshake the way callers expect (see #256).
+	 * Mirror socks-proxy-agent: arm `socket.setTimeout` and destroy on fire.
+	 */
+	private applyProxySocketTimeout(socket: net.Socket): void {
+		const { timeout } = this.connectOpts;
+		if (typeof timeout !== 'number' || timeout <= 0) {
+			return;
+		}
+		socket.setTimeout(timeout);
+		socket.once('timeout', () => {
+			debug('Proxy socket timeout (%o ms)', timeout);
+			socket.destroy(new Error('Proxy connection timed out'));
+		});
+	}
+
 	/**
 	 * Called when the node-core HTTP client library is creating a
 	 * new HTTP request.
@@ -133,6 +154,7 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 			debug('Creating `net.Socket`: %o', this.connectOpts);
 			socket = net.connect(this.connectOpts);
 		}
+		this.applyProxySocketTimeout(socket);
 
 		const headers: OutgoingHttpHeaders =
 			typeof this.proxyHeaders === 'function'
@@ -259,6 +281,7 @@ export class HttpsProxyAgent<Uri extends string> extends Agent {
 		} else {
 			socket = net.connect(this.connectOpts);
 		}
+		this.applyProxySocketTimeout(socket);
 
 		const headers: OutgoingHttpHeaders =
 			typeof this.proxyHeaders === 'function'
