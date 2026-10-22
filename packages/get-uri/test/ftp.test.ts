@@ -3,6 +3,7 @@ import { FtpServer } from 'ftpd';
 import { getUri } from '../src';
 import { readFile } from 'fs/promises';
 import { toBuffer } from './util';
+import { Client } from 'basic-ftp';
 
 describe('get-uri', () => {
 	describe('"ftp:" protocol', () => {
@@ -82,6 +83,21 @@ describe('get-uri', () => {
 					cache,
 				})
 			).rejects.toHaveProperty('code', 'ENOTMODIFIED');
+		});
+
+		it('should emit "error" on the stream when the data transfer fails', async () => {
+			const err = new Error('transfer failed');
+			const spy = vi
+				.spyOn(Client.prototype, 'downloadTo')
+				.mockRejectedValue(err);
+			try {
+				const stream = await getUri(
+					`ftp://127.0.0.1:${port}/${basename(__filename)}`
+				);
+				await expect(toBuffer(stream)).rejects.toBe(err);
+			} finally {
+				spy.mockRestore();
+			}
 		});
 	});
 });
