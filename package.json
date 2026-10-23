@@ -15,7 +15,10 @@
   "pnpm": {
     "onlyBuiltDependencies": [
       "esbuild"
-    ]
+    ],
+    "overrides": {
+      "vite": "^7.3.7"
+    }
   },
   "devDependencies": {
     "@changesets/cli": "^2.30.0",
