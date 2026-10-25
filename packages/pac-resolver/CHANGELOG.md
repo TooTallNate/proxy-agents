@@ -1,5 +1,13 @@
 # pac-resolver
 
+## 9.0.2
+
+### Patch Changes
+
+- 0f80493: Update `quickjs-wasi` to v3.0.0. WASM bytes are now explicitly loaded via `readFile()` instead of relying on implicit filesystem I/O.
+- Updated dependencies [0f80493]
+  - degenerator@7.0.2
+
 ## 9.0.1
 
 ### Patch Changes
