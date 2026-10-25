@@ -38,7 +38,6 @@
   "author": "Nathan Rajlich <nathan@tootallnate.net> (http://n8.io/)",
   "license": "MIT",
   "devDependencies": {
-    "@types/debug": "catalog:",
     "@types/ftpd": "^0.2.35",
     "@types/node": "catalog:",
     "async-listen": "catalog:",
@@ -50,7 +49,7 @@
   "dependencies": {
     "basic-ftp": "^5.3.1",
     "data-uri-to-buffer": "workspace:*",
-    "debug": "catalog:"
+    "obug": "catalog:"
   },
   "engines": {
     "node": ">= 20"

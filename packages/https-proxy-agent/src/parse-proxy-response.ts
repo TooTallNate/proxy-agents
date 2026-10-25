@@ -1,4 +1,4 @@
-import createDebug from 'debug';
+import { createDebug } from 'obug';
 import { IncomingHttpHeaders } from 'http';
 import { Readable } from 'stream';
 

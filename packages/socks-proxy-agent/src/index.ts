@@ -1,6 +1,6 @@
 import { SocksClient, SocksProxy, SocksClientOptions } from 'socks';
 import { Agent, AgentConnectOpts } from 'agent-base';
-import createDebug from 'debug';
+import { createDebug } from 'obug';
 import * as dns from 'dns';
 import * as net from 'net';
 import * as tls from 'tls';

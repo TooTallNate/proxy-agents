@@ -1,7 +1,7 @@
 import * as net from 'net';
 import * as tls from 'tls';
 import * as http from 'http';
-import createDebug from 'debug';
+import { createDebug } from 'obug';
 import { once } from 'events';
 import { Agent, AgentConnectOpts } from 'agent-base';
 import { URL } from 'url';

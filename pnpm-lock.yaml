@@ -9,9 +9,6 @@ catalogs:
     '@types/async-retry':
       specifier: ^1.4.5
       version: 1.4.9
-    '@types/debug':
-      specifier: ^4.1.7
-      version: 4.1.12
     '@types/node':
       specifier: ^22.13.0
       version: 22.19.15
@@ -24,9 +21,9 @@ catalogs:
     async-retry:
       specifier: ^1.3.3
       version: 1.3.3
-    debug:
-      specifier: ^4.3.4
-      version: 4.4.3
+    obug:
+      specifier: ^2.1.4
+      version: 2.1.4
     quickjs-wasi:
       specifier: ^3.0.0
       version: 3.0.0
@@ -74,9 +71,6 @@ importers:
 
   packages/agent-base:
     devDependencies:
-      '@types/debug':
-        specifier: 'catalog:'
-        version: 4.1.12
       '@types/node':
         specifier: 'catalog:'
         version: 22.19.15
@@ -150,13 +144,10 @@ importers:
       data-uri-to-buffer:
         specifier: workspace:*
         version: link:../data-uri-to-buffer
-      debug:
+      obug:
         specifier: 'catalog:'
-        version: 4.4.3
+        version: 2.1.4
     devDependencies:
-      '@types/debug':
-        specifier: 'catalog:'
-        version: 4.1.12
       '@types/ftpd':
         specifier: ^0.2.35
         version: 0.2.40
@@ -184,16 +175,13 @@ importers:
       agent-base:
         specifier: workspace:*
         version: link:../agent-base
-      debug:
+      obug:
         specifier: 'catalog:'
-        version: 4.4.3
+        version: 2.1.4
       proxy-agent-negotiate:
         specifier: workspace:*
         version: link:../negotiate
     devDependencies:
-      '@types/debug':
-        specifier: 'catalog:'
-        version: 4.1.12
       '@types/node':
         specifier: 'catalog:'
         version: 22.19.15
@@ -215,9 +203,9 @@ importers:
       agent-base:
         specifier: workspace:*
         version: link:../agent-base
-      debug:
+      obug:
         specifier: 'catalog:'
-        version: 4.4.3
+        version: 2.1.4
       proxy-agent-negotiate:
         specifier: workspace:*
         version: link:../negotiate
@@ -225,9 +213,6 @@ importers:
       '@types/async-retry':
         specifier: 'catalog:'
         version: 1.4.9
-      '@types/debug':
-        specifier: 'catalog:'
-        version: 4.1.12
       '@types/node':
         specifier: 'catalog:'
         version: 22.19.15
@@ -268,9 +253,6 @@ importers:
       agent-base:
         specifier: workspace:*
         version: link:../agent-base
-      debug:
-        specifier: 'catalog:'
-        version: 4.4.3
       get-uri:
         specifier: workspace:*
         version: link:../get-uri
@@ -280,6 +262,9 @@ importers:
       https-proxy-agent:
         specifier: workspace:*
         version: link:../https-proxy-agent
+      obug:
+        specifier: 'catalog:'
+        version: 2.1.4
       pac-resolver:
         specifier: workspace:*
         version: link:../pac-resolver
@@ -290,9 +275,6 @@ importers:
         specifier: workspace:*
         version: link:../socks-proxy-agent
     devDependencies:
-      '@types/debug':
-        specifier: 'catalog:'
-        version: 4.1.12
       '@types/node':
         specifier: 'catalog:'
         version: 22.19.15
@@ -342,16 +324,13 @@ importers:
       args:
         specifier: ^5.0.3
         version: 5.0.3
-      debug:
+      obug:
         specifier: 'catalog:'
-        version: 4.4.3
+        version: 2.1.4
     devDependencies:
       '@types/args':
         specifier: ^5.0.0
         version: 5.0.4
-      '@types/debug':
-        specifier: 'catalog:'
-        version: 4.1.12
       '@types/node':
         specifier: 'catalog:'
         version: 22.19.15
@@ -370,9 +349,6 @@ importers:
       agent-base:
         specifier: workspace:*
         version: link:../agent-base
-      debug:
-        specifier: 'catalog:'
-        version: 4.4.3
       http-proxy-agent:
         specifier: workspace:*
         version: link:../http-proxy-agent
@@ -382,6 +358,9 @@ importers:
       lru-cache:
         specifier: ^7.14.1
         version: 7.18.3
+      obug:
+        specifier: 'catalog:'
+        version: 2.1.4
       pac-proxy-agent:
         specifier: workspace:*
         version: link:../pac-proxy-agent
@@ -395,9 +374,6 @@ importers:
       '@types/agent-base':
         specifier: ^4.2.0
         version: 4.2.5
-      '@types/debug':
-        specifier: 'catalog:'
-        version: 4.1.12
       '@types/node':
         specifier: 'catalog:'
         version: 22.19.15
@@ -431,9 +407,9 @@ importers:
       agent-base:
         specifier: workspace:*
         version: link:../agent-base
-      debug:
+      obug:
         specifier: 'catalog:'
-        version: 4.4.3
+        version: 2.1.4
       socks:
         specifier: ^2.8.3
         version: 2.8.7
@@ -441,9 +417,6 @@ importers:
       '@types/async-retry':
         specifier: 'catalog:'
         version: 1.4.9
-      '@types/debug':
-        specifier: 'catalog:'
-        version: 4.1.12
       '@types/dns2':
         specifier: ^2.0.3
         version: 2.0.10
@@ -948,9 +921,6 @@ packages:
   '@types/chai@5.2.3':
     resolution: {integrity: sha512-Mw558oeA9fFbv65/y4mHtXDs9bPnFMZAL/jxdPFUpOHHIXX91mcgEHbS5Lahr+pwZFR8A7GQleRWeI6cGFC2UA==}
 
-  '@types/debug@4.1.12':
-    resolution: {integrity: sha512-vIChWdVG3LG1SMxEvI/AK+FWJthlrqlTu7fbrlywTkkaONwk/UAGaULXRlf8vkzFBLVm0zkMdCquhL5aOjhXPQ==}
-
   '@types/deep-eql@4.0.2':
     resolution: {integrity: sha512-c9h9dVVMigMPc4bwTvC5dxqtqJZwQPePsWjPlpSOnojbor6pGqdk541lfA7AqFQr5pB1BRdq0juY9db81BwyFw==}
 
@@ -974,9 +944,6 @@ packages:
 
   '@types/json-schema@7.0.15':
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
-
-  '@types/ms@2.1.0':
-    resolution: {integrity: sha512-GsCCIZDE/p3i96vtEqx+7dBUGXrc7zeSK3wwPHIaRThS+9OhWIXRqzs4d6k1SVU8g91DrNRWxWUGhp5KXQb2VA==}
 
   '@types/netmask@1.0.30':
     resolution: {integrity: sha512-Kl1xAICLv1Y7/WsNXkPKldRMz3QmXUYMIzr3rMXnIBDy9c4/sYG7V6P6u7Ja3w+uNtNQrRudJduqVoYX/DxfZg==}
@@ -1710,6 +1677,10 @@ packages:
 
   obug@2.1.1:
     resolution: {integrity: sha512-uTqF9MuPraAQ+IsnPf366RG4cP9RtUi7MLO1N3KEc+wb0a6yKpeL0lmk2IB1jY5KHPAlTc6T/JRdC/YqxHNwkQ==}
+
+  obug@2.1.4:
+    resolution: {integrity: sha512-4a+OsYv9UktOJKE+l1A4OufDgdRF9PifWj+tJnHURo/P+WOxpG4GzUFL9qCalmWauao6ogiG+QvnCovwPoyAWA==}
+    engines: {node: '>=12.20.0'}
 
   once@1.4.0:
     resolution: {integrity: sha512-lNaJgI+2Q5URQBkccEKHTQOPaXdUxnZZElQTZY0MFUAuaEqe1E+Nyvgdz/aIyNi6Z9MzO5dv1H8n58/GELp3+w==}
@@ -2607,10 +2578,6 @@ snapshots:
       '@types/deep-eql': 4.0.2
       assertion-error: 2.0.1
 
-  '@types/debug@4.1.12':
-    dependencies:
-      '@types/ms': 2.1.0
-
   '@types/deep-eql@4.0.2': {}
 
   '@types/dns2@2.0.10':
@@ -2632,8 +2599,6 @@ snapshots:
       '@types/node': 22.19.15
 
   '@types/json-schema@7.0.15': {}
-
-  '@types/ms@2.1.0': {}
 
   '@types/netmask@1.0.30': {}
 
@@ -3380,6 +3345,8 @@ snapshots:
   node-addon-api@6.1.0: {}
 
   obug@2.1.1: {}
+
+  obug@2.1.4: {}
 
   once@1.4.0:
     dependencies:
