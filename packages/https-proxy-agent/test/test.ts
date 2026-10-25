@@ -295,6 +295,67 @@ describe('HttpsProxyAgent', () => {
 				'Invalid header from proxy CONNECT response: "badheader"'
 			);
 		});
+
+		it('should receive the whole body of a non-200 response that arrives in several chunks', async () => {
+			const chunkedProxy = net.createServer((socket) => {
+				socket.once('data', () => {
+					socket.write(
+						'HTTP/1.1 407 Proxy Authentication Required\r\nContent-Length: 4\r\nConnection: close\r\n\r\n'
+					);
+					setTimeout(() => socket.end('deny'), 50);
+				});
+			});
+			const addr = await listen(chunkedProxy);
+			try {
+				const agent = new HttpsProxyAgent(
+					addr.href.replace('tcp', 'http')
+				);
+				const res = await req('http://example.com', { agent });
+				assert.equal(407, res.statusCode);
+
+				let body = '';
+				res.setEncoding('utf8');
+				for await (const chunk of res) {
+					body += chunk;
+				}
+				assert.equal('deny', body);
+			} finally {
+				chunkedProxy.close();
+			}
+		});
+
+		it('should receive a non-200 response if the proxy closes before sending the whole body', async () => {
+			const shortProxy = net.createServer((socket) => {
+				socket.once('data', () => {
+					socket.end(
+						'HTTP/1.1 407 Proxy Authentication Required\r\nContent-Length: 10\r\n\r\ndeny'
+					);
+				});
+			});
+			const addr = await listen(shortProxy);
+			try {
+				const agent = new HttpsProxyAgent(
+					addr.href.replace('tcp', 'http')
+				);
+				const res = await new Promise<http.IncomingMessage>(
+					(resolve, reject) => {
+						http.get('http://example.com', { agent }, (res) => {
+							// The body is shorter than its Content-Length, so
+							// the response is reported as incomplete.
+							res.once('error', (err: NodeJS.ErrnoException) => {
+								assert.equal('ECONNRESET', err.code);
+								resolve(res);
+							});
+							res.resume();
+						}).once('error', reject);
+					}
+				);
+				assert.equal(407, res.statusCode);
+				assert.equal(false, res.complete);
+			} finally {
+				shortProxy.close();
+			}
+		});
 	});
 
 	describe('"https" module', () => {
