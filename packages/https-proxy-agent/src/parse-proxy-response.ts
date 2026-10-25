@@ -20,6 +20,8 @@ export function parseProxyResponse(
 		// HTTP parser is hooked up...
 		let buffersLength = 0;
 		const buffers: Buffer[] = [];
+		let connect: ConnectResponse | undefined;
+		let bodyStart = 0;
 
 		function read() {
 			const b = socket.read();
@@ -36,6 +38,15 @@ export function parseProxyResponse(
 		function onend() {
 			cleanup();
 			debug('onend');
+			if (connect) {
+				// The proxy closed the connection before sending the whole
+				// body. Replay whatever was received.
+				resolve({
+					connect,
+					buffered: Buffer.concat(buffers, buffersLength),
+				});
+				return;
+			}
 			reject(
 				new Error(
 					'Proxy connection ended before receiving CONNECT response'
@@ -46,6 +57,14 @@ export function parseProxyResponse(
 		function onerror(err: Error) {
 			cleanup();
 			debug('onerror %o', err);
+			if (connect) {
+				// The headers already arrived, so replay what was received.
+				resolve({
+					connect,
+					buffered: Buffer.concat(buffers, buffersLength),
+				});
+				return;
+			}
 			reject(err);
 		}
 
@@ -54,6 +73,11 @@ export function parseProxyResponse(
 			buffersLength += b.length;
 
 			const buffered = Buffer.concat(buffers, buffersLength);
+			if (connect) {
+				onbody(connect, buffered);
+				return;
+			}
+
 			const endOfHeaders = buffered.indexOf('\r\n\r\n');
 
 			if (endOfHeaders === -1) {
@@ -101,15 +125,31 @@ export function parseProxyResponse(
 				}
 			}
 			debug('got proxy server response: %o %o', firstLine, headers);
+			connect = {
+				statusCode,
+				statusText,
+				headers,
+			};
+			bodyStart = endOfHeaders + 4;
+			onbody(connect, buffered);
+		}
+
+		function onbody(response: ConnectResponse, buffered: Buffer) {
+			// A non-200 response is replayed to the HTTP client after the
+			// proxy socket is closed, so wait for its whole body first, or
+			// the client sees the response end early. A 200 response has no
+			// body: the bytes after its headers belong to the tunnel.
+			const bodyLength = getExpectedBodyLength(response);
+			if (
+				response.statusCode !== 200 &&
+				buffered.length - bodyStart < bodyLength
+			) {
+				debug('have not received the whole proxy response body yet...');
+				read();
+				return;
+			}
 			cleanup();
-			resolve({
-				connect: {
-					statusCode,
-					statusText,
-					headers,
-				},
-				buffered,
-			});
+			resolve({ connect: response, buffered });
 		}
 
 		socket.on('error', onerror);
@@ -117,4 +157,15 @@ export function parseProxyResponse(
 
 		read();
 	});
+}
+
+// Largest response body to wait for before replaying what was received.
+const MAX_BODY_LENGTH = 64 * 1024;
+
+function getExpectedBodyLength({ headers }: ConnectResponse): number {
+	const contentLength = Number(headers['content-length']);
+	if (!Number.isSafeInteger(contentLength) || contentLength < 0) {
+		return 0;
+	}
+	return Math.min(contentLength, MAX_BODY_LENGTH);
 }
