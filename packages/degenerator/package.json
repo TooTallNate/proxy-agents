@@ -1,6 +1,6 @@
 {
   "name": "degenerator",
-  "version": "7.0.1",
+  "version": "7.0.2",
   "type": "module",
   "description": "Compiles sync functions into async generator functions",
   "exports": {

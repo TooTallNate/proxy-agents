@@ -1,5 +1,11 @@
 # degenerator
 
+## 7.0.2
+
+### Patch Changes
+
+- 0f80493: Update `quickjs-wasi` to v3.0.0. WASM bytes are now explicitly loaded via `readFile()` instead of relying on implicit filesystem I/O.
+
 ## 7.0.1
 
 ### Patch Changes
