@@ -48,7 +48,7 @@
     "typescript": "catalog:"
   },
   "dependencies": {
-    "basic-ftp": "^5.3.1",
+    "basic-ftp": "^6.2.3",
     "data-uri-to-buffer": "workspace:*",
     "debug": "catalog:"
   },
