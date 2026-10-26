@@ -82,10 +82,16 @@ export const ftp: GetUriProtocol<FTPOptions> = async (url, opts = {}) => {
 
 		const stream = new PassThrough();
 		const rs = stream as FTPReadable;
-		client.downloadTo(stream, filepath).then((result) => {
-			debug(result.message);
-			client.close();
-		});
+		client
+			.downloadTo(stream, filepath)
+			.then((result) => {
+				debug(result.message);
+				client.close();
+			})
+			.catch((err: unknown) => {
+				client.close();
+				stream.destroy(err as Error);
+			});
 		rs.lastModified = lastModified;
 		return rs;
 	} catch (err) {
