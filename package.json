@@ -15,7 +15,10 @@
   "pnpm": {
     "onlyBuiltDependencies": [
       "esbuild"
-    ]
+    ],
+    "overrides": {
+      "brace-expansion@<1.1.21": "^1.1.21"
+    }
   },
   "devDependencies": {
     "@changesets/cli": "^2.30.0",
