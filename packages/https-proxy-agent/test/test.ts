@@ -296,30 +296,36 @@ describe('HttpsProxyAgent', () => {
 			);
 		});
 
-		it('should emit "error" on request if HTTPS proxy closes the connection during the TLS handshake', async () => {
+		const requestErrorWhenProxyCloses = async (protocol: string) => {
 			const badProxy = net.createServer((socket) => {
 				socket.on('error', () => {});
 				socket.once('data', () => socket.end());
 			});
 			const addr = await listen(badProxy);
-			let err: Error | undefined;
 			try {
 				const agent = new HttpsProxyAgent(
-					addr.href.replace('tcp', 'https')
+					addr.href.replace('tcp', protocol)
 				);
 				await req('http://example.com', { agent });
-			} catch (_err) {
-				err = _err as Error;
+			} catch (err) {
+				return err as NodeJS.ErrnoException;
 			} finally {
 				badProxy.close();
 			}
+		};
+
+		it('should emit "error" on request if HTTPS proxy closes the connection during the TLS handshake', async () => {
+			const err = await requestErrorWhenProxyCloses('https');
+			assert(err);
+			assert.equal('ECONNRESET', err.code);
+		});
+
+		it('should emit "error" on request if HTTP proxy closes the connection before the CONNECT response', async () => {
+			const err = await requestErrorWhenProxyCloses('http');
 			assert(err);
 			expect(err.message).toEqual(
 				'Proxy connection ended before receiving CONNECT response'
 			);
-			// The TLS socket emits "error" after "end". Wait for it, so
-			// that an unhandled "error" event fails this test.
-			await new Promise((resolve) => setTimeout(resolve, 50));
 		});
 	});
 
