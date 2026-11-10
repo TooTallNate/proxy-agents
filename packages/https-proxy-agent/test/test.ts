@@ -295,6 +295,38 @@ describe('HttpsProxyAgent', () => {
 				'Invalid header from proxy CONNECT response: "badheader"'
 			);
 		});
+
+		const requestErrorWhenProxyCloses = async (protocol: string) => {
+			const badProxy = net.createServer((socket) => {
+				socket.on('error', () => {});
+				socket.once('data', () => socket.end());
+			});
+			const addr = await listen(badProxy);
+			try {
+				const agent = new HttpsProxyAgent(
+					addr.href.replace('tcp', protocol)
+				);
+				await req('http://example.com', { agent });
+			} catch (err) {
+				return err as NodeJS.ErrnoException;
+			} finally {
+				badProxy.close();
+			}
+		};
+
+		it('should emit "error" on request if HTTPS proxy closes the connection during the TLS handshake', async () => {
+			const err = await requestErrorWhenProxyCloses('https');
+			assert(err);
+			assert.equal('ECONNRESET', err.code);
+		});
+
+		it('should emit "error" on request if HTTP proxy closes the connection before the CONNECT response', async () => {
+			const err = await requestErrorWhenProxyCloses('http');
+			assert(err);
+			expect(err.message).toEqual(
+				'Proxy connection ended before receiving CONNECT response'
+			);
+		});
 	});
 
 	describe('"https" module', () => {
@@ -435,6 +467,9 @@ describe('HttpsProxyAgent', () => {
 			// Create a custom proxy server
 			const customProxy = net.createServer((socket) => {
 				socket.once('data', () => {
+					// Do not lose the request data that arrives before
+					// the target connection is established.
+					socket.pause();
 					socket.write('HTTP/1.1 200 Connection Established\r\n\r\n');
 					const target = net.connect(
 						targetAddr.port,
