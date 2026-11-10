@@ -435,6 +435,9 @@ describe('HttpsProxyAgent', () => {
 			// Create a custom proxy server
 			const customProxy = net.createServer((socket) => {
 				socket.once('data', () => {
+					// Do not lose the request data that arrives before
+					// the target connection is established.
+					socket.pause();
 					socket.write('HTTP/1.1 200 Connection Established\r\n\r\n');
 					const target = net.connect(
 						targetAddr.port,
