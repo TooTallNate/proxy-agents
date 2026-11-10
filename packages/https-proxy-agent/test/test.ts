@@ -295,6 +295,32 @@ describe('HttpsProxyAgent', () => {
 				'Invalid header from proxy CONNECT response: "badheader"'
 			);
 		});
+
+		it('should emit "error" on request if HTTPS proxy closes the connection during the TLS handshake', async () => {
+			const badProxy = net.createServer((socket) => {
+				socket.on('error', () => {});
+				socket.once('data', () => socket.end());
+			});
+			const addr = await listen(badProxy);
+			let err: Error | undefined;
+			try {
+				const agent = new HttpsProxyAgent(
+					addr.href.replace('tcp', 'https')
+				);
+				await req('http://example.com', { agent });
+			} catch (_err) {
+				err = _err as Error;
+			} finally {
+				badProxy.close();
+			}
+			assert(err);
+			expect(err.message).toEqual(
+				'Proxy connection ended before receiving CONNECT response'
+			);
+			// The TLS socket emits "error" after "end". Wait for it, so
+			// that an unhandled "error" event fails this test.
+			await new Promise((resolve) => setTimeout(resolve, 50));
+		});
 	});
 
 	describe('"https" module', () => {

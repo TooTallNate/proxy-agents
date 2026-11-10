@@ -35,6 +35,10 @@ export function parseProxyResponse(
 
 		function onend() {
 			cleanup();
+			// A TLS socket that ends during the handshake emits "error"
+			// after "end". Keep a listener, so that the error does not
+			// crash the process.
+			socket.on('error', () => {});
 			debug('onend');
 			reject(
 				new Error(
