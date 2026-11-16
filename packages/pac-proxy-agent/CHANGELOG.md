@@ -1,5 +1,15 @@
 # pac-proxy-agent
 
+## 9.1.1
+
+### Patch Changes
+
+- 0f80493: Update `quickjs-wasi` to v3.0.0. WASM bytes are now explicitly loaded via `readFile()` instead of relying on implicit filesystem I/O.
+- Updated dependencies [0f80493]
+- Updated dependencies [84e41e4]
+  - pac-resolver@9.0.2
+  - get-uri@8.0.2
+
 ## 9.1.0
 
 ### Minor Changes
