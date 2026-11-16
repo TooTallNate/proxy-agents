@@ -377,10 +377,21 @@ describe('Agent (TypeScript)', () => {
 				): net.Socket {
 					gotCallback = true;
 					assert(opts.secureEndpoint === true);
+					// The exact format of the name returned by
+					// `https.Agent#getName()` varies between Node.js
+					// versions (new TLS options get appended over time),
+					// so compare against the core implementation rather
+					// than a hard-coded string.
+					const name = this.getName(opts);
 					assert.equal(
-						this.getName(opts),
-						`127.0.0.1:${port}::::::::false:::::::::::::`
+						name,
+						https.Agent.prototype.getName.call(
+							new https.Agent(),
+							opts
+						)
 					);
+					assert(name.startsWith(`127.0.0.1:${port}:`));
+					assert.notEqual(name, `127.0.0.1:${port}:`);
 					return tls.connect(opts);
 				}
 			}
