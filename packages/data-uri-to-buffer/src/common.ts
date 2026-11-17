@@ -58,8 +58,20 @@ export const makeDataUriToBuffer =
 			charset = 'US-ASCII';
 		}
 
-		// get the encoded data portion and decode URI-encoded chars
-		const data = unescape(uri.substring(firstComma + 1));
+		// Percent decoding operates on UTF-8 bytes, not UTF-16 code units.
+		// Keep escaped bytes opaque, including bytes invalid in UTF-8.
+		const data = uri
+			.substring(firstComma + 1)
+			.replace(/[\u0080-\uFFFF]+/g, (text) => {
+				let bytes = '';
+				for (const byte of new TextEncoder().encode(text)) {
+					bytes += String.fromCharCode(byte);
+				}
+				return bytes;
+			})
+			.replace(/%([0-9a-f]{2})/gi, (_, hex: string) =>
+				String.fromCharCode(parseInt(hex, 16))
+			);
 		const buffer = base64
 			? convert.base64ToArrayBuffer(data)
 			: convert.stringToBuffer(data);
