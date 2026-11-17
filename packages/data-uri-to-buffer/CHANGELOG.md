@@ -1,5 +1,11 @@
 # data-uri-to-buffer
 
+## 8.0.1
+
+### Patch Changes
+
+- 90c2279: Preserve UTF-8 bytes in unescaped data and decode only two-digit percent escapes.
+
 ## 8.0.0
 
 ### Major Changes

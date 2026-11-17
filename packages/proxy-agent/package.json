@@ -1,6 +1,6 @@
 {
   "name": "proxy-agent",
-  "version": "8.0.3",
+  "version": "8.0.4",
   "type": "module",
   "description": "Maps proxy protocols to `http.Agent` implementations",
   "exports": {
