@@ -1,5 +1,11 @@
 # proxy-agent
 
+## 8.0.4
+
+### Patch Changes
+
+- pac-proxy-agent@9.1.2
+
 ## 8.0.3
 
 ### Patch Changes

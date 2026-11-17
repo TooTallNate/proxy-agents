@@ -1,5 +1,12 @@
 # pac-proxy-agent
 
+## 9.1.2
+
+### Patch Changes
+
+- Updated dependencies [890a208]
+  - get-uri@8.0.3
+
 ## 9.1.1
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # get-uri
 
+## 8.0.3
+
+### Patch Changes
+
+- 890a208: Fix unhandled promise rejection in the `ftp:` protocol handler when the data transfer fails after `getUri()` has resolved. The error is now emitted on the returned stream instead of crashing the process.
+- Updated dependencies [90c2279]
+  - data-uri-to-buffer@8.0.1
+
 ## 8.0.2
 
 ### Patch Changes
