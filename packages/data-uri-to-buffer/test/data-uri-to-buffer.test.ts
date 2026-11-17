@@ -6,6 +6,81 @@ describe('node', () => doTest(node));
 describe('baseline', () => doTest(baseline));
 
 function doTest(dataUriToBuffer: typeof baseline) {
+	it('should UTF-8 encode unescaped data without transcoding percent bytes', function () {
+		for (const text of ['héllo', '你好', '€5', '😀', '\ud800']) {
+			for (const uri of [
+				`data:text/plain;charset=utf-8,${text}`,
+				new URL(`data:text/plain;charset=utf-8,${text}`),
+			]) {
+				assert.deepEqual(
+					Buffer.from(dataUriToBuffer(uri).buffer),
+					Buffer.from(text, 'utf8')
+				);
+			}
+		}
+		assert.deepEqual(
+			Buffer.from(dataUriToBuffer('data:,é%FF%00%C3%A9😀').buffer),
+			Buffer.concat([
+				Buffer.from('é'),
+				Buffer.from([0xff, 0, 0xc3, 0xa9]),
+				Buffer.from('😀'),
+			])
+		);
+	});
+
+	it('should decode only percent-encoded bytes, once', function () {
+		for (const text of [
+			'100%u2026',
+			'%u0041',
+			'%U0041',
+			'%',
+			'%1',
+			'%GG',
+		]) {
+			assert.equal(
+				Buffer.from(dataUriToBuffer(`data:,${text}`).buffer).toString(),
+				text
+			);
+		}
+		assert.equal(
+			Buffer.from(
+				dataUriToBuffer('data:,%25u0041%2520').buffer
+			).toString(),
+			'%u0041%20'
+		);
+		const bytes = Buffer.from(Array.from({ length: 256 }, (_, i) => i));
+		const escaped = Array.from(
+			bytes,
+			(b) => `%${b.toString(16).padStart(2, '0')}`
+		).join('');
+		assert.deepEqual(
+			Buffer.from(dataUriToBuffer(`data:,${escaped}`).buffer),
+			bytes
+		);
+	});
+
+	it('should decode large mixed payloads', function () {
+		const data = 'é😀%FF%u0041'.repeat(16384);
+		const expected = Buffer.concat([
+			Buffer.from('é😀'),
+			Buffer.from([0xff]),
+			Buffer.from('%u0041'),
+		]);
+		const buffer = Buffer.from(dataUriToBuffer(`data:,${data}`).buffer);
+		assert.equal(buffer.length, expected.length * 16384);
+		for (
+			let offset = 0;
+			offset < buffer.length;
+			offset += expected.length
+		) {
+			assert(
+				buffer
+					.subarray(offset, offset + expected.length)
+					.equals(expected)
+			);
+		}
+	});
+
 	it('should decode bare-bones Data URIs', function () {
 		const uri = 'data:,Hello%2C%20World!';
 
