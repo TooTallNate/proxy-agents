@@ -4,7 +4,7 @@ import * as http from 'http';
 import * as os from 'os';
 import pkg from './pkg.js';
 
-import createDebug from 'debug';
+import { createDebug } from 'obug';
 
 // log levels
 const debug = {

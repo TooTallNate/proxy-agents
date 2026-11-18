@@ -3,7 +3,7 @@ import * as https from 'https';
 import { URL } from 'url';
 import LRUCache from 'lru-cache';
 import { Agent, AgentConnectOpts } from 'agent-base';
-import createDebug from 'debug';
+import { createDebug } from 'obug';
 import { getProxyForUrl as envGetProxyForUrl } from 'proxy-from-env';
 import type { PacProxyAgent, PacProxyAgentOptions } from 'pac-proxy-agent';
 import type { HttpProxyAgent, HttpProxyAgentOptions } from 'http-proxy-agent';

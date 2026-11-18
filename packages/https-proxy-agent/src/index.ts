@@ -2,7 +2,7 @@ import * as net from 'net';
 import * as tls from 'tls';
 import * as http from 'http';
 import assert from 'assert';
-import createDebug from 'debug';
+import { createDebug } from 'obug';
 import { Agent, AgentConnectOpts } from 'agent-base';
 import { URL } from 'url';
 import { parseProxyResponse, ConnectResponse } from './parse-proxy-response.js';

@@ -36,17 +36,16 @@
   "license": "MIT",
   "dependencies": {
     "agent-base": "workspace:*",
-    "debug": "catalog:",
     "http-proxy-agent": "workspace:*",
     "https-proxy-agent": "workspace:*",
     "lru-cache": "^7.14.1",
+    "obug": "catalog:",
     "pac-proxy-agent": "workspace:*",
     "proxy-from-env": "^2.0.0",
     "socks-proxy-agent": "workspace:*"
   },
   "devDependencies": {
     "@types/agent-base": "^4.2.0",
-    "@types/debug": "catalog:",
     "@types/node": "catalog:",
     "@types/proxy-from-env": "^1.0.1",
     "@types/ws": "catalog:",

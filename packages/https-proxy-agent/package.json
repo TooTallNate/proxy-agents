@@ -32,12 +32,11 @@
   "license": "MIT",
   "dependencies": {
     "agent-base": "workspace:*",
-    "debug": "catalog:",
+    "obug": "catalog:",
     "proxy-agent-negotiate": "workspace:*"
   },
   "devDependencies": {
     "@types/async-retry": "catalog:",
-    "@types/debug": "catalog:",
     "@types/node": "catalog:",
     "async-listen": "catalog:",
     "async-retry": "catalog:",

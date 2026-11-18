@@ -39,11 +39,10 @@
   "license": "MIT",
   "dependencies": {
     "args": "^5.0.3",
-    "debug": "catalog:"
+    "obug": "catalog:"
   },
   "devDependencies": {
     "@types/args": "^5.0.0",
-    "@types/debug": "catalog:",
     "@types/node": "catalog:",
     "async-listen": "catalog:",
     "tsconfig": "workspace:*",

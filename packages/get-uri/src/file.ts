@@ -1,5 +1,5 @@
 import { Readable } from 'stream';
-import createDebug from 'debug';
+import { createDebug } from 'obug';
 import { Stats, createReadStream, promises as fsPromises } from 'fs';
 import { GetUriProtocol } from './index.js';
 import NotFoundError from './notfound.js';

@@ -3,7 +3,7 @@ import * as tls from 'tls';
 import * as http from 'http';
 import * as crypto from 'crypto';
 import { once } from 'events';
-import createDebug from 'debug';
+import { createDebug } from 'obug';
 import { Readable } from 'stream';
 import { URL } from 'url';
 import { Agent, AgentConnectOpts, toBuffer } from 'agent-base';
