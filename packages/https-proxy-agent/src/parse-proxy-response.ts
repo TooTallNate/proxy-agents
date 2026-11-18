@@ -29,13 +29,21 @@ export function parseProxyResponse(
 
 		function cleanup() {
 			socket.removeListener('end', onend);
+			socket.removeListener('close', onclose);
 			socket.removeListener('error', onerror);
 			socket.removeListener('readable', read);
 		}
 
 		function onend() {
-			cleanup();
 			debug('onend');
+			socket.destroy();
+		}
+
+		// A TLS socket that ends during the handshake emits "error" after
+		// "end". Reject on "close", so that the error is reported first.
+		function onclose() {
+			cleanup();
+			debug('onclose');
 			reject(
 				new Error(
 					'Proxy connection ended before receiving CONNECT response'
@@ -114,6 +122,7 @@ export function parseProxyResponse(
 
 		socket.on('error', onerror);
 		socket.on('end', onend);
+		socket.on('close', onclose);
 
 		read();
 	});
