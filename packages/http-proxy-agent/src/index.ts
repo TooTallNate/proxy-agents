@@ -17,6 +17,25 @@ export type { OnProxyAuthCallback, ProxyAuthParams, ProxyAuthResponse };
 
 const debug = createDebug('http-proxy-agent');
 
+const setServernameFromNonIpHost = <
+	T extends { host?: string; servername?: string }
+>(
+	options: T
+) => {
+	if (
+		options.servername === undefined &&
+		options.host &&
+		!net.isIP(options.host)
+	) {
+		return {
+			...options,
+			servername: options.host,
+		};
+	}
+	return options;
+};
+
+
 export interface ProxyConnect {
 	socket: net.Socket;
 }
@@ -177,7 +196,7 @@ export class HttpProxyAgent<Uri extends string> extends Agent {
 		let socket: net.Socket;
 		if (this.proxy.protocol === 'https:') {
 			debug('Creating `tls.Socket`: %o', this.connectOpts);
-			socket = tls.connect(this.connectOpts);
+			socket = tls.connect(setServernameFromNonIpHost(this.connectOpts));
 		} else {
 			debug('Creating `net.Socket`: %o', this.connectOpts);
 			socket = net.connect(this.connectOpts);
